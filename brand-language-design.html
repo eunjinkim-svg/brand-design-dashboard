@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Language Design / UX Writing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f8f7;
+      --surface: #ffffff;
+      --surface-alt: #f5f5f3;
+      --border: #e7e5e4;
+      --border-light: #f0eeec;
+      --text: #1c1917;
+      --text-sub: #57534e;
+      --text-muted: #a8a29e;
+      --accent: #ea580c;
+      --accent-light: #fff7ed;
+      --accent-border: #fed7aa;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --red-border: #fecaca;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --blue-border: #bfdbfe;
+      --purple: #7c3aed;
+      --purple-bg: #f5f3ff;
+      --purple-border: #ddd6fe;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.8;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Top Bar ===== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+    }
+    .topbar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+    .topbar-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0 0;
+    }
+    .topbar-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .topbar-channel {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--surface-alt);
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 12px;
+    }
+    .tab-btn {
+      position: relative;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-sub); }
+    .tab-btn.active { color: var(--text); font-weight: 600; }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 16px;
+      right: 16px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* ===== Content ===== */
+    .content {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 32px 80px;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ===== Section ===== */
+    .section { margin-bottom: 40px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .section-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .section-desc {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    /* ===== Card ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 14px;
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: var(--shadow-md); }
+    .card-header {
+      padding: 16px 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .card-header:hover { background: var(--surface-alt); }
+    .card-header h3 {
+      font-size: 0.92rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-header .emoji { font-size: 1rem; }
+    .toggle-arrow {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    .card-header.open .toggle-arrow {
+      transform: rotate(90deg);
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    .card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .card-body.open { max-height: 20000px; }
+    .card-body-inner { padding: 0 24px 24px; }
+    .card-body-inner > :first-child { border-top: 1px solid var(--border-light); padding-top: 20px; }
+
+    /* ===== Badge ===== */
+    .badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-must { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-border); }
+    .badge-guide { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple-border); }
+    .badge-ref { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+
+    /* ===== Inline Content Styles ===== */
+    .card-body-inner p { margin: 10px 0; font-size: 0.88rem; color: var(--text-sub); line-height: 1.9; }
+    .card-body-inner h4 {
+      font-size: 1rem; font-weight: 700; color: var(--text);
+      margin: 28px 0 8px;
+    }
+    .card-body-inner h4:first-child { margin-top: 0; }
+    .card-body-inner h5 { font-size: 0.9rem; font-weight: 600; color: var(--text); margin: 18px 0 6px; }
+    .card-body-inner ul, .card-body-inner ol { margin: 8px 0 8px 18px; font-size: 0.88rem; color: var(--text-sub); }
+    .card-body-inner li { margin: 4px 0; line-height: 1.8; }
+    .card-body-inner strong { color: var(--text); font-weight: 600; }
+
+    /* ===== Callout ===== */
+    .callout {
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin: 14px 0;
+      font-size: 0.86rem;
+      line-height: 1.8;
+    }
+    .callout-gray { background: var(--surface-alt); border: 1px solid var(--border-light); }
+    .callout-accent { background: var(--accent-light); border: 1px solid var(--accent-border); }
+    .callout-blue { background: var(--blue-bg); border: 1px solid var(--blue-border); }
+    .callout-purple { background: var(--purple-bg); border: 1px solid var(--purple-border); }
+    .callout p { margin: 4px 0; font-size: 0.86rem; }
+
+    /* ===== Guide Table ===== */
+    .guide-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 14px 0 20px;
+      font-size: 0.84rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .guide-table th {
+      background: var(--surface-alt);
+      font-weight: 600; font-size: 0.78rem;
+      color: var(--text-sub);
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .guide-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top; line-height: 1.8;
+    }
+    .guide-table tr:last-child td { border-bottom: none; }
+    .guide-table td:first-child { background: #fafaf9; font-weight: 500; color: var(--text); width: 40%; }
+    .guide-table td.plain { background: none; font-weight: 400; color: var(--text-sub); }
+
+    .dont {
+      display: inline-block; font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 700;
+      color: var(--red); background: var(--red-bg); border: 1px solid var(--red-border);
+      padding: 1px 7px; border-radius: 4px; margin-right: 3px;
+    }
+    .do {
+      display: inline-block; font-family: 'Inter', sans-serif;
+      font-size: 0.65rem; font-weight: 700;
+      color: var(--green); background: var(--green-bg); border: 1px solid var(--green-border);
+      padding: 1px 7px; border-radius: 4px; margin-right: 3px;
+    }
+
+    /* ===== Toggle (details) ===== */
+    details {
+      margin: 6px 0;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    details + details { margin-top: 8px; }
+    details summary {
+      cursor: pointer; font-weight: 500; font-size: 0.88rem;
+      padding: 11px 16px; list-style: none;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s;
+    }
+    details summary:hover { background: var(--surface-alt); }
+    details summary::before {
+      content: '\25B8'; font-size: 0.75rem; color: var(--text-muted);
+      transition: transform 0.2s; flex-shrink: 0;
+    }
+    details[open] summary::before { transform: rotate(90deg); }
+    details[open] summary { border-bottom: 1px solid var(--border-light); }
+    details > div { padding: 14px 18px; font-size: 0.86rem; color: var(--text-sub); }
+    details ul { margin: 6px 0 6px 16px; }
+
+    /* ===== Scope Cards ===== */
+    .scope-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin: 12px 0 20px; overflow: hidden;
+    }
+    .scope-item {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex; gap: 12px; align-items: baseline;
+    }
+    .scope-item:last-child { border-bottom: none; }
+    .scope-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      padding: 2px 9px; border-radius: 4px;
+      flex-shrink: 0; text-transform: uppercase;
+    }
+    .tag-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .tag-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+    .scope-desc { font-size: 0.84rem; color: var(--text-sub); line-height: 1.6; }
+    .scope-desc strong { color: var(--text); }
+    .scope-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.76rem; font-weight: 600;
+      padding: 4px 12px; border-radius: 16px; margin-bottom: 8px;
+    }
+    .pill-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .pill-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+
+    /* ===== Ext link ===== */
+    .ext-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.84rem; color: var(--blue); text-decoration: none;
+      padding: 7px 14px; border: 1px solid var(--blue-border);
+      border-radius: var(--radius-sm); background: var(--blue-bg);
+      transition: background 0.15s;
+    }
+    .ext-link:hover { background: #dbeafe; }
+
+    /* ===== Intro Banner (Tab 1 top) ===== */
+    .intro-banner {
+      background: linear-gradient(135deg, #fff7ed 0%, #fefce8 50%, #f0fdf4 100%);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .intro-banner .lead {
+      font-size: 0.95rem; font-weight: 500; line-height: 1.9; color: var(--text);
+    }
+    .intro-banner .sub {
+      margin-top: 12px; font-size: 0.84rem; color: var(--text-sub); line-height: 1.8;
+    }
+
+    /* ===== Quick access (Tab 1 top) ===== */
+    .quick-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .quick-item {
+      text-align: center;
+      padding: 16px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .quick-item:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .quick-item .qi-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .quick-item .qi-label { font-size: 0.78rem; font-weight: 500; color: var(--text-sub); line-height: 1.4; }
+
+    /* ===== About: Intro Card ===== */
+    .about-intro {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .about-intro .lead { font-size: 0.95rem; font-weight: 500; line-height: 1.9; margin-bottom: 14px; }
+    .about-intro .detail { font-size: 0.86rem; color: var(--text-sub); line-height: 2; }
+    .about-intro .detail strong { color: var(--text); }
+
+    /* ===== Process Steps ===== */
+    .steps { margin: 16px 0; }
+    .step {
+      display: flex; gap: 16px; margin-bottom: 20px;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content h5 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .step-content p { font-size: 0.84rem; color: var(--text-sub); margin: 0; line-height: 1.7; }
+
+    /* ===== Footer ===== */
+    .page-footer {
+      text-align: center; padding: 28px 0;
+      color: var(--text-muted); font-size: 0.75rem;
+      border-top: 1px solid var(--border-light);
+      margin-top: 48px;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 640px) {
+      .content { padding: 24px 16px 64px; }
+      .topbar-inner { padding: 0 16px; }
+      .quick-row { grid-template-columns: repeat(2, 1fr); }
+      .intro-banner { padding: 20px; }
+      .card-body-inner { padding: 0 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-top">
+        <div class="topbar-title">✍🏻 Brand Language Design / UX Writing</div>
+        <span class="topbar-channel"># des_ux_writing</span>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('guide', this)">글쓰기 가이드</button>
+        <button class="tab-btn" onclick="switchTab('request', this)">업무 요청</button>
+        <button class="tab-btn" onclick="switchTab('bot', this)">라이팅봇</button>
+        <button class="tab-btn" onclick="switchTab('about', this)">About</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ================================================================ -->
+    <!-- TAB 1: 글쓰기 가이드 -->
+    <!-- ================================================================ -->
+    <div id="tab-guide" class="tab-panel active">
+
+      <div class="intro-banner">
+        <p class="lead">문구를 쓰기 전, 이 가이드를 한 번 훑어보세요.<br>오늘의집의 목소리를 일관되게 유지하는 데 도움이 됩니다.</p>
+        <p class="sub">체크리스트로 빠르게 점검하거나, 상세 가이드를 펼쳐 확인할 수 있어요.</p>
+      </div>
+
+      <div class="quick-row">
+        <a class="quick-item" onclick="openCard('checklist')">
+          <div class="qi-icon">✅</div>
+          <div class="qi-label">최종 점검<br>체크리스트</div>
+        </a>
+        <a class="quick-item" onclick="openCard('writing-tips')">
+          <div class="qi-icon">🧚🏻‍♀️</div>
+          <div class="qi-label">매끄러운<br>글쓰기 TIP</div>
+        </a>
+        <a class="quick-item" onclick="openCard('notation')">
+          <div class="qi-icon">📍</div>
+          <div class="qi-label">표기 규칙<br>가이드</div>
+        </a>
+        <a class="quick-item" href="https://docs.google.com/spreadsheets/d/1TTmn2D0vBfaJnk6PJQQR1V08bKyV60fAWQ7cKMIcSho/edit?gid=0#gid=0" target="_blank">
+          <div class="qi-icon">🚫</div>
+          <div class="qi-label">금지 & 주의<br>표현</div>
+        </a>
+      </div>
+
+      <!-- 최종 점검 체크리스트 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--accent-light);">✅</div>
+          <div class="section-title">최종 점검 체크리스트</div>
+        </div>
+        <p class="section-desc">문구 작성 후, 아래 5가지 관점에서 최종 체크해주세요.</p>
+
+        <div class="card" id="checklist">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>"이걸 하면 나한테 좋은 건가?"</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p>사용자에게 가치와 혜택을 명확하게 전달해요</p>
+            <table class="guide-table">
+              <tr><td>이점을 앞부분에 강조</td><td><span class="dont">Don't</span> AI 추천 시스템이 작동합니다<br><span class="do">Do</span> AI 추천으로 원하는 상품을 더 쉽게 찾을 수 있어요</td></tr>
+              <tr><td>구체적인 숫자 활용</td><td><span class="dont">Don't</span> 할인 쿠폰이 제공됩니다<br><span class="do">Do</span> 30% 할인 쿠폰을 받을 수 있어요</td></tr>
+              <tr><td>사용자 중심 언어</td><td><span class="dont">Don't</span> 오늘의집이 더 나은 경험을 제공하는데 도움됩니다<br><span class="do">Do</span> 관심사에 맞는 콘텐츠와 상품을 추천 받을 수 있어요</td></tr>
+              <tr><td>"하면 좋다"로 말해요</td><td><span class="dont">Don't</span> 이 기능을 사용해야 합니다<br><span class="do">Do</span> 이 기능을 활용하면 검색이 훨씬 쉬워져요!</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>"하려는 말이 뭐지?"</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p>명확하고 직관적인 문장을 작성해요</p>
+            <table class="guide-table">
+              <tr><td>한 문장에 하나의 메시지</td><td><span class="dont">Don't</span> 앱 업데이트가 필요하며, 최신 버전을 사용해야 원활한 이용이 가능합니다<br><span class="do">Do</span> 앱을 업데이트해주세요. 최신 버전에서 원활하게 이용할 수 있어요.</td></tr>
+              <tr><td>군더더기 삭제</td><td><span class="dont">Don't</span> 보다 간편하게 결제하실 수 있어요.<br><span class="do">Do</span> 간편하게 결제할 수 있어요.</td></tr>
+              <tr><td>명확한 단어 사용</td><td><span class="dont">Don't</span> 사용자가 요청하면 해당 금액이 즉시 반환 처리됩니다<br><span class="do">Do</span> 즉시 환불됩니다.</td></tr>
+              <tr><td>단어 반복 검토</td><td><span class="dont">Don't</span> 배송이 시작되면 배송 알림이 발송돼요.<br><span class="do">Do</span> 배송이 시작되면 알려드릴게요.</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>"내가 뭘 하면 될까?"</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p>다음 행동을 명확하게 안내해요</p>
+            <table class="guide-table">
+              <tr><td>다음 행동을 안내</td><td><span class="dont">Don't</span> 입력 정보가 올바르지 않습니다<br><span class="do">Do</span> 비밀번호는 8자 이상이어야 해요. 다시 입력해주세요</td></tr>
+              <tr><td>구체적 안내</td><td><span class="dont">Don't</span> 파일이 업로드되지 않았어요.<br><span class="do">Do</span> 지원되지 않는 파일 형식이에요. PDF 또는 JPG 파일을 업로드해주세요.</td></tr>
+              <tr><td>자연스러운 동기 부여</td><td><span class="dont">Don't</span> 업데이트하지 않으면 이용할 수 없습니다.<br><span class="do">Do</span> 업데이트하면 더 빠르고 안정적으로 사용할 수 있어요</td></tr>
+              <tr><td>피동형 지양</td><td><span class="dont">Don't</span> 결제가 처리되었습니다<br><span class="do">Do</span> 결제가 완료됐어요</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>"뭔가 찜찜한데...."</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p>명확하고 긍정적인 경험을 제공해요</p>
+            <table class="guide-table">
+              <tr><td>이중 부정 질문 금지</td><td><span class="dont">Don't</span> 이 기능을 사용하지 않겠습니까?<br><span class="do">Do</span> 이 기능을 유지할까요?</td></tr>
+              <tr><td>긍정적 표현 사용</td><td><span class="dont">Don't</span> 진행을 원하지 않으세요?<br><span class="do">Do</span> 계속 진행할까요?</td></tr>
+              <tr><td>결정을 압박하지 않기</td><td><span class="dont">Don't</span> 이 기회를 놓치고 싶지 않죠?<br><span class="do">Do</span> 이 상품이 마음에 드시나요?</td></tr>
+              <tr><td>부정적 단어 지양</td><td><span class="dont">Don't</span> 인터넷이 끊겼습니다<br><span class="do">Do</span> 연결이 원활하지 않아요. 다시 시도해주세요</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>"역시 오늘의집!"</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p>신뢰를 쌓는 표현을 사용해요</p>
+            <table class="guide-table">
+              <tr><td>과장 없이 담백하게</td><td><span class="dont">Don't</span> 이건 꼭 사야 해요!<br><span class="do">Do</span> 이런 점이 좋아요. 필요하면 참고해 보세요.</td></tr>
+              <tr><td>정보 제공 느낌</td><td><span class="dont">Don't</span> 마지막 찬스!<br><span class="do">Do</span> 마감이 얼마 남지 않았어요.</td></tr>
+              <tr><td>객관적 사실 반영</td><td><span class="dont">Don't</span> No.1 브랜드<br><span class="do">Do</span> 많은 분이 선택한 제품이에요.</td></tr>
+              <tr><td>형식적 표현 줄이기</td><td><span class="dont">Don't</span> 해당 제품을 구매하시면 혜택을 받을 수 있습니다<br><span class="do">Do</span> 이 제품을 구매하면 이런 혜택이 있어요</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3><span class="emoji">🧹</span> '우~ 모먼트'를 없애는 기본 체크</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <h5>맞춤법과 문법, 표기 규칙 한 번 더 확인해요</h5>
+            <p>정확한 언어 사용은 브랜드의 신뢰도를 좌우하는 중요한 요소입니다.</p>
+            <h5>소리내어 읽고 마무리해주세요</h5>
+            <p>텍스트가 자연스럽게 흐르는지 판단할 수 있는 가장 좋은 방법이에요.</p>
+            <h5>새로운 용어와 표현을 쓰기 전, 히스토리를 확인해요</h5>
+            <p>화면마다 다른 용어를 사용한다면, 사용자는 혼란을 겪습니다.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- 매끄러운 글쓰기 핵심TIP -->
+      <div class="section" id="writing-tips">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--purple-bg);">🧚🏻‍♀️</div>
+          <div class="section-title">매끄러운 글쓰기 핵심TIP</div>
+        </div>
+
+        <details>
+          <summary>논리적 모순과 번역투 지우기</summary>
+          <div>
+            <ul>
+              <li><strong>최상급의 모순</strong> &mdash; 가장 오래된 것 중 하나 &rarr; 가장 오래된 것 / 오래된 것 중 하나</li>
+              <li><strong>영어식 진행형 지양</strong> &mdash; 검토하고 있는 중이다 &rarr; 검토 중이다</li>
+              <li>~에 대하여 &rarr; ~를, ~을</li>
+              <li>~를 가지다 &rarr; ~를 갖다 / ~가 있다</li>
+              <li>~에 대한 &rarr; 조사 '의'로 바꾸거나 생략</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>'의·적·것' 군더더기 걷어내기</summary>
+          <div>
+            <ul>
+              <li><strong>'의' 삭제</strong> &mdash; 사과의 나무 &rarr; 사과나무</li>
+              <li><strong>'적' 자제</strong> &mdash; 경제적 현상 &rarr; 경제 현상</li>
+              <li><strong>'것' 줄이기</strong> &mdash; 노력해야 하는 것이다 &rarr; 노력해야 한다</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>피동을 능동으로 바꾸기</summary>
+          <div>
+            <ul>
+              <li><strong>이중 피동 금지</strong> &mdash; 생각되어집니다 &rarr; 생각합니다</li>
+              <li><strong>능동형 권장</strong> &mdash; 제안이 받아들여졌다 &rarr; 제안을 수용했다</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>정확한 부호 사용하기</summary>
+          <div>
+            <table class="guide-table">
+              <tr><th>부호</th><th>사용법</th><th>예시</th></tr>
+              <tr><td class="plain">쉼표 ( , )</td><td>열거하거나 흐름이 바뀔 때</td><td>사과, 배, 복숭아를 샀다.</td></tr>
+              <tr><td class="plain">따옴표 ( " " )</td><td>대화나 직접 인용에만</td><td>그가 "안녕"이라고 말했다.</td></tr>
+              <tr><td class="plain">작은따옴표 ( ' ' )</td><td>생각, 강조 용어</td><td>'이게 맞을까' 고민했다.</td></tr>
+              <tr><td class="plain">가운데점 ( &middot; )</td><td>짝 단어, 밀접한 열거</td><td>조사&middot;분석</td></tr>
+              <tr><td class="plain">줄표 ( &mdash; )</td><td>부가 설명 삽입</td><td>그의 태도&mdash;무관심&mdash;가 화나게 했다.</td></tr>
+            </table>
+          </div>
+        </details>
+        <details>
+          <summary>단어의 올바른 호응</summary>
+          <div>
+            <ul>
+              <li>'결코, 전혀, 별로' + 부정어 &mdash; 별로 예쁘다 (X) &rarr; 별로 예쁘지 않다 (O)</li>
+              <li>'설마' + 의문문 &mdash; 설마 그가 올 것이다 (X) &rarr; 설마 그가 올까? (O)</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>겹말(동어반복) 삭제하기</summary>
+          <div>
+            <ul>
+              <li>미리 예고하다 &rarr; 예고하다</li>
+              <li>다시 재개하다 &rarr; 재개하다</li>
+              <li>기존의 관례 &rarr; 관례</li>
+              <li>따뜻한 온정 &rarr; 온정</li>
+            </ul>
+          </div>
+        </details>
+        <details>
+          <summary>모호한 '추측성 어미' 지양</summary>
+          <div>
+            <ul>
+              <li>효율적인 방식인 것 같습니다 &rarr; 효율적인 방식입니다</li>
+              <li>결과가 좋을 것으로 생각되어집니다 &rarr; 결과가 좋을 것으로 전망합니다</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <!-- 표기 규칙 가이드 -->
+      <div class="section" id="notation">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--purple-bg);">📍</div>
+          <div class="section-title">표기 규칙 가이드</div>
+        </div>
+
+        <div class="callout callout-purple">
+          <p>표기 규칙을 정하는 것은 사용자 경험을 직관적이고 효율적이며, 신뢰성 있게 만들어주는 중요한 요소입니다.</p>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:20px 0 10px;">최근 업데이트</h4>
+        <ul style="font-size:0.88rem; color:var(--text-sub); margin-left:18px;">
+          <li>숫자표기: 약식 표기 규칙 <span style="color:var(--text-muted);">(25/11/01)</span></li>
+          <li>띄어쓰기: UI 컴포넌트 규칙 <span style="color:var(--text-muted);">(25/03/31)</span></li>
+          <li>문장부호: 더하기 규칙 변경 <span style="color:var(--text-muted);">(25/01/10)</span></li>
+        </ul>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:24px 0 10px;">상황별 표기 규칙</h4>
+        <table class="guide-table">
+          <tr><th>항목</th><th>설명</th></tr>
+          <tr><td>숫자 / 금액</td><td class="plain">숫자, 금액, 약식 표기 등 수 관련 표기 규칙</td></tr>
+          <tr><td>날짜 / 시간</td><td class="plain">날짜, 시간, 기간 등 시간 관련 표기 규칙</td></tr>
+          <tr><td>외래어 표기</td><td class="plain">외래어, 영문 혼용 시 표기 규칙</td></tr>
+          <tr><td>오늘의집 서비스용어</td><td class="plain">서비스 내 통일 용어 정의</td></tr>
+        </table>
+
+        <details style="margin-top:16px;">
+          <summary>가이드 내용 변경이 필요한 경우?</summary>
+          <div><p>가이드 내 댓글로 담당자를 태그하거나, #des_ux_writing 채널에서 메시지를 남겨주세요.</p></div>
+        </details>
+      </div>
+
+      <!-- Component UX Writing Guide -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#fdf2f8;">🖱️</div>
+          <div class="section-title">Component UX Writing Guide</div>
+        </div>
+        <p class="section-desc">오늘의집 서비스 안에서 UI 텍스트를 일관되게 작성하기 위한 가이드입니다. UI 요소(어디에 쓰이는가)와 메시지 유형(어떤 성격의 말인가)을 확인해 보세요.</p>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:8px 0 10px;">UI 요소별 가이드 (Where)</h4>
+        <table class="guide-table">
+          <tr><th>컴포넌트</th><th>Use cases</th></tr>
+          <tr><td>Button</td><td class="plain">버튼 레이블 작성 가이드</td></tr>
+          <tr><td>Dialog</td><td class="plain">다이얼로그 메시지 작성 가이드</td></tr>
+          <tr><td>Tab</td><td class="plain">탭 레이블 작성 가이드</td></tr>
+          <tr><td>Badge</td><td class="plain">뱃지 텍스트 작성 가이드</td></tr>
+          <tr><td>Caution Box</td><td class="plain">주의 안내 메시지 작성 가이드</td></tr>
+          <tr><td>Navigation & Footer</td><td class="plain">내비게이션, 푸터 텍스트 가이드 <span style="color:var(--text-muted);">(작업중)</span></td></tr>
+        </table>
+
+        <p style="margin-top:12px;">
+          <a class="ext-link" href="https://www.figma.com/design/aTdWM1sgdScr68GZdQ2sWO/ODS-(Ohouse-Design-System)-Master?m=auto&node-id=9-64" target="_blank">ODS Design System &nearr;</a>&nbsp;
+          <a class="ext-link" href="https://docs.google.com/spreadsheets/d/1JaDvRTrz4p_Ry2jLhyFut8Vet1TfrYLNkJxDTHjRqKY/edit?gid=0#gid=0" target="_blank">컴포넌트 텍스트 DB &nearr;</a>
+        </p>
+      </div>
+
+      <!-- 목소리가 들리는 UX라이팅 가이드 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#fef9c3;">✨</div>
+          <div class="section-title">목소리가 들리는 UX라이팅 가이드</div>
+        </div>
+        <div class="callout callout-gray">
+          <p>사용자의 취향과 경험을 존중하는 오늘의집은 <strong>친근하고 다정한 톤</strong>을 유지하면서, 가벼워 보이지 않도록 <strong>신뢰감을 주는 표현</strong>을 사용해요. 🤗</p>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:16px 0 10px;">목소리가 들리는 UX라이팅</h4>
+        <table class="guide-table">
+          <tr><th>주제</th><th>태그</th></tr>
+          <tr><td class="plain">서비스의 첫인상 👉🏻 문체 선택하기</td><td class="plain"><span class="badge badge-guide" style="font-size:0.6rem;">문체</span></td></tr>
+          <tr><td class="plain">단어 선택, 어디까지 고민해야 할까?</td><td class="plain"><span class="badge badge-guide" style="font-size:0.6rem;">단어수준</span></td></tr>
+          <tr><td class="plain">친절함과 다정함을 넘어서</td><td class="plain"><span class="badge badge-guide" style="font-size:0.6rem;">UX라이팅팁</span></td></tr>
+          <tr><td class="plain">사용자를 어떻게 부르는 게 좋을까요?</td><td class="plain"><span class="badge badge-ref" style="font-size:0.6rem;">사용자호칭</span></td></tr>
+          <tr><td class="plain">혼란을 주는 다크패턴 짚어보기</td><td class="plain"><span class="badge badge-must" style="font-size:0.6rem;">다크패턴</span></td></tr>
+          <tr><td class="plain">'오늘의집'을 지워주세요</td><td class="plain"><span class="badge badge-guide" style="font-size:0.6rem;">일관성</span></td></tr>
+          <tr><td class="plain">포용성: 남을 너그럽게 감싸 주거나 받아들이는 성질</td><td class="plain"><span class="badge badge-ref" style="font-size:0.6rem;">사용자배려</span></td></tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 2: 업무 요청 & 도구 -->
+    <!-- ================================================================ -->
+    <div id="tab-request" class="tab-panel">
+
+      <!-- 업무 요청 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--blue-bg);">🙋🏻</div>
+          <div class="section-title">업무 요청은 이렇게</div>
+        </div>
+
+        <div class="callout callout-accent">
+          <p><strong>문구가 고민이신가요?</strong> 먼저 <a href="https://chatgpt.com/g/g-67da4f2a322c8191bf491d9b91bae4fd-oneulyijib-raitingbos" target="_blank" style="color:var(--accent);font-weight:700;">오늘의집 라이팅봇</a>을 사용해보세요.<br>
+          원하는 답을 얻지 못했다면, 아래 순서를 따라 요청해주세요.</p>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:24px 0 8px;">요청 채널</h4>
+        <p style="font-size:0.88rem; color:var(--text-sub);"><strong>#des_ux_writing</strong></p>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:24px 0 8px;">요청 범위</h4>
+        <ul style="font-size:0.88rem; color:var(--text-sub); margin-left:18px;">
+          <li><strong>인터페이스 텍스트 작성 및 검토</strong> &mdash; 버튼, 메뉴, 오류 메시지 등</li>
+          <li><strong>보이스 & 톤 논의</strong></li>
+          <li><strong>라이팅봇 생성 & 학습 자료 업데이트</strong></li>
+        </ul>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:24px 0 14px;">요청 프로세스</h4>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h5>요청 전 확인</h5>
+              <p>완료일 기준 <strong>3일전</strong>까지 요청 필수. 우선순위 산정 후 ETA 확정.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h5>슬랙 워크플로로 요청</h5>
+              <p>#des_ux_writing 채널 상단 [업무 요청 워크플로] 버튼을 눌러 양식을 작성해주세요.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h5>완료!</h5>
+              <p>쓰레드로 이어서 논의 드릴게요.</p>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>카피라이팅 vs UX라이팅 차이</summary>
+          <div>
+            <table class="guide-table">
+              <tr><th>항목</th><th>카피라이팅</th><th>UX라이팅</th></tr>
+              <tr><td class="plain">구분</td><td>이목을 끄는 매력적인 카피</td><td>직관적이고 단순명료한 카피</td></tr>
+              <tr><td class="plain">목표</td><td>구매 욕구 자극, 감성적 소구</td><td>논리적인 맥락, 프로덕트 사용성</td></tr>
+              <tr><td class="plain">담당자</td><td>마케터, 에디터</td><td>UX라이터, 콘텐츠 전략가</td></tr>
+            </table>
+          </div>
+        </details>
+      </div>
+
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 3: 라이팅봇 -->
+    <!-- ================================================================ -->
+    <div id="tab-bot" class="tab-panel">
+
+      <div class="intro-banner" style="background:linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);">
+        <p class="lead">🤖 '오늘의집답게' 문구를 작성하는 일이 어렵다면, 라이팅봇과 대화해보세요.</p>
+        <p class="sub">브랜드 톤앤매너를 지키면서 누구나 쉽게 문구를 작성할 수 있도록 UX 라이팅 가이드를 학습한 GPT 기반 글쓰기 도우미입니다.</p>
+      </div>
+
+      <div class="quick-row" style="grid-template-columns:1fr 1fr 1fr;">
+        <a class="quick-item" href="https://chatgpt.com/g/g-67da4f2a322c8191bf491d9b91bae4fd-oneulyijib-raitingbos" target="_blank">
+          <div class="qi-icon">💬</div>
+          <div class="qi-label">오늘의집<br>라이팅봇</div>
+        </a>
+        <a class="quick-item" href="https://docs.google.com/presentation/d/18aZib2VpsGKt2sdzTpPaQnEPeFR5QTIZlXjvr7SycGo/edit#slide=id.p" target="_blank">
+          <div class="qi-icon">📖</div>
+          <div class="qi-label">사용법<br>슬라이드</div>
+        </a>
+        <a class="quick-item" style="cursor:default;">
+          <div class="qi-icon">📝</div>
+          <div class="qi-label">피드백<br>남기기</div>
+        </a>
+      </div>
+
+      <!-- 사용가이드 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--accent-light);">🔦</div>
+          <div class="section-title">사용가이드</div>
+        </div>
+
+        <div class="callout callout-gray">
+          <p>GPT는 똑똑한 동료이자, 말 잘 알아듣는 도구예요.<br>'정답'을 찾기보단, '함께 생각을 정리해주는 도우미'로 생각해주세요. 🙂</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h5>접속하기</h5>
+              <p>목적에 맞는 라이팅봇 링크를 열어주세요. <a href="https://chatgpt.com/g/g-67da4f2a322c8191bf491d9b91bae4fd-oneulyijib-raitingbos" target="_blank" style="color:var(--accent);">오늘의집 라이팅봇 바로가기 &nearr;</a></p>
+              <p style="font-size:0.8rem; color:var(--text-muted);">* Plus계정에서 더 좋은 답변을 받을 수 있어요.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h5>요청하기</h5>
+              <p>하고 싶은 말을 그냥 던져주세요. "이렇게 해줘"라고 지시하는 문장!</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h5>결과 확인</h5>
+              <p>Enter를 누르면 학습된 데이터를 기반으로 결과를 보여줘요.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h5>마음에 안 들면? 다시 요청</h5>
+              <p>"너무 길어요", "좀 더 격식 있는 느낌으로" 처럼 구체적으로 피드백해주세요.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-content">
+              <h5>그래도 어려우면</h5>
+              <p>#des_ux_writing 채널에 업무를 요청해주세요.</p>
+            </div>
+          </div>
+        </div>
+
+        <details>
+          <summary>이미지 첨부 시 주의할 점</summary>
+          <div>
+            <ol style="margin-left:16px;">
+              <li>텍스트가 선명해야 해요</li>
+              <li>배경과 텍스트 대비가 뚜렷해야 해요</li>
+              <li>스크롤 캡처보단 단일 화면 이미지</li>
+              <li>해상도 800px 이상 권장</li>
+            </ol>
+          </div>
+        </details>
+      </div>
+
+      <hr>
+
+      <!-- 운영 개요 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--blue-bg);">🦾</div>
+          <div class="section-title">운영 개요</div>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin:8px 0;">주요 활용</h4>
+        <ul style="font-size:0.88rem; color:var(--text-sub); margin-left:18px;">
+          <li>금지어 및 권장어 자동 체크</li>
+          <li>버튼/안내 문구의 일관성 검토</li>
+          <li>문장 톤의 적절성 평가</li>
+        </ul>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>운영 히스토리</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <table class="guide-table">
+              <tr><th>시점</th><th>이벤트</th><th>설명</th></tr>
+              <tr><td class="plain">2025.03</td><td>초기 기획 시작</td><td>PoC 준비</td></tr>
+              <tr><td class="plain">2025.04</td><td>가이드 정비 & 학습 구조 설계</td><td>학습 데이터 정리</td></tr>
+              <tr><td class="plain">2025.05</td><td>Phase 1 운영</td><td>3개 도메인 테스트</td></tr>
+              <tr><td class="plain">2025.06</td><td>Phase 2 운영</td><td>목적 중심 프롬프트 전환</td></tr>
+              <tr><td class="plain">2025.08</td><td>팀별 운영 체계</td><td>자율 관리 체계 수립</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>FAQ</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <details>
+              <summary>라이팅봇은 어떤 기준으로 문장을 수정하나요?</summary>
+              <div><p>UX Writing 가이드를 기반으로 톤앤매너, 금지어, 문장 형식 등을 자동 검토해요.</p></div>
+            </details>
+            <details>
+              <summary>꼭 GPT를 통해 문장을 써야 하나요?</summary>
+              <div><p>선택 사항이지만, 브랜드 일관성 확보와 업무 효율을 위해 적극 권장해요.</p></div>
+            </details>
+            <details>
+              <summary>우리 팀만의 스타일을 적용할 수 있나요?</summary>
+              <div><p>가능해요. 목적별로 커스터마이징이 가능하며, 요청 시 팀 전용 라이팅봇 생성을 지원합니다.</p></div>
+            </details>
+          </div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- TAB 3: About -->
+    <!-- ================================================================ -->
+    <div id="tab-about" class="tab-panel">
+
+      <!-- BLD -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--accent-light);">✍🏻</div>
+          <div class="section-title">Brand Language Design</div>
+        </div>
+
+        <div class="about-intro">
+          <p class="lead">브랜드 랭귀지 디자인은 브랜드의 정체성을 언어의 기준으로 설계해, 어디서 만나도 같은 브랜드로 느껴지게 만드는 일입니다.</p>
+          <div class="detail">
+            ❶ 추상적인 브랜드 가치를 <strong>말투·표현·문장 규칙</strong>으로 구체화해 브랜드의 Voice를 만듭니다.<br>
+            ❷ 프로덕트, 콘텐츠, CS까지 모든 접점에서 <strong>흔들리지 않는 한 가지 목소리</strong>를 유지합니다.<br>
+            ❸ 단순한 정보 전달을 넘어 브랜드의 태도가 드러나는 문장으로 <strong>신뢰를 쌓습니다.</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- UX Writing이란? -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--green-bg);">🧑🏻‍🌾</div>
+          <div class="section-title">UX Writing이 무엇인가요?</div>
+        </div>
+
+        <div class="about-intro">
+          <p class="lead">UX라이팅은 <strong style="color:var(--accent);">사용자 경험에서 언어를 다루는 모든 활동</strong>을 말합니다.</p>
+          <p class="detail">"서비스가 사용자에게 말을 거는 방식을 설계하고, 언어를 가꾸는 일"이라고 정의합니다. 버튼의 이름을 정하는 것부터 알림 메시지의 어조를 고민하는 일, 복잡한 정보를 쉽게 풀어 쓰는 일까지. UX 라이팅은 사용자가 서비스를 이용하는 전 과정에 함께합니다.</p>
+        </div>
+
+        <table class="guide-table">
+          <tr><th>영역</th><th>UX 라이팅</th><th>카피라이팅</th><th>테크니컬 라이팅</th></tr>
+          <tr><td class="plain">목적</td><td>사용자 경험 향상</td><td>설득, 마케팅</td><td>기술 설명, 매뉴얼</td></tr>
+          <tr><td class="plain">형태</td><td>짧고 간결한 UI 문구</td><td>광고, 홍보 문구</td><td>안내서, 긴 문서</td></tr>
+          <tr><td class="plain">사용자 중심</td><td>필수</td><td>선택적</td><td>기술 중심</td></tr>
+        </table>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>왜 UX Writing이 중요한가요?</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p>단어 하나, 표현 하나가 사용자 경험을 완전히 바꿀 수 있습니다.</p>
+            <table class="guide-table">
+              <tr><td class="plain"><span class="dont">Before</span></td><td><span class="do">After</span></td></tr>
+              <tr><td class="plain">[삭제]</td><td>[완전히 삭제할까요?]</td></tr>
+              <tr><td class="plain">[에러]</td><td>[사진 용량이 너무 커서 업로드할 수 없어요]</td></tr>
+              <tr><td class="plain">[확인]</td><td>[주문 완료하기]</td></tr>
+              <tr><td class="plain">[제출 완료]</td><td>[제출이 완료됐어요. 1~2일 이내 결과를 알려드릴게요]</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3>UX Writer는 어떤 일을 하나요?</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <p><strong>📌 마이크로카피 작성</strong> &mdash; 버튼 레이블, 안내 문구, 에러 메시지 등 UI에 직접 노출되는 짧은 문장들을 만듭니다.</p>
+            <p><strong>📌 브랜드 말투 정립과 톤 앤 매너 유지</strong> &mdash; 전체 서비스에 걸쳐 일관된 언어 톤을 유지할 수 있도록 스타일 가이드를 만들고 관리합니다.</p>
+            <p><strong>📌 사용자 중심의 언어 설계</strong> &mdash; 서비스를 처음 쓰는 사람도 막힘 없이 흐름을 따라갈 수 있도록 문장을 설계합니다.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- 업무 구분 -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:var(--blue-bg);">🔎</div>
+          <div class="section-title">UX writing 업무 구분</div>
+        </div>
+        <p class="section-desc">UX Writing 업무를 범위와 종류에 따라 구분한 기준입니다.</p>
+
+        <span class="pill pill-green">범위에 따라</span>
+        <div class="scope-card">
+          <div class="scope-item"><span class="scope-tag tag-green">Writing</span><div><div class="scope-desc">문제 정의를 바탕으로 텍스트를 새로 작성하고 메시지를 구성</div></div></div>
+          <div class="scope-item"><span class="scope-tag tag-green">Editing</span><div><div class="scope-desc">구조, 흐름, 정보 밀도를 포함한 내용 단위의 수정</div><div class="scope-sub">불필요한 문장 제거, 순서 재정렬, 메시지 재구성</div></div></div>
+          <div class="scope-item"><span class="scope-tag tag-green">Refining</span><div><div class="scope-desc">편집된 텍스트를 기준에 맞게 정밀 조정</div><div class="scope-sub">논리·맥락·용어 일관성 점검</div></div></div>
+          <div class="scope-item"><span class="scope-tag tag-green">Polishing</span><div><div class="scope-desc">배포 직전 단계의 표현 마무리</div><div class="scope-sub">오탈자, 띄어쓰기, 뉘앙스 미세 조정</div></div></div>
+        </div>
+
+        <span class="pill pill-blue">역할에 따라</span>
+        <div class="scope-card">
+          <div class="scope-item"><span class="scope-tag tag-blue">Framework</span><div><div class="scope-desc">글쓰기 기준과 규칙 정의, 템플릿 설계</div><div class="scope-sub">Writing Guide · Template | Tone & Voice</div></div></div>
+          <div class="scope-item"><span class="scope-tag tag-blue">Definition</span><div><div class="scope-desc">이름과 개념을 정하는 일</div><div class="scope-sub">Naming · Labeling</div></div></div>
+          <div class="scope-item"><span class="scope-tag tag-blue">Production</span><div><div class="scope-desc">실제 문구를 만드는 일</div><div class="scope-sub">Component Writing | Transactional Content</div></div></div>
+          <div class="scope-item"><span class="scope-tag tag-blue">Evaluation</span><div><div class="scope-desc">기준에 맞는지 점검하는 일</div><div class="scope-sub">UX Writing Audit</div></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-footer">
+      Brand Language Design / UX Writing &mdash; 오늘의집
+    </div>
+  </div>
+
+  <script>
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      btn.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleCard(header) {
+      header.classList.toggle('open');
+      header.nextElementSibling.classList.toggle('open');
+    }
+
+    function openCard(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        const header = el.querySelector('.card-header');
+        const body = el.querySelector('.card-body');
+        if (header && body && !body.classList.contains('open')) {
+          header.classList.add('open');
+          body.classList.add('open');
+        }
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  </script>
+
+</body>
+</html>

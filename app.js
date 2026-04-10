@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initQuickNote();
   initSearch();
   initQuickAdd();
+  initVendorFinder();
 
   renderAll();
 });
@@ -156,12 +157,14 @@ function switchPage(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page)?.classList.add('active');
-  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '캘린더', notes: '메모', vendor: '협력업체 파인더' };
+  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '업무 캘린더', lunch: '점심 룰렛', vendor: '협력업체 파인더', team: '팀원 소개' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
   if (page === 'tasks') { renderKanban(); renderMemberFilter(); }
   if (page === 'projects') renderProjectsPage();
-  if (page === 'notes') renderNotesPage();
   if (page === 'calendar') renderCalendar();
+  if (page === 'lunch') renderLunchPage();
+  if (page === 'vendor') vfRender();
+  if (page === 'team') renderTeamProfiles();
 }
 window.switchPage = switchPage;
 
@@ -784,11 +787,13 @@ function initModals() {
   injectAssigneeField('addTaskModal');
 
   const noteModal = document.getElementById('addNoteModal');
-  document.getElementById('openAddNoteModal').addEventListener('click', () => openNoteModal());
-  document.getElementById('closeAddNoteModal').addEventListener('click', () => closeModal('addNoteModal'));
-  document.getElementById('cancelAddNote').addEventListener('click', () => closeModal('addNoteModal'));
-  document.getElementById('confirmAddNote').addEventListener('click', saveNoteFromModal);
-  noteModal.addEventListener('click', e => { if (e.target === noteModal) closeModal('addNoteModal'); });
+  if (noteModal) {
+    document.getElementById('openAddNoteModal')?.addEventListener('click', () => openNoteModal());
+    document.getElementById('closeAddNoteModal')?.addEventListener('click', () => closeModal('addNoteModal'));
+    document.getElementById('cancelAddNote')?.addEventListener('click', () => closeModal('addNoteModal'));
+    document.getElementById('confirmAddNote')?.addEventListener('click', saveNoteFromModal);
+    noteModal.addEventListener('click', e => { if (e.target === noteModal) closeModal('addNoteModal'); });
+  }
 }
 
 function injectAssigneeField(modalId) {
@@ -1039,9 +1044,12 @@ function initCalendar() {
   calYear = today.getFullYear();
   calMonth = today.getMonth();
   selectedDate = todayStr();
-  document.getElementById('prevMonth').addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
-  document.getElementById('nextMonth').addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
-  document.getElementById('addEventBtn').addEventListener('click', addEventFromForm);
+  const prev = document.getElementById('prevMonth');
+  const next = document.getElementById('nextMonth');
+  const addBtn = document.getElementById('addEventBtn');
+  if (prev) prev.addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+  if (next) next.addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+  if (addBtn) addBtn.addEventListener('click', addEventFromForm);
   renderCalendar();
 }
 
@@ -1197,3 +1205,850 @@ window.resetDashboard = function() {
   save(); renderAll();
   showToast('데이터가 초기화되었습니다');
 };
+
+// ════════════════════════════════════════════════════
+// VENDOR FINDER (integrated from vendor-source.html)
+// ════════════════════════════════════════════════════
+
+const VF_SNAPSHOT = [
+  { id:"295a597878a080418a23e1d4aba44fa5", name:"이토스", status:"green", type:["제작"], cat:["인쇄물"], price:5940000, duration:"약 2주", leadDays:14, note:"100장씩, 600통", project:"오늘의집 리브랜딩_명함", url:"https://www.notion.so/ohouse/295a597878a080418a23e1d4aba44fa5", hasFiles:true },
+  { id:"296a597878a080cca582c39936b1f0b5", name:"이토스", status:"green", type:["제작"], cat:["인쇄물"], price:2046000, duration:"약 1달", leadDays:30, note:"1000장 제작 기준", project:"오늘의집 리브랜딩_쇼핑백", url:"https://www.notion.so/ohouse/296a597878a080cca582c39936b1f0b5", hasFiles:true },
+  { id:"296a597878a080e08726de7e5bfc92e1", name:"이토스", status:"green", type:["제작"], cat:["인쇄물"], price:693000, duration:"약 2주", leadDays:14, note:"각 1000장씩", project:"오늘의집 리브랜딩_봉투 2종", url:"https://www.notion.so/ohouse/296a597878a080e08726de7e5bfc92e1", hasFiles:true },
+  { id:"295a597878a080c6a473d7669bcf376f", name:"인타임", status:"warn", type:["제작"], cat:["인쇄물"], price:930600, duration:"", leadDays:null, note:"850개 제작, 다수 불량으로 사용 x", project:"오늘의집 리브랜딩_스티커 제작", url:"https://www.notion.so/ohouse/295a597878a080c6a473d7669bcf376f", hasFiles:true },
+  { id:"295a597878a080d88ef0e8c01fea2208", name:"랩크리트", status:"green", type:["제작"], cat:["굿즈"], price:9020000, duration:"약 1달 반", leadDays:45, note:"금형비 70만원, 본품 개당 5만원 150개 제작", project:"스페셜크리에이터_상패_제작비용", url:"https://www.notion.so/ohouse/295a597878a080d88ef0e8c01fea2208", hasFiles:true, hasPreview:true },
+  { id:"295a597878a0802eb67ae8327acb6da7", name:"㈜메이크포유", status:"orange", type:["제작"], cat:["굿즈"], price:100204326, duration:"-", leadDays:null, note:"150개 제작, 진행 x", project:"스페셜크리에이터_상패_황동 제작비용", url:"https://www.notion.so/ohouse/295a597878a0802eb67ae8327acb6da7", hasFiles:true },
+  { id:"295a597878a08093b62ef1e4b5431baf", name:"랩크리트", status:"green", type:["디자인"], cat:["디자인"], price:660000, duration:"", leadDays:null, note:"상패 디자인 모델링 비용 1건", project:"스페셜크리에이터_상패_모델링 비용", url:"https://www.notion.so/ohouse/295a597878a08093b62ef1e4b5431baf", hasFiles:true },
+  { id:"2b9a597878a0806985e2ccd144d420a9", name:"박스마스터", status:"green", type:["제작"], cat:["패키지"], price:8820000, duration:"약 1달 반", leadDays:45, note:"150개 패키지 제작, 칼선 개발비 & 샘플비 포함", project:"스페셜크리에이터_상패_패키지 제작 비용", url:"https://www.notion.so/ohouse/2b9a597878a0806985e2ccd144d420a9", hasFiles:true, hasPreview:true },
+  { id:"296a597878a080b69b09ed534a0cdb98", name:"LCC", status:"orange", type:["촬영"], cat:["사진/촬영"], price:30800000, duration:"", leadDays:null, note:"2일 촬영 기준, 공간을 제외한 나머지 전부 포함", project:"오늘의집 스탠다드_촬영", url:"https://www.notion.so/ohouse/296a597878a080b69b09ed534a0cdb98", hasFiles:true },
+  { id:"295a597878a0806ea87ff68db5e84e00", name:"단필름", status:"none", type:["촬영"], cat:["사진/촬영"], price:4100000, duration:"", leadDays:null, note:"모델, 미술감독, 조명감독 등 포함", project:"오늘의집 스탠다드_촬영비용", url:"https://www.notion.so/ohouse/295a597878a0806ea87ff68db5e84e00", hasFiles:true, hasPreview:true },
+  { id:"295a597878a080f189b2c3759b894107", name:"이도타입", status:"orange", type:["디자인"], cat:["디자인","폰트"], price:11000000, duration:"", leadDays:null, note:"국영문 각 1종", project:"오늘의집 리브랜딩_워드마크 국영문 개발비용", url:"https://www.notion.so/ohouse/295a597878a080f189b2c3759b894107", hasFiles:true },
+  { id:"295a597878a0804d94a9c84764542918", name:"양장점", status:"none", type:["디자인"], cat:["디자인","폰트"], price:16000000, duration:"", leadDays:null, note:"국영문 각 1종", project:"오늘의집 리브랜딩_워드마크 국영문 개발비용", url:"https://www.notion.so/ohouse/295a597878a0804d94a9c84764542918", hasFiles:true, hasPreview:true },
+  { id:"295a597878a080f6b813f8541b09b370", name:"조소희", status:"green", type:["디자인"], cat:["디자인","레터링"], price:2160000, duration:"1주일 반", leadDays:10, note:"시안 2개 이상", project:"오늘의집 리브랜딩_캠페인 레터링 제작", url:"https://www.notion.so/ohouse/295a597878a080f6b813f8541b09b370", hasFiles:true, hasPreview:true },
+  { id:"2b7a597878a0804bb2b0f19d186a9b6f", name:"팟 (김현진)", status:"none", type:["디자인"], cat:["디자인","레터링"], price:5000000, duration:"", leadDays:null, note:"2종, 각 시안 2개 이상, 수정 2회", project:"오늘의집 PICK & 미식100선_이벤트 레터링 제작", url:"https://www.notion.so/ohouse/2b7a597878a0804bb2b0f19d186a9b6f", hasFiles:true, hasPreview:true },
+  { id:"295a597878a080a1aba2c9439b5e9a0f", name:"보담디자인", status:"none", type:["제작"], cat:["사이니지","시공"], price:7400000, duration:"", leadDays:null, note:"시공비 포함", project:"오늘의집 리브랜딩_물류 사이니지 교체", url:"https://www.notion.so/ohouse/295a597878a080a1aba2c9439b5e9a0f", hasFiles:true },
+  { id:"295a597878a080e88b87e00c3e233485", name:"룩앤두", status:"none", type:["제작"], cat:["사이니지"], price:1265000, duration:"", leadDays:null, note:"스텐실 조명형 1종, 시공비 포함", project:"오늘의집 키친 팝업_사이니지", url:"https://www.notion.so/ohouse/295a597878a080e88b87e00c3e233485", hasFiles:true, hasPreview:true },
+  { id:"2e7a597878a080f8925dd4e8116aa2fe", name:"단필름", status:"none", type:["촬영"], cat:["사진/촬영"], price:300000, duration:"", leadDays:null, note:"최초 50만원, 빠르게 단일 제품 컷만 촬영", project:"오늘의집 리브랜딩_줄자 촬영", url:"https://www.notion.so/ohouse/2e7a597878a080f8925dd4e8116aa2fe", hasFiles:true, hasPreview:true },
+  { id:"2b9a597878a08003a082f4b4856b526f", name:"이도타입", status:"orange", type:["디자인"], cat:["폰트"], price:81000000, duration:"", leadDays:null, note:"한글 2,780 규격 / 라틴베이직 / 웨이트 3종", project:"오늘의집 리브랜딩_국영문 폰트 개발비용", url:"https://www.notion.so/ohouse/2b9a597878a08003a082f4b4856b526f", hasFiles:true },
+  { id:"2fda597878a080f9bde2fad9ddca6ba8", name:"세원정밀", status:"green", type:["제작"], cat:["패키지"], price:12383000, duration:"약 3주", leadDays:21, note:"500개 제작, 배송비 포함 객단가 24,766원", project:"패키지 할인_라이프 바인더 제작", url:"https://www.notion.so/ohouse/2fda597878a080f9bde2fad9ddca6ba8", hasFiles:true },
+  { id:"2fea597878a0808b8e3cf32c5569f8f3", name:"LCC", status:"orange", type:["촬영"], cat:["사진/촬영"], price:3960000, duration:"", leadDays:null, note:"14컷 기준", project:"패키지 할인_라이프 바인더 제품 촬영", url:"https://www.notion.so/ohouse/2fea597878a0808b8e3cf32c5569f8f3", hasFiles:true },
+  { id:"305a597878a080dea513fb8aa7588367", name:"이정민 작가", status:"none", type:["촬영"], cat:["사진/촬영"], price:null, duration:"", leadDays:null, note:"", project:"패키지 할인_라이프 바인더 제품 촬영", url:"https://www.notion.so/ohouse/305a597878a080dea513fb8aa7588367", hasFiles:false },
+  { id:"2fea597878a080b482b9f57d5d9a9156", name:"(주)테디", status:"green", type:["제작"], cat:["시공"], price:1496000, duration:"", leadDays:null, note:"유리벽 5면 기준", project:"오늘의집 시공 지하 상담실 시트작업", url:"https://www.notion.so/ohouse/2fea597878a080b482b9f57d5d9a9156", hasFiles:true },
+  { id:"2fea597878a080aa9055d9e82ef3ce42", name:"레이저그라피", status:"green", type:["제작"], cat:["굿즈","기타"], price:396000, duration:"1주", leadDays:7, note:"스펀지 패드 제작", project:"오늘의집 인테리어 파트너 어워즈 2026_스펀지 패드", url:"https://www.notion.so/ohouse/2fea597878a080aa9055d9e82ef3ce42", hasFiles:true },
+  { id:"2fea597878a0805ab4f6d7244524e2ff", name:"해머트로피", status:"green", type:["제작"], cat:["굿즈"], price:7210500, duration:"약 3주", leadDays:21, note:"23개 제작, 알루미늄 아노다이징", project:"오늘의집 인테리어 파트너 어워즈 2026_트로피", url:"https://www.notion.so/ohouse/2fea597878a0805ab4f6d7244524e2ff", hasFiles:true },
+  { id:"2fea597878a080a49e12f6ceacb92075", name:"세원정밀", status:"green", type:["제작"], cat:["패키지"], price:2194000, duration:"2주", leadDays:14, note:"30개 제작, 스펀지 패드 포함, 긴급건", project:"오늘의집 인테리어 파트너 어워즈 2026_싸바리 박스", url:"https://www.notion.so/ohouse/2fea597878a080a49e12f6ceacb92075", hasFiles:true },
+  { id:"2c5a597878a080b5831add0cf44870af", name:"PAPERBELLA", status:"green", type:["제작"], cat:["인쇄물"], price:null, duration:"", leadDays:null, note:"단색 지류 봉투, 종이파일과 박 위주 후가공 가능업체", project:"구매 업체 (지류)", url:"https://www.notion.so/ohouse/2c5a597878a080b5831add0cf44870af", hasFiles:false },
+  { id:"33ea597878a0807bb4d5ef779f74840f", name:"test 업체", status:"none", type:["제작"], cat:["인쇄물"], price:3000000, duration:"3일", leadDays:null, note:"", project:"test", url:"https://www.notion.so/ohouse/33ea597878a0807bb4d5ef779f74840f", hasFiles:false },
+  { id:"33ea597878a080429333ee26365dbfe4", name:"테스트업첩", status:"none", type:["제작"], cat:["인쇄물","사진/촬영","레터링"], price:null, duration:"2", leadDays:30, note:"", project:"테스트업체", url:"https://www.notion.so/ohouse/33ea597878a080429333ee26365dbfe4", hasFiles:false },
+  { id:"33ea597878a080989660f090206d9901", name:"testtest", status:"none", type:["촬영"], cat:["폰트"], price:null, duration:"", leadDays:null, note:"", project:"test2", url:"https://www.notion.so/ohouse/33ea597878a080989660f090206d9901", hasFiles:false },
+];
+
+const VF_CONTACTS = {
+  "이토스":       { homepage:"", phone:"", email:"", manager:"", memo:"인쇄물 전반 — 명함/쇼핑백/봉투" },
+  "인타임":       { homepage:"", phone:"", email:"", manager:"", memo:"스티커 다수 불량 이력. 사용 보류" },
+  "랩크리트":     { homepage:"", phone:"", email:"", manager:"", memo:"상패/굿즈 모델링·제작" },
+  "㈜메이크포유": { homepage:"", phone:"", email:"", manager:"", memo:"황동 가공 — 견적만 받음" },
+  "박스마스터":   { homepage:"", phone:"", email:"", manager:"", memo:"패키지 칼선/샘플 제작" },
+  "LCC":          { homepage:"", phone:"", email:"", manager:"", memo:"프로덕션 촬영 (모델/스타일링/감독 포함)" },
+  "단필름":       { homepage:"", phone:"", email:"", manager:"", memo:"단일 컷 빠른 촬영 가능" },
+  "이도타입":     { homepage:"", phone:"", email:"", manager:"", memo:"워드마크/폰트 패밀리 개발" },
+  "양장점":       { homepage:"", phone:"", email:"", manager:"", memo:"워드마크 비교 견적" },
+  "조소희":       { homepage:"", phone:"", email:"", manager:"", memo:"캠페인 레터링" },
+  "팟 (김현진)":  { homepage:"", phone:"", email:"", manager:"", memo:"이벤트 레터링" },
+  "보담디자인":   { homepage:"", phone:"", email:"", manager:"", memo:"사이니지 + 시공 일괄" },
+  "룩앤두":       { homepage:"", phone:"", email:"", manager:"", memo:"스텐실 조명형 사이니지" },
+  "세원정밀":     { homepage:"", phone:"", email:"", manager:"", memo:"패키지 제작 — 라이프 바인더, 싸바리 박스" },
+  "이정민 작가":  { homepage:"", phone:"", email:"", manager:"", memo:"제품 촬영 — 견적 미정" },
+  "(주)테디":     { homepage:"", phone:"", email:"", manager:"", memo:"유리벽 시트 시공" },
+  "레이저그라피": { homepage:"", phone:"", email:"", manager:"", memo:"스펀지 패드/소형 굿즈" },
+  "해머트로피":   { homepage:"", phone:"", email:"", manager:"", memo:"어워즈 트로피 — 알루미늄 아노다이징" },
+  "PAPERBELLA":   { homepage:"https://smartstore.naver.com/paperbella", phone:"", email:"", manager:"", memo:"단색 지류 봉투, 종이파일, 박 후가공" },
+  "test 업체":    { homepage:"https://ohou.se/", phone:"020000000", email:"", manager:"", memo:"테스트 — 노션 동기화 검증용" },
+  "테스트업첩":   { homepage:"https://naver.com", phone:"", email:"", manager:"", memo:"" },
+};
+
+let vfData = VF_SNAPSHOT.slice();
+let vfState = { cat: 'all', budget: 110000000, recOnly: false };
+let vfSyncSource = 'snapshot';
+let vfLastSync = new Date();
+let vfIsRefreshing = false;
+
+const VF_SERVER_FALLBACKS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
+function vfGetContact(vendorName) {
+  const v = vfData.find(d => d.name === vendorName);
+  if (v && v.contact) return v.contact;
+  return VF_CONTACTS[vendorName] || null;
+}
+
+function vfFmt(n) {
+  if (!n) return { text: 'TBD', unset: true };
+  return { text: 'KRW ' + new Intl.NumberFormat('en-US').format(n), unset: false };
+}
+
+function vfStatusBadge(s) {
+  if (s === 'green') return '<span class="vf-badge vf-badge-green">Recommended</span>';
+  if (s === 'orange') return '<span class="vf-badge vf-badge-orange">Quote only</span>';
+  if (s === 'warn') return '<span class="vf-badge vf-badge-warn">Flagged</span>';
+  return '';
+}
+
+function vfStatusBadgeBig(s) {
+  if (s === 'green') return '<span class="vf-badge vf-badge-green">Recommended</span>';
+  if (s === 'orange') return '<span class="vf-badge vf-badge-orange">Quote only</span>';
+  if (s === 'warn') return '<span class="vf-badge vf-badge-warn">Flagged</span>';
+  return '<span class="vf-badge" style="background:var(--bg-secondary);color:var(--text-tertiary)">Logged</span>';
+}
+
+const VF_ICON = {
+  phone:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/></svg>',
+  mail:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>',
+  link:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+  user:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  ext:    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h7v7"/><path d="M13 3L6 10"/></svg>',
+};
+
+function vfRenderContact(contact) {
+  if (!contact) return '<div class="vf-contact-empty">아직 등록된 연락처가 없습니다.</div>';
+  const rows = [];
+  if (contact.manager) rows.push(`<div class="vf-contact-row">${VF_ICON.user}<div><span class="key">담당</span>${esc(contact.manager)}</div></div>`);
+  if (contact.phone) {
+    const tel = contact.phone.replace(/[^0-9+]/g, '');
+    rows.push(`<div class="vf-contact-row">${VF_ICON.phone}<div><span class="key">Phone</span><a href="tel:${esc(tel)}">${esc(contact.phone)}</a></div></div>`);
+  }
+  if (contact.email) rows.push(`<div class="vf-contact-row">${VF_ICON.mail}<div><span class="key">Email</span><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></div></div>`);
+  if (contact.homepage) {
+    const href = contact.homepage.startsWith('http') ? contact.homepage : `https://${contact.homepage}`;
+    rows.push(`<div class="vf-contact-row">${VF_ICON.link}<div><span class="key">Homepage</span><a href="${esc(href)}" target="_blank" rel="noopener">${esc(contact.homepage.replace(/^https?:\/\//, ''))}</a></div></div>`);
+  }
+  const memo = contact.memo ? `<div class="vf-panel-memo">${esc(contact.memo)}</div>` : '';
+  if (rows.length === 0) return `<div class="vf-contact-empty">연락처 항목이 비어 있습니다.</div>${memo}`;
+  return rows.join('') + memo;
+}
+
+function vfRender() {
+  const container = document.getElementById('vfResults');
+  if (!container) return;
+
+  let filtered = vfData.filter(d => {
+    if (vfState.cat !== 'all' && !d.cat.includes(vfState.cat)) return false;
+    if (d.price && d.price > vfState.budget && vfState.budget < 110000000) return false;
+    if (vfState.recOnly && d.status !== 'green') return false;
+    return true;
+  });
+
+  filtered.sort((a, b) => {
+    const sOrd = { green: 0, orange: 1, none: 2, warn: 3 };
+    if (sOrd[a.status] !== sOrd[b.status]) return sOrd[a.status] - sOrd[b.status];
+    return (b.price || 0) - (a.price || 0);
+  });
+
+  const n = filtered.length;
+  const countEl = document.getElementById('vfResultCount');
+  if (countEl) countEl.innerHTML = `<span class="num">${String(n).padStart(2, '0')}</span> ${n === 1 ? 'result' : 'results'} found`;
+
+  if (n === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:60px"><p>조건에 맞는 업체가 없습니다</p></div>';
+    return;
+  }
+
+  container.innerHTML = filtered.map((d, i) => {
+    const isRec = d.status === 'green';
+    const priceObj = vfFmt(d.price);
+    return `
+      <article class="vf-card${isRec ? ' recommended' : ''}" data-vendor="${esc(d.name)}" tabindex="0" role="button" aria-label="${esc(d.name)} 상세 보기">
+        <div class="vf-card-top">
+          <div class="vf-vendor-name-wrap">
+            <span class="vf-vendor-name">${esc(d.name)}</span>
+            ${vfStatusBadge(d.status)}
+          </div>
+          <div class="vf-card-price${priceObj.unset ? ' unset' : ''}">${priceObj.text}</div>
+        </div>
+        ${d.cat.length ? `<div class="vf-card-tags">${d.cat.map(c => `<span class="vf-tag">${esc(c)}</span>`).join('')}</div>` : ''}
+        <div class="vf-card-meta">
+          ${d.duration ? `<span><span class="vf-meta-key">Lead</span> ${esc(d.duration)}</span>` : ''}
+        </div>
+        ${d.note ? `<div class="vf-card-note">${esc(d.note)}</div>` : ''}
+        <div class="vf-card-footer">
+          <div class="vf-card-project">— ${esc(d.project)}</div>
+          <a class="vf-notion-link" href="${esc(d.url)}" target="_blank" rel="noopener" data-stop="1">
+            View in Notion
+            ${VF_ICON.ext}
+          </a>
+        </div>
+      </article>`;
+  }).join('');
+
+  // Sync bar
+  const syncBar = document.getElementById('vfSyncBar');
+  if (syncBar) {
+    const time = vfLastSync.toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' });
+    const dot = vfSyncSource === 'live' ? '#10b981' : '#f59e0b';
+    const label = vfSyncSource === 'live' ? 'LIVE' : 'SNAPSHOT';
+    syncBar.innerHTML = `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${dot}"></span> ${label} · ${time}`;
+  }
+}
+
+function vfOpenPanel(vendorName) {
+  const quotes = vfData.filter(d => d.name === vendorName);
+  if (quotes.length === 0) return;
+
+  const contact = vfGetContact(vendorName);
+  const primaryStatus = quotes.find(q => q.status === 'green')?.status
+    || quotes.find(q => q.status === 'orange')?.status
+    || quotes[0].status;
+
+  const allCats = [...new Set(quotes.flatMap(q => q.cat))];
+
+  const historyHtml = quotes.map(q => {
+    const priceObj = vfFmt(q.price);
+    return `
+      <div class="vf-history-item">
+        <div>
+          <div class="vf-history-project">${esc(q.project)}</div>
+          <div class="vf-history-meta">${q.duration ? esc(q.duration) + ' · ' : ''}${q.cat.join(' / ')}</div>
+        </div>
+        <a class="vf-history-price${priceObj.unset ? ' unset' : ''}" href="${esc(q.url)}" target="_blank" rel="noopener" style="text-decoration:none">${priceObj.text}</a>
+      </div>`;
+  }).join('');
+
+  const tagsHtml = allCats.map(t => `<span class="vf-tag">${esc(t)}</span>`).join('');
+
+  document.getElementById('vfPanelContent').innerHTML = `
+    <div class="vf-panel-header">
+      <div class="vf-panel-eyebrow">
+        <span>Vendor / ${quotes.length} ${quotes.length === 1 ? 'quote' : 'quotes'}</span>
+        <button class="vf-panel-close" id="vfPanelCloseBtn">Close</button>
+      </div>
+      <h2 class="vf-panel-name">${esc(vendorName)}</h2>
+      <div>${vfStatusBadgeBig(primaryStatus)}</div>
+      ${tagsHtml ? `<div class="vf-panel-tags">${tagsHtml}</div>` : ''}
+    </div>
+    <div class="vf-panel-body">
+      <section class="vf-panel-section">
+        <div class="vf-panel-section-title">Contact</div>
+        ${vfRenderContact(contact)}
+      </section>
+      <section class="vf-panel-section">
+        <div class="vf-panel-section-title">History · ${quotes.length}</div>
+        ${historyHtml}
+      </section>
+    </div>
+    <div class="vf-panel-footer">
+      <a class="vf-panel-cta" href="${esc(quotes[0].url)}" target="_blank" rel="noopener">
+        Open first quote in Notion ${VF_ICON.ext}
+      </a>
+    </div>`;
+
+  document.getElementById('vfPanel').classList.add('open');
+  document.getElementById('vfPanelBackdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('vfPanelCloseBtn').addEventListener('click', vfClosePanel);
+}
+
+function vfClosePanel() {
+  document.getElementById('vfPanel').classList.remove('open');
+  document.getElementById('vfPanelBackdrop').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function vfTryServerFetch(base, force) {
+  const path = '/api/vendors' + (force ? '?force=1' : '');
+  const r = await fetch(base + path, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function vfRefresh(opts = {}) {
+  if (vfIsRefreshing) return;
+  vfIsRefreshing = true;
+  try {
+    let next = null;
+    if (location.protocol !== 'file:') {
+      try { const json = await vfTryServerFetch('', opts.force); vfSyncSource = json.source === 'live' ? 'live' : 'snapshot'; next = json.vendors || []; } catch {}
+    }
+    if (!next) {
+      for (const base of VF_SERVER_FALLBACKS) {
+        try { const json = await vfTryServerFetch(base, opts.force); vfSyncSource = json.source === 'live' ? 'live' : 'snapshot'; next = json.vendors || []; break; } catch {}
+      }
+    }
+    if (next) {
+      vfData = next;
+      vfLastSync = new Date();
+      vfRender();
+    }
+  } finally { vfIsRefreshing = false; }
+}
+
+// Init vendor finder event listeners
+function initVendorFinder() {
+  // Category chips
+  document.querySelectorAll('#vfCatFilter .vf-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#vfCatFilter .vf-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      vfState.cat = btn.dataset.val;
+      vfRender();
+    });
+  });
+
+  // Budget slider
+  const slider = document.getElementById('vfBudgetSlider');
+  const budgetVal = document.getElementById('vfBudgetVal');
+  if (slider) {
+    slider.addEventListener('input', () => {
+      const v = parseInt(slider.value);
+      vfState.budget = v;
+      budgetVal.textContent = v >= 110000000 ? 'NO LIMIT' : '\u2264 ' + new Intl.NumberFormat('en-US').format(v);
+      vfRender();
+    });
+  }
+
+  // Rec only toggle
+  const recOnly = document.getElementById('vfRecOnly');
+  if (recOnly) recOnly.addEventListener('change', e => { vfState.recOnly = e.target.checked; vfRender(); });
+
+  // Card click → panel
+  const results = document.getElementById('vfResults');
+  if (results) {
+    results.addEventListener('click', e => {
+      if (e.target.closest('[data-stop]')) return;
+      const card = e.target.closest('.vf-card');
+      if (card) vfOpenPanel(card.getAttribute('data-vendor'));
+    });
+    results.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const card = e.target.closest('.vf-card');
+      if (!card) return;
+      e.preventDefault();
+      vfOpenPanel(card.getAttribute('data-vendor'));
+    });
+  }
+
+  // Panel backdrop
+  document.getElementById('vfPanelBackdrop')?.addEventListener('click', vfClosePanel);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') vfClosePanel(); });
+
+  // Auto-refresh from server
+  vfRefresh({ force: true });
+  setInterval(() => vfRefresh(), 30000);
+}
+
+// ════════════════════════════════════════════════════
+// GOOGLE CALENDAR (team view)
+// ════════════════════════════════════════════════════
+
+const GCAL_STORE_KEY = 'team_gcal_settings';
+
+function loadGcalSettings() {
+  try { return JSON.parse(localStorage.getItem(GCAL_STORE_KEY)) || {}; } catch { return {}; }
+}
+function saveGcalSettings(settings) { localStorage.setItem(GCAL_STORE_KEY, JSON.stringify(settings)); }
+
+function getGcalSettings() {
+  const s = loadGcalSettings();
+  if (!s.calendars) s.calendars = {};
+  if (!s.viewMode) s.viewMode = 'WEEK';
+  if (!s.columns) s.columns = 2;
+  return s;
+}
+
+// Google Calendar embed에 사용할 색상 (최대 7명)
+const GCAL_COLORS = ['D50000','F4511E','F6BF26','0B8043','039BE5','7986CB','8E24AA'];
+
+function buildGcalCombinedUrl(entries, mode) {
+  const base = 'https://calendar.google.com/calendar/embed';
+  const params = new URLSearchParams({
+    ctz: 'Asia/Seoul',
+    mode: mode || 'WEEK',
+    showTitle: '0',
+    showNav: '1',
+    showDate: '1',
+    showPrint: '0',
+    showTabs: '0',
+    showCalendars: '1',
+    showTz: '0',
+    wkst: '2',
+  });
+  // 여러 src & color 파라미터 추가 (URLSearchParams.append로 중복 키 가능)
+  entries.forEach((e, i) => {
+    params.append('src', e.calId);
+    params.append('color', '#' + (GCAL_COLORS[i % GCAL_COLORS.length]));
+  });
+  return `${base}?${params.toString()}`;
+}
+
+function renderGcalPage() {
+  const settings = getGcalSettings();
+  const grid = document.getElementById('gcalGrid');
+  const viewSelect = document.getElementById('gcalViewMode');
+  if (!grid) return;
+
+  if (viewSelect) viewSelect.value = settings.viewMode || 'WEEK';
+
+  // Collect calendars that are set
+  const entries = DATA.members
+    .map(m => ({ member: m, calId: settings.calendars[m.id] }))
+    .filter(e => e.calId);
+
+  if (entries.length === 0) {
+    grid.className = 'gcal-grid';
+    grid.innerHTML = `
+      <div class="gcal-empty">
+        <p>팀원 Google Calendar를 추가해주세요.</p>
+        <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px">설정 버튼을 눌러 캘린더 ID(이메일)를 등록하면<br>여기에 모든 팀원의 일정이 표시됩니다.</p>
+        <button class="btn-primary" style="margin-top:16px" onclick="openGcalSettingsModal()">캘린더 설정</button>
+      </div>`;
+    return;
+  }
+
+  grid.className = 'gcal-grid';
+
+  // 범례 (팀원-색상 매핑)
+  const legendHtml = entries.map((e, i) => {
+    const color = '#' + GCAL_COLORS[i % GCAL_COLORS.length];
+    return `<span class="gcal-legend-item">
+      <span class="gcal-legend-dot" style="background:${color}"></span>
+      <span class="avatar" style="width:22px;height:22px;font-size:9px;background:${e.member.color}">${e.member.name[0]}</span>
+      ${esc(e.member.name.split(' ')[0])}
+    </span>`;
+  }).join('');
+
+  const embedUrl = buildGcalCombinedUrl(entries, settings.viewMode);
+
+  grid.innerHTML = `
+    <div class="gcal-legend">${legendHtml}</div>
+    <div class="gcal-combined-wrap">
+      <iframe src="${embedUrl}" frameborder="0" scrolling="no" loading="lazy"></iframe>
+    </div>`;
+}
+
+window.openGcalSettingsModal = function() {
+  if (document.getElementById('gcalSettingsPopup')) return;
+  const settings = getGcalSettings();
+
+  const popup = document.createElement('div');
+  popup.id = 'gcalSettingsPopup';
+  popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+  popup.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;padding:24px;width:520px;max-width:92vw;box-shadow:var(--shadow-lg)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h3 style="font-size:17px;font-weight:700">팀 캘린더 설정</h3>
+        <button onclick="closeGcalSettingsModal()" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:18px">\u2715</button>
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:16px">각 팀원의 Google Calendar ID (Gmail 주소)를 입력하세요. 캘린더가 <strong>공개</strong>로 설정되어 있어야 임베드됩니다.</p>
+      <div id="gcalSettingsList">
+        ${DATA.members.map(m => `
+          <div class="gcal-setting-row">
+            <div class="avatar" style="background:${m.color}">${m.name[0]}</div>
+            <span class="name">${esc(m.name.split(' ')[0])}</span>
+            <input type="email" id="gcal_${m.id}" value="${esc(settings.calendars[m.id] || '')}" placeholder="example@gmail.com" />
+          </div>
+        `).join('')}
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+        <button class="btn-secondary" onclick="closeGcalSettingsModal()">취소</button>
+        <button class="btn-primary" onclick="saveGcalSettingsFromModal()">저장</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  popup.addEventListener('click', e => { if (e.target === popup) closeGcalSettingsModal(); });
+};
+
+window.closeGcalSettingsModal = function() {
+  const el = document.getElementById('gcalSettingsPopup');
+  if (el) el.remove();
+};
+
+window.saveGcalSettingsFromModal = function() {
+  const settings = getGcalSettings();
+  DATA.members.forEach(m => {
+    const input = document.getElementById('gcal_' + m.id);
+    if (input) {
+      const val = input.value.trim();
+      if (val) settings.calendars[m.id] = val;
+      else delete settings.calendars[m.id];
+    }
+  });
+  saveGcalSettings(settings);
+  closeGcalSettingsModal();
+  renderGcalPage();
+  showToast('캘린더 설정이 저장되었습니다');
+};
+
+function initGcal() {
+  const viewSelect = document.getElementById('gcalViewMode');
+  if (viewSelect) {
+    viewSelect.addEventListener('change', () => {
+      const settings = getGcalSettings();
+      settings.viewMode = viewSelect.value;
+      saveGcalSettings(settings);
+      renderGcalPage();
+    });
+  }
+}
+
+// ════════════════════════════════════════════════════
+// LUNCH ROULETTE
+// ════════════════════════════════════════════════════
+
+const LUNCH_STORE = 'lunch_roulette_v1';
+const WHEEL_COLORS = ['#6366f1','#f59e0b','#10b981','#ec4899','#3b82f6','#f97316','#8b5cf6','#14b8a6','#ef4444','#84cc16','#06b6d4','#e879f9'];
+
+function loadLunch() {
+  try { return JSON.parse(localStorage.getItem(LUNCH_STORE)) || null; } catch { return null; }
+}
+function saveLunch(d) { localStorage.setItem(LUNCH_STORE, JSON.stringify(d)); }
+
+function getLunchData() {
+  let d = loadLunch();
+  if (!d) {
+    d = {
+      menus: ['김치찌개','돈까스','쌀국수','초밥','버거','파스타','칼국수','비빔밥','떡볶이','샌드위치','짜장면','냉면'],
+      history: []
+    };
+    saveLunch(d);
+  }
+  return d;
+}
+
+let lunchSpinning = false;
+let lunchAngle = 0;
+
+function drawWheel() {
+  const canvas = document.getElementById('lunchWheel');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const data = getLunchData();
+  const menus = data.menus;
+  const n = menus.length;
+  if (n === 0) {
+    ctx.clearRect(0, 0, 360, 360);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '500 15px Pretendard, Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('메뉴를 추가해주세요', 180, 185);
+    return;
+  }
+
+  const cx = 180, cy = 180, r = 170;
+  const arc = (2 * Math.PI) / n;
+
+  ctx.clearRect(0, 0, 360, 360);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(lunchAngle);
+
+  for (let i = 0; i < n; i++) {
+    const startAngle = i * arc;
+    const endAngle = startAngle + arc;
+
+    // Slice
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, r, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.3)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Text
+    ctx.save();
+    ctx.rotate(startAngle + arc / 2);
+    ctx.fillStyle = '#fff';
+    ctx.font = `600 ${n > 16 ? 10 : n > 10 ? 12 : 14}px Pretendard, Inter, sans-serif`;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(menus[i].length > 6 ? menus[i].slice(0, 5) + '..' : menus[i], r - 16, 0);
+    ctx.restore();
+  }
+
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(0, 0, 28, 0, 2 * Math.PI);
+  ctx.fillStyle = 'var(--surface, #fff)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.08)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+window.spinLunchWheel = function() {
+  const data = getLunchData();
+  if (data.menus.length === 0 || lunchSpinning) return;
+  lunchSpinning = true;
+
+  const btn = document.getElementById('lunchSpinBtn');
+  const resultEl = document.getElementById('lunchResult');
+  btn.disabled = true;
+  btn.textContent = '돌아가는 중...';
+  resultEl.innerHTML = '';
+
+  const n = data.menus.length;
+  const arc = (2 * Math.PI) / n;
+  // Pick random winner
+  const winnerIdx = Math.floor(Math.random() * n);
+  // Target angle: spin several full rotations + land so that winner is at top (3 o'clock = angle 0, arrow is at right/top)
+  // Arrow points right (3 o'clock). Slice i is at angle (i*arc + arc/2). We want that angle + lunchAngle ≡ 0 (mod 2π)
+  const targetSliceAngle = winnerIdx * arc + arc / 2;
+  const spins = 5 + Math.random() * 3; // 5~8 full spins
+  const targetAngle = lunchAngle + spins * 2 * Math.PI - (targetSliceAngle + lunchAngle) % (2 * Math.PI);
+
+  const startAngle = lunchAngle;
+  const totalDelta = targetAngle - startAngle;
+  const duration = 4000;
+  const startTime = performance.now();
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    lunchAngle = startAngle + totalDelta * easeOutCubic(t);
+    drawWheel();
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      lunchSpinning = false;
+      btn.disabled = false;
+      btn.textContent = '돌리기!';
+      const winner = data.menus[winnerIdx];
+      resultEl.innerHTML = `<span class="lunch-result-text">오늘의 점심은 <strong>${esc(winner)}</strong>!</span>`;
+      data.history.unshift({ menu: winner, date: todayStr(), time: new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }) });
+      if (data.history.length > 30) data.history.length = 30;
+      saveLunch(data);
+      renderLunchHistory();
+    }
+  }
+  requestAnimationFrame(animate);
+};
+
+window.addLunchMenu = function() {
+  const input = document.getElementById('lunchNewMenu');
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) return;
+  const data = getLunchData();
+  if (data.menus.includes(name)) { showToast('이미 있는 메뉴입니다'); return; }
+  data.menus.push(name);
+  saveLunch(data);
+  input.value = '';
+  renderLunchMenuList();
+  drawWheel();
+  showToast(`"${name}" 추가됨`);
+};
+
+window.removeLunchMenu = function(name) {
+  const data = getLunchData();
+  data.menus = data.menus.filter(m => m !== name);
+  saveLunch(data);
+  renderLunchMenuList();
+  drawWheel();
+};
+
+function renderLunchMenuList() {
+  const container = document.getElementById('lunchMenuList');
+  if (!container) return;
+  const data = getLunchData();
+  if (data.menus.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-tertiary);font-size:13px">메뉴를 추가해보세요</div>';
+    return;
+  }
+  container.innerHTML = data.menus.map((m, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light)">
+      <span style="width:8px;height:8px;border-radius:50%;background:${WHEEL_COLORS[i % WHEEL_COLORS.length]};flex-shrink:0"></span>
+      <span style="flex:1;font-size:14px">${esc(m)}</span>
+      <button onclick="removeLunchMenu('${esc(m).replace(/'/g, "\\'")}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:13px;padding:2px 6px">\u2715</button>
+    </div>
+  `).join('');
+}
+
+function renderLunchHistory() {
+  const container = document.getElementById('lunchHistory');
+  if (!container) return;
+  const data = getLunchData();
+  if (data.history.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-tertiary);font-size:13px">아직 기록이 없습니다</div>';
+    return;
+  }
+  container.innerHTML = data.history.map(h => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light)">
+      <span style="font-size:18px">🍽️</span>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600">${esc(h.menu)}</div>
+        <div style="font-size:11px;color:var(--text-tertiary)">${h.date} ${h.time || ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLunchPage() {
+  renderLunchMenuList();
+  renderLunchHistory();
+  drawWheel();
+}
+
+// ════════════════════════════════════════════════════
+// TEAM PROFILES
+// ════════════════════════════════════════════════════
+
+const TP_STORE = 'team_profiles_v1';
+const TP_FIELDS = [
+  { key:'intro',  label:'한 줄 소개', icon:'💬', placeholder:'자유롭게 한 줄!' },
+  { key:'mbti',   label:'MBTI',       icon:'🧠', placeholder:'INFP' },
+  { key:'hobby',  label:'취미',       icon:'🎯', placeholder:'넷플릭스, 러닝...' },
+  { key:'food',   label:'최애 음식',  icon:'🍕', placeholder:'떡볶이, 초밥...' },
+  { key:'tmi',    label:'TMI',        icon:'🤫', placeholder:'아무 말 대잔치' },
+];
+
+function loadProfiles() { try { return JSON.parse(localStorage.getItem(TP_STORE)) || {}; } catch { return {}; } }
+function saveProfiles(d) { localStorage.setItem(TP_STORE, JSON.stringify(d)); }
+
+function renderTeamProfiles() {
+  const grid = document.getElementById('teamProfileGrid');
+  if (!grid) return;
+  const profiles = loadProfiles();
+
+  grid.innerHTML = DATA.members.map(m => {
+    const p = profiles[m.id] || {};
+    const taskCount = DATA.tasks.filter(t => t.assignee === m.id && t.status !== 'done').length;
+    const doneCount = DATA.tasks.filter(t => t.assignee === m.id && t.status === 'done').length;
+
+    const fieldsHtml = TP_FIELDS.map(f => {
+      const val = p[f.key] || '';
+      return `<div class="tp-field">
+        <span class="tp-field-icon">${f.icon}</span>
+        <span class="tp-field-label">${f.label}</span>
+        <span class="tp-field-value">${val ? esc(val) : '<span style="color:var(--text-tertiary);font-style:italic">미입력</span>'}</span>
+      </div>`;
+    }).join('');
+
+    const avatarHtml = p.photo
+      ? `<div class="tp-avatar-img" style="width:56px;height:56px"><img src="${p.photo}" alt="${esc(m.name)}" /></div>`
+      : `<div class="avatar" style="width:56px;height:56px;font-size:20px;background:${m.color}">${m.name[0]}</div>`;
+
+    return `
+    <div class="tp-card" style="--member-color:${m.color}">
+      <div class="tp-card-header">
+        ${avatarHtml}
+        <div class="tp-card-info">
+          <div class="tp-card-name">${esc(m.name)}</div>
+          <div class="tp-card-role">${esc(m.role || 'Brand Designer')}</div>
+          <div class="tp-card-stats">
+            <span class="tp-stat">진행 <strong>${taskCount}</strong></span>
+            <span class="tp-stat">완료 <strong>${doneCount}</strong></span>
+          </div>
+        </div>
+        <button class="tp-edit-btn" onclick="openProfileEditor('${m.id}')" title="수정">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+      <div class="tp-card-body">${fieldsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+window.openProfileEditor = function(memberId) {
+  if (document.getElementById('tpEditorPopup')) return;
+  const m = getMember(memberId);
+  if (!m) return;
+  _pendingPhoto = undefined;
+  const profiles = loadProfiles();
+  const p = profiles[memberId] || {};
+
+  const popup = document.createElement('div');
+  popup.id = 'tpEditorPopup';
+  popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+  const editorAvatarHtml = p.photo
+    ? `<div class="tp-avatar-img" style="width:48px;height:48px"><img src="${p.photo}" id="tpPhotoPreview" alt="" /></div>`
+    : `<div class="avatar" style="width:48px;height:48px;font-size:17px;background:${m.color}" id="tpPhotoPreview">${m.name[0]}</div>`;
+
+  popup.innerHTML = `
+    <div style="background:var(--surface);border-radius:16px;padding:24px;width:440px;max-width:92vw;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        ${editorAvatarHtml}
+        <div>
+          <h3 style="font-size:17px;font-weight:700">${esc(m.name)}</h3>
+          <div style="font-size:12px;color:var(--text-tertiary)">프로필 수정</div>
+        </div>
+        <button onclick="closeProfileEditor()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:18px">\u2715</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">프로필 사진</label>
+        <div class="tp-photo-upload">
+          <input type="file" id="tpPhotoInput" accept="image/*" onchange="previewProfilePhoto(this)" style="display:none" />
+          <button type="button" class="btn-secondary" style="font-size:12px;padding:6px 14px" onclick="document.getElementById('tpPhotoInput').click()">사진 선택</button>
+          ${p.photo ? '<button type="button" class="btn-secondary" style="font-size:12px;padding:6px 14px;color:var(--danger)" onclick="removeProfilePhoto()">삭제</button>' : ''}
+          <span style="font-size:11px;color:var(--text-tertiary);margin-left:4px">200KB 이하 권장</span>
+        </div>
+      </div>
+      ${TP_FIELDS.map(f => `
+        <div class="form-group">
+          <label class="form-label">${f.icon} ${f.label}</label>
+          <input type="text" class="form-input" id="tp_${f.key}" value="${esc(p[f.key] || '')}" placeholder="${f.placeholder}" />
+        </div>
+      `).join('')}
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+        <button class="btn-secondary" onclick="closeProfileEditor()">취소</button>
+        <button class="btn-primary" onclick="saveProfile('${memberId}')">저장</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  popup.addEventListener('click', e => { if (e.target === popup) closeProfileEditor(); });
+  document.getElementById('tp_' + TP_FIELDS[0].key)?.focus();
+};
+
+window.closeProfileEditor = function() {
+  const el = document.getElementById('tpEditorPopup');
+  if (el) el.remove();
+};
+
+let _pendingPhoto = undefined; // undefined=no change, null=remove, string=new data
+
+window.previewProfilePhoto = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 500 * 1024) { showToast('500KB 이하 이미지를 선택해주세요'); input.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    _pendingPhoto = e.target.result;
+    const preview = document.getElementById('tpPhotoPreview');
+    if (preview.tagName === 'IMG') {
+      preview.src = _pendingPhoto;
+    } else {
+      preview.outerHTML = `<div class="tp-avatar-img" style="width:48px;height:48px"><img src="${_pendingPhoto}" id="tpPhotoPreview" alt="" /></div>`;
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removeProfilePhoto = function() {
+  _pendingPhoto = null;
+  const preview = document.getElementById('tpPhotoPreview');
+  if (preview) {
+    const wrap = preview.closest('.tp-avatar-img');
+    if (wrap) wrap.outerHTML = `<div class="avatar" style="width:48px;height:48px;font-size:17px;background:var(--primary)" id="tpPhotoPreview">?</div>`;
+  }
+};
+
+window.saveProfile = function(memberId) {
+  const profiles = loadProfiles();
+  if (!profiles[memberId]) profiles[memberId] = {};
+  TP_FIELDS.forEach(f => {
+    const input = document.getElementById('tp_' + f.key);
+    if (input) profiles[memberId][f.key] = input.value.trim();
+  });
+  if (_pendingPhoto !== undefined) {
+    if (_pendingPhoto === null) delete profiles[memberId].photo;
+    else profiles[memberId].photo = _pendingPhoto;
+  }
+  _pendingPhoto = undefined;
+  saveProfiles(profiles);
+  closeProfileEditor();
+  renderTeamProfiles();
+  showToast('프로필이 저장되었습니다');
+};
+
