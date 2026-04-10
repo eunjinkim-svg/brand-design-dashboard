@@ -238,6 +238,8 @@ window.quickAddTask = function(e) {
 // ────────── Render All ──────────
 function renderAll() {
   renderTeamSummary();
+  renderDeadlines();
+  renderWeeklySummary();
   renderWorkloadChart();
   renderRequesterChart();
   renderSchedules();
@@ -248,6 +250,91 @@ function renderAll() {
   renderProjectsPage();
   renderNotesPage();
   updateBadge();
+}
+
+// ────────── Deadlines ──────────
+function renderDeadlines() {
+  const container = document.getElementById('deadlineList');
+  if (!container) return;
+
+  const today = todayStr();
+  const nextWeek = new Date();
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  const nextWeekStr = `${nextWeek.getFullYear()}-${String(nextWeek.getMonth()+1).padStart(2,'0')}-${String(nextWeek.getDate()).padStart(2,'0')}`;
+
+  const urgent = DATA.tasks
+    .filter(t => t.due && t.status !== 'done' && t.due <= nextWeekStr)
+    .sort((a, b) => a.due.localeCompare(b.due));
+
+  if (urgent.length === 0) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px">이번 주 마감 업무 없음</div>';
+    return;
+  }
+
+  container.innerHTML = urgent.map(t => {
+    const overdue = t.due < today;
+    const isToday = t.due === today;
+    return `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border-light)">
+      <span style="font-size:14px">${overdue ? '🚨' : isToday ? '⏰' : '📌'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
+        <div style="font-size:11px;color:var(--text-tertiary)">${getMemberName(t.assignee)}</div>
+      </div>
+      <span style="font-size:12px;font-weight:600;color:${overdue ? '#dc2626' : isToday ? '#d97706' : 'var(--text-secondary)'}">${overdue ? '기한 초과' : isToday ? '오늘' : fmtDate(t.due)}</span>
+      <span class="size-badge size-${t.size || 'M'}" style="font-size:10px;padding:1px 5px">${t.size || 'M'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ────────── Weekly Summary ──────────
+function renderWeeklySummary() {
+  const container = document.getElementById('weeklySummary');
+  if (!container) return;
+
+  const t = DATA.tasks;
+  const total = t.length;
+  const ongoing = t.filter(x => x.status === 'ongoing').length;
+  const done = t.filter(x => x.status === 'done').length;
+  const ready = t.filter(x => x.status === 'ready' || x.status === 'new').length;
+  const almostDone = t.filter(x => x.status === 'almostdone').length;
+  const hold = t.filter(x => x.status === 'hold').length;
+
+  // 여유 있는 사람 찾기
+  const memberWorkloads = DATA.members.map(m => {
+    const w = t.filter(x => x.assignee === m.id && x.status !== 'done')
+      .reduce((sum, x) => sum + (SIZE_WEIGHTS[x.size] || 3), 0);
+    return { name: m.name.split(' ')[0], color: m.color, workload: w };
+  }).sort((a, b) => a.workload - b.workload);
+
+  const maxW = Math.max(...memberWorkloads.map(m => m.workload), 1);
+  const available = memberWorkloads.filter(m => m.workload < maxW * 0.4);
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:700">${total}</div>
+        <div style="font-size:12px;color:var(--text-tertiary)">전체 업무</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:28px;font-weight:700;color:#059669">${done}</div>
+        <div style="font-size:12px;color:var(--text-tertiary)">완료</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.ongoing}15;color:${STATUS_COLORS.ongoing};font-weight:600">Ongoing ${ongoing}</span>
+      <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.ready}15;color:${STATUS_COLORS.ready};font-weight:600">Ready ${ready}</span>
+      <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.almostdone}15;color:${STATUS_COLORS.almostdone};font-weight:600">Almost ${almostDone}</span>
+      ${hold ? `<span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.hold}15;color:${STATUS_COLORS.hold};font-weight:600">Hold ${hold}</span>` : ''}
+    </div>
+    ${available.length > 0 ? `
+    <div style="border-top:1px solid var(--border-light);padding-top:12px">
+      <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px">📋 신규 업무 배분 가능</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${available.map(m => `<span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${m.color}18;color:${m.color};font-weight:600">${m.name} (${m.workload})</span>`).join('')}
+      </div>
+    </div>` : '<div style="border-top:1px solid var(--border-light);padding-top:12px;font-size:12px;color:var(--text-tertiary)">모든 팀원이 바쁨 — 신규 배분 주의</div>'}
+  `;
 }
 
 // ────────── Workload Chart ──────────
@@ -295,12 +382,14 @@ function renderWorkloadChart() {
         else if (ratio >= 0.7) emoji = '😡';
         else if (ratio >= 0.5) emoji = '😐';
         else emoji = '😊';
+        const isAvailable = ratio < 0.4;
 
         return `
         <div class="wc-row">
           <div class="wc-name">
             <div class="avatar" style="width:26px;height:26px;font-size:11px;background:${m.color}">${m.name[0]}</div>
             <span>${m.name.split(' ')[0]}</span>
+            ${isAvailable ? '<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:#dcfce7;color:#166534;font-weight:600;margin-left:4px">배분 가능</span>' : ''}
           </div>
           <div class="wc-bar-wrap">
             <div class="wc-bar">

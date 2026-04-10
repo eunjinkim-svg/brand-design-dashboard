@@ -1127,6 +1127,7 @@ body {
 @media (max-width: 1024px) {
   .dashboard-grid { grid-template-columns: 1fr; }
   #dashBottomGrid { grid-template-columns: 1fr !important; }
+  #alertGrid { grid-template-columns: 1fr !important; }
   .dashboard-grid > * { grid-column: 1 !important; grid-row: auto !important; }
   .calendar-layout { grid-template-columns: 1fr; }
   .tasks-kanban { grid-template-columns: repeat(2, 1fr); }
