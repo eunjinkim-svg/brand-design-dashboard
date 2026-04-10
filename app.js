@@ -157,7 +157,7 @@ function switchPage(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page)?.classList.add('active');
-  const titles = { dashboard: '대시보드', tasks: '업무 현황', projects: '프로젝트', calendar: '캘린더', notes: '메모' };
+  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '캘린더', notes: '메모', vendor: '협력업체 파인더' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
   if (page === 'tasks') { renderKanban(); renderMemberFilter(); }
   if (page === 'projects') renderProjectsPage();
