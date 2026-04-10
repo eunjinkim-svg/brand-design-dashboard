@@ -36,57 +36,35 @@ function seedData() {
   ];
 
   const tasks = [
-    // New
-    { id: 't1', title: '실적공시 보고 자료 이미지 제작', desc: '', assignee: 'm_joe', status: 'new', priority: 'medium', size: 'M', due: '', requester: '', createdAt: Date.now() },
+    // Ben Park — @New 섹션
+    { id: 't22', title: '홈개편 소개 영상 제작', desc: 'w/ Ben, Dana ~4/13 / 스토리보드 PD공유 완 - 제작중', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-13', requester: 'Home', createdAt: Date.now() },
+    { id: 't23b', title: '카테고리 에셋 적용', desc: '', assignee: 'm_ben', status: 'done', priority: 'medium', size: 'L', due: '2026-04-03', requester: 'Home', createdAt: Date.now() },
+    { id: 't28b', title: 'PNC AI프론티어 티셔츠 그래픽', desc: '', assignee: 'm_ben', status: 'done', priority: 'medium', size: 'XL', due: '2026-04-03', requester: 'commerce', createdAt: Date.now() },
 
     // Joe Jo
-    { id: 't2', title: '상세페이지 제작', desc: 'figma.com/design/Te1MByoyFlZdDan7eyDcu4', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-18', requester: 'commerce', createdAt: Date.now() },
-    { id: 't3', title: '라이트 멤버쉽 소개 자료 제작 (리플렛/페이지)', desc: '', assignee: 'm_joe', status: 'ready', priority: 'medium', size: 'L', due: '', requester: 'O2O', createdAt: Date.now() },
-    { id: 't4', title: '시트지 설치', desc: '금주 화요일 or 수요일 방문', assignee: 'm_joe', status: 'ongoing', priority: 'medium', size: 'S', due: '2026-04-15', requester: 'offline', createdAt: Date.now() },
-    { id: 't5', title: '기타 제작물 발주 및 현장 배치', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'offline', createdAt: Date.now() },
-
-    // Dana Kim
-    { id: 't6', title: '홈 개편 안내 영상 스토리보드 카피라이팅', desc: 'w. Ben & Luka', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-18', requester: 'Home', createdAt: Date.now() },
-    { id: 't7', title: '라이팅봇 클로드 확장', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'medium', size: 'XL', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't8', title: '실사용 리뷰명, 리뷰어 명칭', desc: '실사용 기반의 맥락이 드러나는 안', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'M', due: '', requester: 'content', createdAt: Date.now() },
-    { id: 't9', title: '늘,신선 PDP 카피라이팅', desc: 'w. Joe / 영문명: ALWAYS FRESH / 슬로건: Always Fresh, Always Home.', assignee: 'm_dana', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 't10', title: '사장님센터 랜딩페이지 카피라이팅', desc: 'w. Luka / 1차 - 라이트 멤버십 페이지 검토 / 2차 - 전체', assignee: 'm_dana', status: 'ready', priority: 'medium', size: 'L', due: '', requester: 'O2O', createdAt: Date.now() },
-    { id: 't11', title: '채용브랜딩 - 블로그 글 리뷰 (기록에 머물던 로그는 어떻게 자산이 되었을까)', desc: 'w. Sarah', assignee: 'm_dana', status: 'almostdone', priority: 'medium', size: 'M', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't12', title: '채용브랜딩 - 블로그 글 리뷰 (AI로 가설을 증명하는 법)', desc: '', assignee: 'm_dana', status: 'ready', priority: 'medium', size: 'M', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't13', title: '오늘의집 머니 네이밍 논의', desc: '', assignee: 'm_dana', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 't14', title: '포인트 소멸 안내 푸시 관련 VoC 처리', desc: '', assignee: 'm_dana', status: 'done', priority: 'medium', size: 'S', due: '', requester: 'Team', createdAt: Date.now() },
-
-    // Zen
-    { id: 't15', title: '전국내방자랑 리뉴얼', desc: '', assignee: 'm_leezen', status: 'ongoing', priority: 'medium', size: 'XL', due: '', requester: 'content', createdAt: Date.now() },
-
-    // Ben Park
-    { id: 't16', title: '웰컴키트', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'L', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't17', title: '연합브랜드 눅텐 브랜딩', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'XL', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't18', title: '오늘의집 대형 매장', desc: '전달 받은 매장 강점을 토대로 브랜드 경험 제안 예정 w. June', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'XL', due: '', requester: 'O2O', createdAt: Date.now() },
-    { id: 't19', title: '라이프 바인더', desc: '추후 업무에 대해서는 퀄리티 검수 정도', assignee: 'm_ben', status: 'almostdone', priority: 'low', size: 'L', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't20', title: '스페셜크리에이터', desc: '검수만 남은 상태', assignee: 'm_ben', status: 'almostdone', priority: 'low', size: 'M', due: '', requester: 'content', createdAt: Date.now() },
-    { id: 't21', title: '홈 개편 영상 도움', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'Home', createdAt: Date.now() },
+    { id: 't27j', title: '사장님센터 랜딩페이지 서비스 소개 영상', desc: '', assignee: 'm_joe', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-10', requester: 'O2O', createdAt: Date.now() },
 
     // Luka Jung
-    { id: 't22', title: '홈개편 소개 영상 제작', desc: 'w/ Ben, Dana - ~4/13 / 스토리보드 PD공유 완 - 제작중', assignee: 'm_luka', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-13', requester: 'Home', createdAt: Date.now() },
-    { id: 't23', title: '카테고리 에셋 적용', desc: '조명에 대한 이슈 있었음 - 해결 / 추후에 MD요청에 따라 교체예정', assignee: 'm_luka', status: 'done', priority: 'medium', size: 'L', due: '', requester: 'Home', createdAt: Date.now() },
-    { id: 't24', title: 'visual language 개발', desc: '실제 진행되는 업무에 적용하면서 디벨롭 중', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'XL', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 't25', title: '홈개편 히어로 배너 리디자인', desc: '', assignee: 'm_luka', status: 'done', priority: 'medium', size: 'M', due: '', requester: 'Home', createdAt: Date.now() },
-    { id: 't26', title: '원하는날 도착 - 배송트럭 KV 제작', desc: '', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'M', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 't27', title: '사장님센터 랜딩페이지 서비스 소개 영상', desc: 'w. Dana / 서비스 목적/베네핏 정리해서 모션 에셋으로 제작 예정', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-30', requester: 'O2O', createdAt: Date.now() },
-    { id: 't28', title: 'PNC AI프론티어 티셔츠 그래픽', desc: '', assignee: 'm_luka', status: 'done', priority: 'low', size: 'S', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 't29', title: '카테고리 아이콘 AI 활용 개편 및 블로그글 작성', desc: '초안작성 완', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'L', due: '', requester: 'Team', createdAt: Date.now() },
+    { id: 't29', title: '카테고리 아이콘 AI 활용 개편 및 블로그글 작성', desc: '초안작성 완', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-10', requester: 'Team', createdAt: Date.now() },
+
+    // Dana Kim
+    { id: 't24d', title: 'visual language 개발', desc: '실제 진행되는 업무에 적용하면서 디벨롭 중', assignee: 'm_dana', status: 'ready', priority: 'medium', size: 'M', due: '2026-04-12', requester: 'Team', createdAt: Date.now() },
 
     // June Kim
-    { id: 't31', title: '오늘의집 기흥 브랜드 경험 설계', desc: 'w. Ben', assignee: 'm_june', status: 'ongoing', priority: 'high', size: 'XL', due: '', requester: 'O2O', createdAt: Date.now() },
+    { id: 't26j', title: '원하는날 도착 - 배송트럭 KV 제작', desc: '', assignee: 'm_june', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-23', requester: 'commerce', createdAt: Date.now() },
+    { id: 't19j', title: '라이프 바인더', desc: '추후 퀄리티 검수 정도', assignee: 'm_june', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-05-10', requester: 'Team', createdAt: Date.now() },
+
+    // Zen
+    { id: 't20z', title: '스페셜크리에이터', desc: '검수만 남은 상태', assignee: 'm_leezen', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-04-23', requester: 'content', createdAt: Date.now() },
 
     // Sarah Kim
-    { id: 't30', title: 'AI를 활용한 hi-prototype 제작기 그래픽 제작', desc: '', assignee: 'm_sarah', status: 'ongoing', priority: 'medium', size: 'L', due: '', requester: 'Team', createdAt: Date.now() },
+    { id: 't25s', title: '홈개편 히어로 배너 리디자인', desc: '', assignee: 'm_sarah', status: 'done', priority: 'medium', size: 'S', due: '2026-04-23', requester: 'Home', createdAt: Date.now() },
   ];
 
   const schedules = [
-    { id: 's1', member: 'm_joe', text: '00월 00일 오후 반차', date: '' },
-    { id: 's2', member: 'm_ben', text: '9월 17일 - 28일 리프레시 휴가', date: '' },
+    { id: 's1', member: 'm_joe', text: '4/11(금) 오후 반차', date: '' },
+    { id: 's2', member: 'm_dana', text: '4/22(화) 연차', date: '' },
+    { id: 's3', member: 'm_luka', text: '4/14(월) ~ 4/23(수) 연차', date: '' },
   ];
 
   return {
