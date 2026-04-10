@@ -25,7 +25,6 @@ function save() { localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
 
 function seedData() {
   const members = [
-    { id: 'm_bongho', name: 'Bongho Choi', role: '', color: '#f472b6' },
     { id: 'm_joe', name: 'Joe Jo', role: '', color: '#fb923c' },
     { id: 'm_dana', name: 'Dana Kim', role: '', color: '#a78bfa' },
     { id: 'm_leezen', name: 'Zen', role: '', color: '#38bdf8' },
@@ -300,16 +299,6 @@ function renderWeeklySummary() {
   const almostDone = t.filter(x => x.status === 'almostdone').length;
   const hold = t.filter(x => x.status === 'hold').length;
 
-  // 여유 있는 사람 찾기
-  const memberWorkloads = DATA.members.map(m => {
-    const w = t.filter(x => x.assignee === m.id && x.status !== 'done')
-      .reduce((sum, x) => sum + (SIZE_WEIGHTS[x.size] || 3), 0);
-    return { name: m.name.split(' ')[0], color: m.color, workload: w };
-  }).sort((a, b) => a.workload - b.workload);
-
-  const maxW = Math.max(...memberWorkloads.map(m => m.workload), 1);
-  const available = memberWorkloads.filter(m => m.workload < maxW * 0.4);
-
   container.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
       <div style="text-align:center">
@@ -327,13 +316,6 @@ function renderWeeklySummary() {
       <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.almostdone}15;color:${STATUS_COLORS.almostdone};font-weight:600">Almost ${almostDone}</span>
       ${hold ? `<span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.hold}15;color:${STATUS_COLORS.hold};font-weight:600">Hold ${hold}</span>` : ''}
     </div>
-    ${available.length > 0 ? `
-    <div style="border-top:1px solid var(--border-light);padding-top:12px">
-      <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px">📋 신규 업무 배분 가능</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        ${available.map(m => `<span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${m.color}18;color:${m.color};font-weight:600">${m.name} (${m.workload})</span>`).join('')}
-      </div>
-    </div>` : '<div style="border-top:1px solid var(--border-light);padding-top:12px;font-size:12px;color:var(--text-tertiary)">모든 팀원이 바쁨 — 신규 배분 주의</div>'}
   `;
 }
 
@@ -382,14 +364,11 @@ function renderWorkloadChart() {
         else if (ratio >= 0.7) emoji = '😡';
         else if (ratio >= 0.5) emoji = '😐';
         else emoji = '😊';
-        const isAvailable = ratio < 0.4;
-
         return `
         <div class="wc-row">
           <div class="wc-name">
             <div class="avatar" style="width:26px;height:26px;font-size:11px;background:${m.color}">${m.name[0]}</div>
             <span>${m.name.split(' ')[0]}</span>
-            ${isAvailable ? '<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:#dcfce7;color:#166534;font-weight:600;margin-left:4px">배분 가능</span>' : ''}
           </div>
           <div class="wc-bar-wrap">
             <div class="wc-bar">
