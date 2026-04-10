@@ -1267,7 +1267,7 @@ const VF_CONTACTS = {
 };
 
 let vfData = VF_SNAPSHOT.slice();
-let vfState = { cat: 'all', budget: 110000000, recOnly: false };
+let vfState = { cat: 'all', budget: 110000000, recOnly: false, search: '' };
 let vfSyncSource = 'snapshot';
 let vfLastSync = new Date();
 let vfIsRefreshing = false;
@@ -1329,50 +1329,75 @@ function vfRender() {
   const container = document.getElementById('vfResults');
   if (!container) return;
 
+  const q = vfState.search.toLowerCase();
+
+  // Filter individual quotes
   let filtered = vfData.filter(d => {
     if (vfState.cat !== 'all' && !d.cat.includes(vfState.cat)) return false;
     if (d.price && d.price > vfState.budget && vfState.budget < 110000000) return false;
     if (vfState.recOnly && d.status !== 'green') return false;
+    if (q && !d.name.toLowerCase().includes(q) && !d.project.toLowerCase().includes(q)) return false;
     return true;
   });
 
-  filtered.sort((a, b) => {
-    const sOrd = { green: 0, orange: 1, none: 2, warn: 3 };
-    if (sOrd[a.status] !== sOrd[b.status]) return sOrd[a.status] - sOrd[b.status];
-    return (b.price || 0) - (a.price || 0);
+  // Group by vendor name
+  const groupMap = new Map();
+  filtered.forEach(d => {
+    if (!groupMap.has(d.name)) groupMap.set(d.name, []);
+    groupMap.get(d.name).push(d);
   });
 
-  const n = filtered.length;
+  // Sort groups
+  const sOrd = { green: 0, orange: 1, none: 2, warn: 3 };
+  const groups = [...groupMap.entries()].map(([name, quotes]) => {
+    const bestStatus = quotes.reduce((best, q) => sOrd[q.status] < sOrd[best] ? q.status : best, 'warn');
+    const totalPrice = quotes.reduce((sum, q) => sum + (q.price || 0), 0);
+    const allCats = [...new Set(quotes.flatMap(q => q.cat))];
+    return { name, quotes, bestStatus, totalPrice, allCats };
+  });
+  groups.sort((a, b) => {
+    if (sOrd[a.bestStatus] !== sOrd[b.bestStatus]) return sOrd[a.bestStatus] - sOrd[b.bestStatus];
+    return b.totalPrice - a.totalPrice;
+  });
+
+  const n = groups.length;
+  const totalQuotes = filtered.length;
   const countEl = document.getElementById('vfResultCount');
-  if (countEl) countEl.innerHTML = `<span class="num">${String(n).padStart(2, '0')}</span> ${n === 1 ? 'result' : 'results'} found`;
+  if (countEl) countEl.innerHTML = `<span class="num">${String(n).padStart(2, '0')}</span> ${n === 1 ? 'vendor' : 'vendors'} · ${totalQuotes} quotes`;
 
   if (n === 0) {
     container.innerHTML = '<div class="empty-state" style="padding:60px"><p>조건에 맞는 업체가 없습니다</p></div>';
     return;
   }
 
-  container.innerHTML = filtered.map((d, i) => {
-    const isRec = d.status === 'green';
-    const priceObj = vfFmt(d.price);
+  container.innerHTML = groups.map((g, i) => {
+    const isRec = g.bestStatus === 'green';
+    const projectSummary = g.quotes.length <= 2
+      ? g.quotes.map(q => q.project).join(', ')
+      : g.quotes.slice(0, 2).map(q => q.project).join(', ') + ` 외 ${g.quotes.length - 2}건`;
+    const priceRange = vfPriceRange(g.quotes);
+    const hasFiles = g.quotes.some(q => q.hasFiles);
+    const hasPreview = g.quotes.some(q => q.hasPreview);
+
     return `
-      <article class="vf-card${isRec ? ' recommended' : ''}" data-vendor="${esc(d.name)}" tabindex="0" role="button" aria-label="${esc(d.name)} 상세 보기">
+      <article class="vf-card${isRec ? ' recommended' : ''}" data-vendor="${esc(g.name)}" tabindex="0" role="button" aria-label="${esc(g.name)} 상세 보기" style="animation-delay:${i * 0.04}s">
         <div class="vf-card-top">
           <div class="vf-vendor-name-wrap">
-            <span class="vf-vendor-name">${esc(d.name)}</span>
-            ${vfStatusBadge(d.status)}
+            <span class="vf-vendor-name">${esc(g.name)}</span>
+            ${vfStatusBadge(g.bestStatus)}
+            ${g.quotes.length > 1 ? `<span class="vf-quote-count">${g.quotes.length} quotes</span>` : ''}
           </div>
-          <div class="vf-card-price${priceObj.unset ? ' unset' : ''}">${priceObj.text}</div>
+          <div class="vf-card-price">${priceRange}</div>
         </div>
-        ${d.cat.length ? `<div class="vf-card-tags">${d.cat.map(c => `<span class="vf-tag">${esc(c)}</span>`).join('')}</div>` : ''}
-        <div class="vf-card-meta">
-          ${d.duration ? `<span><span class="vf-meta-key">Lead</span> ${esc(d.duration)}</span>` : ''}
-        </div>
-        ${d.note ? `<div class="vf-card-note">${esc(d.note)}</div>` : ''}
+        ${g.allCats.length ? `<div class="vf-card-tags">${g.allCats.map(c => `<span class="vf-tag">${esc(c)}</span>`).join('')}</div>` : ''}
+        <div class="vf-card-note">${esc(projectSummary)}</div>
         <div class="vf-card-footer">
-          <div class="vf-card-project">— ${esc(d.project)}</div>
-          <a class="vf-notion-link" href="${esc(d.url)}" target="_blank" rel="noopener" data-stop="1">
-            View in Notion
-            ${VF_ICON.ext}
+          <div class="vf-card-files">
+            ${hasFiles ? '<span class="vf-file-indicator"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 견적서</span>' : ''}
+            ${hasPreview ? '<span class="vf-file-indicator"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 결과물</span>' : ''}
+          </div>
+          <a class="vf-notion-link" href="${esc(g.quotes[0].url)}" target="_blank" rel="noopener" data-stop="1">
+            Notion ${VF_ICON.ext}
           </a>
         </div>
       </article>`;
@@ -1388,6 +1413,16 @@ function vfRender() {
   }
 }
 
+function vfPriceRange(quotes) {
+  const prices = quotes.map(q => q.price).filter(Boolean);
+  if (prices.length === 0) return '<span style="color:var(--text-tertiary)">TBD</span>';
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const fmt = n => new Intl.NumberFormat('ko-KR').format(n);
+  if (min === max) return `<span style="color:var(--primary);font-weight:600">₩${fmt(min)}</span>`;
+  return `<span style="color:var(--primary);font-weight:600">₩${fmt(min)} ~ ${fmt(max)}</span>`;
+}
+
 function vfOpenPanel(vendorName) {
   const quotes = vfData.filter(d => d.name === vendorName);
   if (quotes.length === 0) return;
@@ -1401,11 +1436,15 @@ function vfOpenPanel(vendorName) {
 
   const historyHtml = quotes.map(q => {
     const priceObj = vfFmt(q.price);
+    const fileLinks = [];
+    if (q.hasFiles) fileLinks.push(`<a class="vf-file-link" href="${esc(q.url)}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 견적서 보기</a>`);
+    if (q.hasPreview) fileLinks.push(`<a class="vf-file-link vf-file-preview" href="${esc(q.url)}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 결과물 보기</a>`);
     return `
       <div class="vf-history-item">
-        <div>
+        <div style="flex:1;min-width:0">
           <div class="vf-history-project">${esc(q.project)}</div>
-          <div class="vf-history-meta">${q.duration ? esc(q.duration) + ' · ' : ''}${q.cat.join(' / ')}</div>
+          <div class="vf-history-meta">${q.duration ? esc(q.duration) + ' · ' : ''}${q.cat.join(' / ')}${q.note ? ' · ' + esc(q.note) : ''}</div>
+          ${fileLinks.length ? `<div class="vf-history-files">${fileLinks.join('')}</div>` : ''}
         </div>
         <a class="vf-history-price${priceObj.unset ? ' unset' : ''}" href="${esc(q.url)}" target="_blank" rel="noopener" style="text-decoration:none">${priceObj.text}</a>
       </div>`;
@@ -1481,6 +1520,15 @@ async function vfRefresh(opts = {}) {
 
 // Init vendor finder event listeners
 function initVendorFinder() {
+  // Search
+  const searchInput = document.getElementById('vfSearchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      vfState.search = searchInput.value.trim();
+      vfRender();
+    });
+  }
+
   // Category chips
   document.querySelectorAll('#vfCatFilter .vf-chip').forEach(btn => {
     btn.addEventListener('click', () => {
