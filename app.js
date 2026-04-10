@@ -36,8 +36,10 @@ function seedData() {
   ];
 
   const tasks = [
-    // Ben Park — @New 섹션
+    // @New — 홈개편 소개 영상
     { id: 't22', title: '홈개편 소개 영상 제작', desc: 'w/ Ben, Dana ~4/13 / 스토리보드 PD공유 완 - 제작중', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-13', requester: 'Home', createdAt: Date.now() },
+
+    // Ben Park
     { id: 't23b', title: '카테고리 에셋 적용', desc: '', assignee: 'm_ben', status: 'done', priority: 'medium', size: 'L', due: '2026-04-03', requester: 'Home', createdAt: Date.now() },
     { id: 't28b', title: 'PNC AI프론티어 티셔츠 그래픽', desc: '', assignee: 'm_ben', status: 'done', priority: 'medium', size: 'XL', due: '2026-04-03', requester: 'commerce', createdAt: Date.now() },
 
@@ -46,16 +48,14 @@ function seedData() {
 
     // Luka Jung
     { id: 't29', title: '카테고리 아이콘 AI 활용 개편 및 블로그글 작성', desc: '초안작성 완', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-10', requester: 'Team', createdAt: Date.now() },
+    { id: 't26l', title: '원하는날 도착 - 배송트럭 KV 제작', desc: '', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-23', requester: 'commerce', createdAt: Date.now() },
+    { id: 't19l', title: '라이프 바인더', desc: '추후 퀄리티 검수 정도', assignee: 'm_luka', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-05-10', requester: 'Team', createdAt: Date.now() },
 
     // Dana Kim
     { id: 't24d', title: 'visual language 개발', desc: '실제 진행되는 업무에 적용하면서 디벨롭 중', assignee: 'm_dana', status: 'ready', priority: 'medium', size: 'M', due: '2026-04-12', requester: 'Team', createdAt: Date.now() },
 
-    // June Kim
-    { id: 't26j', title: '원하는날 도착 - 배송트럭 KV 제작', desc: '', assignee: 'm_june', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-23', requester: 'commerce', createdAt: Date.now() },
-    { id: 't19j', title: '라이프 바인더', desc: '추후 퀄리티 검수 정도', assignee: 'm_june', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-05-10', requester: 'Team', createdAt: Date.now() },
-
     // Zen
-    { id: 't20z', title: '스페셜크리에이터', desc: '검수만 남은 상태', assignee: 'm_leezen', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-04-23', requester: 'content', createdAt: Date.now() },
+    { id: 't20z', title: '(업무명 미입력)', desc: '', assignee: 'm_leezen', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-04-23', requester: '', createdAt: Date.now() },
 
     // Sarah Kim
     { id: 't25s', title: '홈개편 히어로 배너 리디자인', desc: '', assignee: 'm_sarah', status: 'done', priority: 'medium', size: 'S', due: '2026-04-23', requester: 'Home', createdAt: Date.now() },
