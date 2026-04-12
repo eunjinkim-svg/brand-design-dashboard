@@ -83,11 +83,85 @@
       border-radius: 12px;
     }
 
+    /* Search */
+    .search-wrap {
+      position: relative;
+      margin-top: 12px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 16px 10px 38px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-alt);
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--accent);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(234,88,12,0.1);
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-clear {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--border);
+      border: none;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      font-size: 0.65rem;
+      color: var(--text-sub);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-clear.show { display: flex; }
+    .search-results-info {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      display: none;
+    }
+    .search-results-info.show { display: block; }
+
+    /* Search highlight */
+    mark.search-hl {
+      background: #fef08a;
+      color: var(--text);
+      padding: 1px 2px;
+      border-radius: 3px;
+    }
+    .search-active .card { display: none; }
+    .search-active .card.search-match { display: block; }
+    .search-active .section { display: none; }
+    .search-active .section.search-match { display: block; }
+    .search-active .section-desc { display: none; }
+    .search-active .quick-row { display: none; }
+    .search-active .intro-banner { display: none; }
+    .search-active details:not(.search-match) { display: none; }
+    .search-active .callout:not(.search-match) { display: none; }
+
     /* Tabs */
     .tabs {
       display: flex;
       gap: 0;
-      margin-top: 12px;
+      margin-top: 8px;
     }
     .tab-btn {
       position: relative;
@@ -448,6 +522,12 @@
         <div class="topbar-title">✍🏻 Brand Language Design / UX Writing</div>
         <span class="topbar-channel"># des_ux_writing</span>
       </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="가이드 검색 — 버튼 글자수, 날짜 표기, 해요체..." oninput="handleSearch(this.value)">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">&times;</button>
+      </div>
+      <div class="search-results-info" id="searchInfo"></div>
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('guide', this)">글쓰기 가이드</button>
         <button class="tab-btn" onclick="switchTab('request', this)">업무 요청</button>
@@ -693,13 +773,73 @@
         </ul>
 
         <h4 style="font-size:0.95rem; font-weight:600; margin:24px 0 10px;">상황별 표기 규칙</h4>
-        <table class="guide-table">
-          <tr><th>항목</th><th>설명</th></tr>
-          <tr><td>숫자 / 금액</td><td class="plain">숫자, 금액, 약식 표기 등 수 관련 표기 규칙</td></tr>
-          <tr><td>날짜 / 시간</td><td class="plain">날짜, 시간, 기간 등 시간 관련 표기 규칙</td></tr>
-          <tr><td>외래어 표기</td><td class="plain">외래어, 영문 혼용 시 표기 규칙</td></tr>
-          <tr><td>오늘의집 서비스용어</td><td class="plain">서비스 내 통일 용어 정의</td></tr>
-        </table>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3><span class="emoji">🔢</span> 숫자 / 금액</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <h5>천 단위 구분</h5>
+            <p>천 단위는 쉼표로 구분합니다. <strong>9,900</strong> / <strong>13,000</strong></p>
+
+            <h5>숫자와 단위</h5>
+            <p>숫자와 단위는 붙여쓰기합니다.<br>
+            <span class="do">Do</span> 9,900원, 20%, 79.3㎡<br>
+            소수점은 <strong>1자리까지</strong> 표기합니다.</p>
+
+            <h5>고가 상품 표기</h5>
+            <p>1,000단위까지 쓰고 만/억을 사용합니다. 만과 원은 붙여쓰기합니다.<br>
+            <span class="do">Do</span> 1만원, 100만원, 1억원</p>
+
+            <h5>숫자 줄임</h5>
+            <ul>
+              <li><strong>국내</strong> — 만/억 단위 사용: 1.2만, 1.23억</li>
+              <li><strong>글로벌</strong> — K/M 단위 사용: 1.2K, 1.2M</li>
+            </ul>
+
+            <h5>수량 한정 표현</h5>
+            <p><span class="do">Do</span> ~30%까지, 최대 30% 할인, 약 1,000명, 9,900원부터</p>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3><span class="emoji">📅</span> 날짜 / 시간</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <h5>축약형 날짜</h5>
+            <p>마침표(.)로 구분하고 붙여쓰기합니다. 올해는 연도를 생략합니다.<br>
+            <span class="do">Do</span> 2024.12.06</p>
+
+            <h5>요일 표기</h5>
+            <p>기본적으로 사용하지 않습니다. 필요한 경우 괄호 안에 한 글자로 표기합니다.<br>
+            <span class="do">Do</span> 04.19 (수)</p>
+
+            <h5>배송일 예외</h5>
+            <p>배송일은 슬래시(/) 사용을 허용합니다.<br>
+            <span class="do">Do</span> 11/27(월) 도착 예정</p>
+
+            <h5>일반형 날짜</h5>
+            <p>연/월/일/요일을 모두 표기하며, 띄어쓰기를 적용합니다.</p>
+
+            <h5>시간 표기</h5>
+            <ul>
+              <li><strong>24시간 표기</strong> — 쌍점(:)으로 구분: <span class="do">Do</span> 14:30</li>
+              <li><strong>12시간 표기</strong> — 오전/오후와 함께 표기: <span class="do">Do</span> 2:30 PM</li>
+            </ul>
+
+            <h5>업로드 시간</h5>
+            <ul>
+              <li>1분 미만 → 방금</li>
+              <li>1분 이상 → N분 전</li>
+              <li>1시간 이상 → N시간 전</li>
+              <li>1일 이상 → N일 전</li>
+              <li>8일 이상 → 날짜로 표기</li>
+            </ul>
+          </div></div>
+        </div>
 
         <details style="margin-top:16px;">
           <summary>가이드 내용 변경이 필요한 경우?</summary>
@@ -716,15 +856,74 @@
         <p class="section-desc">오늘의집 서비스 안에서 UI 텍스트를 일관되게 작성하기 위한 가이드입니다. UI 요소(어디에 쓰이는가)와 메시지 유형(어떤 성격의 말인가)을 확인해 보세요.</p>
 
         <h4 style="font-size:0.95rem; font-weight:600; margin:8px 0 10px;">UI 요소별 가이드 (Where)</h4>
-        <table class="guide-table">
-          <tr><th>컴포넌트</th><th>Use cases</th></tr>
-          <tr><td>Button</td><td class="plain">버튼 레이블 작성 가이드</td></tr>
-          <tr><td>Dialog</td><td class="plain">다이얼로그 메시지 작성 가이드</td></tr>
-          <tr><td>Tab</td><td class="plain">탭 레이블 작성 가이드</td></tr>
-          <tr><td>Badge</td><td class="plain">뱃지 텍스트 작성 가이드</td></tr>
-          <tr><td>Caution Box</td><td class="plain">주의 안내 메시지 작성 가이드</td></tr>
-          <tr><td>Navigation & Footer</td><td class="plain">내비게이션, 푸터 텍스트 가이드 <span style="color:var(--text-muted);">(작업중)</span></td></tr>
-        </table>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3><span class="emoji">🔘</span> Button</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <h5>텍스트 버튼</h5>
+            <p><strong>4글자 이내</strong>로 작성하며, 띄어쓰기는 권장하지 않습니다.</p>
+
+            <h5>박스 버튼</h5>
+            <p>최소 간격 내 간결하게 작성합니다. 2개 이상일 때 <strong>동일 형식</strong>을 유지합니다.</p>
+
+            <h5>기본 원칙</h5>
+            <ul>
+              <li><span class="dont">Don't</span> 버튼에 문장 사용</li>
+              <li><span class="dont">Don't</span> '예/아니요' 사용</li>
+              <li><span class="do">Do</span> 명사 또는 동사의 명사형(보기, 하기)으로 간결하게</li>
+            </ul>
+
+            <h5>주요 버튼 액션</h5>
+            <table class="guide-table">
+              <tr><th>레이블</th><th>사용 맥락</th></tr>
+              <tr><td>확인</td><td class="plain">정보 확인 후 창 닫기 또는 이동</td></tr>
+              <tr><td>완료</td><td class="plain">선택 또는 프로세스 완료</td></tr>
+              <tr><td>삭제</td><td class="plain">저장된 내용 삭제</td></tr>
+              <tr><td>이전 / 다음</td><td class="plain">다단계 플로우 이동</td></tr>
+              <tr><td>계속하기 / 그만하기</td><td class="plain">프로세스 중도 이탈 시</td></tr>
+              <tr><td>나가기</td><td class="plain">콘텐츠 작성 중 이탈</td></tr>
+              <tr><td>더보기</td><td class="plain">추가 정보 노출</td></tr>
+              <tr><td>초기화</td><td class="plain">필터 초기화</td></tr>
+            </table>
+          </div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <h3><span class="emoji">💬</span> Dialog</h3>
+            <span class="toggle-arrow">&#9654;</span>
+          </div>
+          <div class="card-body"><div class="card-body-inner">
+            <h5>타이틀</h5>
+            <ul>
+              <li>띄어쓰기 포함 <strong>10자 이내</strong></li>
+              <li>반드시 <strong>한 줄</strong>로 작성</li>
+              <li><span class="dont">Don't</span> 문장 형태 사용</li>
+              <li><span class="dont">Don't</span> 이모지, 아이콘, 특수기호 사용</li>
+            </ul>
+
+            <h5>텍스트 (바디)</h5>
+            <ul>
+              <li><strong>해요체</strong>를 사용합니다</li>
+              <li>중요한 정보부터 먼저 작성합니다</li>
+              <li>2버튼 다이얼로그의 경우 <strong>3줄 이내</strong>로 작성합니다</li>
+              <li>3줄까지 <strong>중앙정렬</strong>, 4줄부터 <strong>좌측정렬</strong></li>
+            </ul>
+
+            <h5>서브 텍스트</h5>
+            <p>되도록 사용하지 않으며, 사용 시 <strong>1줄 이내</strong>로 작성합니다.</p>
+
+            <h5>버튼</h5>
+            <ul>
+              <li><span class="dont">Don't</span> 문장 사용, '예/아니요' 사용</li>
+              <li><span class="do">Do</span> 명사형으로 간결하게 작성</li>
+              <li>Fill 버튼이 Outline 버튼보다 주요 액션</li>
+            </ul>
+          </div></div>
+        </div>
 
         <p style="margin-top:12px;">
           <a class="ext-link" href="https://www.figma.com/design/aTdWM1sgdScr68GZdQ2sWO/ODS-(Ohouse-Design-System)-Master?m=auto&node-id=9-64" target="_blank">ODS Design System &nearr;</a>&nbsp;
@@ -1074,6 +1273,7 @@
 
   <script>
     function switchTab(id, btn) {
+      clearSearch();
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + id).classList.add('active');
@@ -1097,6 +1297,161 @@
         }
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+    }
+
+    // ===== Search =====
+    let searchTimeout;
+
+    function handleSearch(query) {
+      clearTimeout(searchTimeout);
+      const clearBtn = document.getElementById('searchClear');
+      clearBtn.classList.toggle('show', query.length > 0);
+
+      if (query.length < 2) {
+        resetSearch();
+        return;
+      }
+      searchTimeout = setTimeout(() => performSearch(query), 200);
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchClear').classList.remove('show');
+      resetSearch();
+    }
+
+    function resetSearch() {
+      const content = document.querySelector('.content');
+      content.classList.remove('search-active');
+      document.getElementById('searchInfo').classList.remove('show');
+
+      // Remove all highlights
+      content.querySelectorAll('mark.search-hl').forEach(m => {
+        const parent = m.parentNode;
+        parent.replaceChild(document.createTextNode(m.textContent), m);
+        parent.normalize();
+      });
+
+      // Reset visibility
+      content.querySelectorAll('.search-match').forEach(el => el.classList.remove('search-match'));
+
+      // Close all cards opened by search
+      content.querySelectorAll('.search-opened').forEach(el => {
+        el.querySelector('.card-header')?.classList.remove('open');
+        el.querySelector('.card-body')?.classList.remove('open');
+        el.classList.remove('search-opened');
+      });
+    }
+
+    function performSearch(query) {
+      resetSearch();
+      const content = document.querySelector('.content');
+      const q = query.toLowerCase().trim();
+      const words = q.split(/\s+/).filter(w => w.length >= 1);
+      if (words.length === 0) return;
+
+      // Show all tabs' content for search
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('active'));
+      content.classList.add('search-active');
+
+      let matchCount = 0;
+
+      // Search in cards
+      content.querySelectorAll('.card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const matches = words.every(w => text.includes(w));
+        if (matches) {
+          card.classList.add('search-match');
+          // Find parent section
+          const section = card.closest('.section');
+          if (section) section.classList.add('search-match');
+          // Open the card
+          const header = card.querySelector('.card-header');
+          const body = card.querySelector('.card-body');
+          if (header && body && !body.classList.contains('open')) {
+            header.classList.add('open');
+            body.classList.add('open');
+            card.classList.add('search-opened');
+          }
+          // Highlight
+          highlightInElement(card.querySelector('.card-body-inner'), words);
+          matchCount++;
+        }
+      });
+
+      // Search in details
+      content.querySelectorAll('details').forEach(det => {
+        const text = det.textContent.toLowerCase();
+        const matches = words.every(w => text.includes(w));
+        if (matches) {
+          det.classList.add('search-match');
+          det.open = true;
+          const section = det.closest('.section');
+          if (section) section.classList.add('search-match');
+          highlightInElement(det, words);
+          matchCount++;
+        }
+      });
+
+      // Search in callouts
+      content.querySelectorAll('.callout').forEach(co => {
+        const text = co.textContent.toLowerCase();
+        const matches = words.every(w => text.includes(w));
+        if (matches) {
+          co.classList.add('search-match');
+          const section = co.closest('.section');
+          if (section) section.classList.add('search-match');
+          highlightInElement(co, words);
+          matchCount++;
+        }
+      });
+
+      // Search in scope-cards
+      content.querySelectorAll('.scope-card').forEach(sc => {
+        const text = sc.textContent.toLowerCase();
+        const matches = words.every(w => text.includes(w));
+        if (matches) {
+          const section = sc.closest('.section');
+          if (section) section.classList.add('search-match');
+        }
+      });
+
+      // Show info
+      const info = document.getElementById('searchInfo');
+      info.textContent = matchCount > 0
+        ? `"${query}" — ${matchCount}건의 결과`
+        : `"${query}" — 검색 결과가 없어요. 다른 키워드로 시도해보세요.`;
+      info.classList.add('show');
+
+      // Scroll to first match
+      if (matchCount > 0) {
+        const first = content.querySelector('.search-match');
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function highlightInElement(el, words) {
+      if (!el) return;
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+      textNodes.forEach(node => {
+        let html = node.textContent;
+        let hasMatch = false;
+        words.forEach(w => {
+          const regex = new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          if (regex.test(html)) {
+            html = html.replace(regex, '<mark class="search-hl">$1</mark>');
+            hasMatch = true;
+          }
+        });
+        if (hasMatch) {
+          const span = document.createElement('span');
+          span.innerHTML = html;
+          node.parentNode.replaceChild(span, node);
+        }
+      });
     }
   </script>
 
