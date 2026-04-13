@@ -287,7 +287,7 @@ function switchPage(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page)?.classList.add('active');
-  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '업무 캘린더', works: 'Works', lunch: '오늘 점심 뭐먹지?', vendor: '협력업체 파인더', team: '팀원 소개' };
+  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '업무 캘린더', works: 'Works', lunch: '오늘 점심 뭐먹지?', vendor: '협력업체 파인더', team: 'About' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
   if (page === 'tasks') { renderKanban(); renderMemberFilter(); }
   if (page === 'projects') renderProjectsPage();

@@ -2181,6 +2181,271 @@ body {
   line-height: 1.5;
 }
 
+/* ---------- About Page ---------- */
+.about-hero {
+  padding: 40px 0 24px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+.about-hero-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+.about-hero-title {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+  margin: 0 0 10px;
+  color: var(--text-primary);
+}
+.about-hero-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 720px;
+  margin: 0;
+}
+
+.about-section {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.about-section:last-child { border-bottom: none; }
+.about-section-head { margin-bottom: 20px; }
+.about-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.about-section-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  letter-spacing: -.01em;
+}
+.about-section-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 720px;
+}
+
+/* Mission callout */
+.about-mission-card {
+  background: var(--surface);
+  border-left: 3px solid var(--primary);
+  border-radius: 10px;
+  padding: 22px 26px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+.about-mission-card strong { font-weight: 700; color: var(--primary); }
+
+.about-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.about-role-item {
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.about-role-num {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-tertiary);
+  letter-spacing: .08em;
+  margin-bottom: 6px;
+}
+.about-role-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.about-role-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Principles */
+.about-principles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 1100px) {
+  .about-principles { grid-template-columns: 1fr 1fr 1fr; }
+}
+.about-principle {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 22px 24px;
+}
+.about-principle-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+.about-principle-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 2px;
+  color: var(--text-primary);
+}
+.about-principle-sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+}
+.about-principle-quote {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-left: 2px solid var(--border);
+  margin: 0 0 12px;
+  padding: 2px 0 2px 12px;
+  line-height: 1.5;
+}
+.about-principle-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* RICO */
+.about-rico-acronym {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.about-rico-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 900px)  { .about-rico-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1400px) { .about-rico-grid { grid-template-columns: repeat(4, 1fr); } }
+.about-rico-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 22px 22px 20px;
+  position: relative;
+}
+.about-rico-letter {
+  position: absolute;
+  top: 18px; right: 22px;
+  font-size: 44px;
+  font-weight: 900;
+  color: var(--primary-light);
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+.about-rico-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 2px;
+  color: var(--text-primary);
+}
+.about-rico-sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 14px;
+  max-width: 90%;
+  line-height: 1.5;
+}
+.about-rico-quote {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+.about-rico-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.about-rico-list li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+.about-rico-list li::before {
+  content: '·';
+  position: absolute;
+  left: 2px; top: -2px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+.about-rico-scale {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: var(--bg);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.about-rico-scale-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.about-rico-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.about-rico-score--high { background: var(--primary); }
+.about-rico-score--low  { background: var(--text-tertiary); }
+
 /* Sidebar section label */
 .nav-section {
   list-style: none;
