@@ -110,7 +110,7 @@
         <div class="footer-badge">BD</div>
         <div class="user-info">
           <div class="user-name">Brand Design</div>
-          <div class="user-role">오늘의집 · Team</div>
+          <div class="user-role">오늘의집 · Internal only</div>
         </div>
       </div>
     </div>
@@ -134,6 +134,12 @@
           </svg>
           <input type="text" id="searchInput" placeholder="검색..." />
         </div>
+        <span class="internal-pill" title="이 대시보드는 Brand Design 팀 내부 전용입니다">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Internal only
+        </span>
         <button class="btn-secondary" onclick="localStorage.removeItem('team_dashboard_v2');location.reload()" style="font-size:12px;padding:6px 12px" title="업무 데이터만 시드로 리셋 (프로필·테마는 유지)">업데이트</button>
         <button class="notification-btn" id="notificationBtn" aria-label="알림">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -428,37 +434,36 @@
       <!-- Hero -->
       <section class="about-hero">
         <div class="about-hero-tag">Brand eXperience Design</div>
-        <h1 class="about-hero-title">정서적 만족을 디자인하는 팀</h1>
-        <p class="about-hero-sub">비즈니스 전략(이성)을 시각·언어적 감도와 디테일(감성)로 변환하여 고객에게 전달하는 가교 역할을 합니다.</p>
+        <h1 class="about-hero-title">우리는 브랜드의 철학이 고객의 마음까지 닿을 수 있도록,<br>보고·듣고·느끼는 모든 순간을 세심하게 설계하는 팀이에요.</h1>
       </section>
 
       <!-- Team Definition -->
       <section class="about-section">
         <div class="about-section-head">
           <div class="about-section-label">01 · Who We Are</div>
-          <h2 class="about-section-title">우리는 누구인가</h2>
+          <h2 class="about-section-title">우리가 하는 일</h2>
         </div>
         <div class="about-mission-card">
-          우리 팀은 비즈니스 전략에 담긴 브랜드 철학이 고객의 마음까지 닿을 수 있도록,
-          브랜드를 <strong>보고·듣고·느끼는 모든 순간의 시각·언어적 감도와 디테일을 세심하게 설계</strong>합니다.
-          그렇게 완성된 경험은 가격이나 설명으로는 대체할 수 없는 <strong>정서적 만족</strong>을 만들고,
-          고객이 우리 브랜드를 꾸준히 선택하고 사랑할 이유가 됩니다.
+          우리는 비즈니스 전략에 담긴 브랜드 철학이 고객의 마음까지 닿을 수 있도록,
+          브랜드를 <strong>보고·듣고·느끼는 모든 순간의 감도와 디테일을 함께 설계</strong>해요.
+          그렇게 완성된 경험이 가격이나 설명으로는 대체할 수 없는 <strong>정서적 만족</strong>을 만들고,
+          고객이 우리 브랜드를 꾸준히 선택하고 사랑할 이유가 되어줘요.
         </div>
         <div class="about-role-grid">
           <div class="about-role-item">
             <div class="about-role-num">01</div>
-            <div class="about-role-label">Role · 역할</div>
-            <div class="about-role-text">비즈니스 전략(이성)을 시각·언어적 감도와 디테일(감성)로 변환하여 고객에게 전달하는 가교 역할</div>
+            <div class="about-role-label">우리의 역할</div>
+            <div class="about-role-text">전략(이성)을 감도와 디테일(감성)로 바꿔서, 고객에게 브랜드를 따뜻하게 전해요.</div>
           </div>
           <div class="about-role-item">
             <div class="about-role-num">02</div>
-            <div class="about-role-label">Goal · 목표</div>
-            <div class="about-role-text">가격이나 기능 설명으로는 대체 불가능한 '정서적 만족' 창출</div>
+            <div class="about-role-label">우리가 만드는 것</div>
+            <div class="about-role-text">가격이나 기능만으로는 설명되지 않는, 고객이 오래 기억할 만한 '정서적 만족'을 만들어요.</div>
           </div>
           <div class="about-role-item">
             <div class="about-role-num">03</div>
-            <div class="about-role-label">Result · 결과</div>
-            <div class="about-role-text">고객이 브랜드를 지속적으로 선택하고 사랑하게 만드는 근거 마련</div>
+            <div class="about-role-label">우리가 남기는 것</div>
+            <div class="about-role-text">고객이 오늘의집을 꾸준히 선택하고 사랑하게 만드는, 작지만 단단한 이유예요.</div>
           </div>
         </div>
       </section>
@@ -467,30 +472,30 @@
       <section class="about-section">
         <div class="about-section-head">
           <div class="about-section-label">02 · Core Principles</div>
-          <h2 class="about-section-title">우리의 일하는 방식</h2>
-          <p class="about-section-desc">우리는 오늘의집의 미션을 실현하고, 대체 불가능한 브랜드 경험을 만들기 위해 다음 원칙을 따릅니다.</p>
+          <h2 class="about-section-title">우리가 일하는 방식</h2>
+          <p class="about-section-desc">오늘의집의 미션을 실현하고, 우리만이 만들 수 있는 브랜드 경험을 쌓기 위해 우리가 함께 지키고 있는 세 가지 약속.</p>
         </div>
         <div class="about-principles">
           <article class="about-principle">
             <div class="about-principle-num">①</div>
             <h3 class="about-principle-title">Mission-Driven Design</h3>
-            <div class="about-principle-sub">미션을 실체화하는 디자인</div>
+            <div class="about-principle-sub">우리는 미션에서 출발해요</div>
             <blockquote class="about-principle-quote">"Making great living accessible to all"</blockquote>
-            <p class="about-principle-text">우리의 모든 디자인은 '누구나 좋은 삶을 누리고, 사랑하는 집을 스스로 만들어가도록 돕는다'는 미션에서 출발합니다. 디자인을 통해 심리적 문턱을 낮추고(Accessible), 스스로 변화를 만들 영감의 순간(Inspiring)을 만들어 주는 것, 이것이 우리가 미션을 실현하는 방식입니다.</p>
+            <p class="about-principle-text">우리가 만드는 모든 디자인은 '누구나 좋은 삶을 누리고, 사랑하는 집을 스스로 만들어가도록 돕는다'는 미션에서 시작해요. 심리적 문턱은 낮추고(Accessible), 변화를 만들 영감의 순간(Inspiring)은 더해 주는 것. 그게 우리가 이 미션을 실현하는 방식이에요.</p>
           </article>
           <article class="about-principle">
             <div class="about-principle-num">②</div>
             <h3 class="about-principle-title">Cumulative Experience</h3>
-            <div class="about-principle-sub">축적되는 경험</div>
-            <blockquote class="about-principle-quote">"일회성 자극이 아닌, 시간이 지날수록 단단해지는 신뢰를 만듭니다."</blockquote>
-            <p class="about-principle-text">우리는 찰나의 클릭을 유도하는 디자인보다, 고객의 기억 속에 차곡차곡 쌓이는 브랜드 자산을 지향합니다. 모든 경험이 하나의 서사로 연결되어 '오늘의집이라서 믿을 수 있다'는 신뢰와 관계가 형성되도록 설계합니다.</p>
+            <div class="about-principle-sub">우리는 쌓이는 경험을 만들어요</div>
+            <blockquote class="about-principle-quote">"일회성 자극보다, 시간이 지날수록 단단해지는 신뢰를 만들어요."</blockquote>
+            <p class="about-principle-text">찰나의 클릭을 유도하는 디자인보다는, 고객의 기억 속에 차곡차곡 쌓이는 브랜드 자산을 지향해요. 각각의 경험이 하나의 서사로 이어져 '오늘의집이라서 믿을 수 있다'는 관계가 자연스럽게 만들어지도록요.</p>
           </article>
           <article class="about-principle">
             <div class="about-principle-num">③</div>
             <h3 class="about-principle-title">Integrity with Authenticity</h3>
-            <div class="about-principle-sub">진정성을 담은 완성도</div>
-            <blockquote class="about-principle-quote">"화려한 포장보다, 고객이 경험할 본질에 집중합니다."</blockquote>
-            <p class="about-principle-text">우리가 추구하는 높은 기준은 '남들에게 잘 보이는 것'이 아니라 '고객에게 솔직한 것'입니다. 보이는 모습과 쓰이는 경험이 일치하도록 끝까지 책임지는 태도, 그것이 바로 우리가 지키는 진정성과 완성도입니다.</p>
+            <div class="about-principle-sub">우리는 본질에 집중해요</div>
+            <blockquote class="about-principle-quote">"화려한 포장보다, 고객이 실제로 경험할 본질에 집중해요."</blockquote>
+            <p class="about-principle-text">우리가 추구하는 높은 기준은 '남들에게 잘 보이는 것'이 아니라 '고객에게 솔직한 것'이에요. 보이는 모습과 실제로 쓰이는 경험이 같아지도록 끝까지 책임지는 것, 그게 우리가 생각하는 진정성과 완성도예요.</p>
           </article>
         </div>
       </section>
@@ -500,7 +505,7 @@
         <div class="about-section-head">
           <div class="about-section-label">03 · Priority Model</div>
           <h2 class="about-section-title">우선순위 판단 모델 <span class="about-rico-acronym">R.I.C.O.</span></h2>
-          <p class="about-section-desc">모든 업무는 아래 4가지 축으로 평가합니다. 공수(사이즈)만이 아니라, 이 일이 우리 팀에 어떤 가치가 있는지를 함께 봅니다.</p>
+          <p class="about-section-desc">"얼마나 시간이 드는지"만이 아니라, "이 일이 우리 팀에 어떤 의미가 있는지"를 함께 살펴보는 네 가지 축.</p>
         </div>
         <div class="about-rico-grid">
           <article class="about-rico-card">
@@ -558,7 +563,8 @@
       <section class="about-section">
         <div class="about-section-head">
           <div class="about-section-label">04 · People</div>
-          <h2 class="about-section-title">팀 멤버</h2>
+          <h2 class="about-section-title">우리를 소개해요</h2>
+          <p class="about-section-desc">이 대시보드를 함께 만들어가는 사람들.</p>
         </div>
         <div class="tp-grid" id="teamProfileGrid">
           <!-- Generated by JS -->

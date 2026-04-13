@@ -2169,21 +2169,21 @@ function renderTeamProfiles() {
     const taskCount = DATA.tasks.filter(t => t.assignee === m.id && t.status !== 'done').length;
     const doneCount = DATA.tasks.filter(t => t.assignee === m.id && t.status === 'done').length;
 
-    const fieldsHtml = TP_FIELDS.map(f => {
-      const val = p[f.key] || '';
-      return `<div class="tp-field">
-        <span class="tp-field-icon">${f.icon}</span>
-        <span class="tp-field-label">${f.label}</span>
-        <span class="tp-field-value">${val ? esc(val) : '<span style="color:var(--text-tertiary);font-style:italic">미입력</span>'}</span>
-      </div>`;
-    }).join('');
+    const fieldChips = TP_FIELDS
+      .map(f => {
+        const val = (p[f.key] || '').trim();
+        if (!val) return '';
+        return `<span class="tp-chip" title="${esc(f.label)}">${f.icon} ${esc(val)}</span>`;
+      })
+      .filter(Boolean)
+      .join('');
 
     const avatarHtml = p.photo
-      ? `<div class="tp-avatar-img" style="width:84px;height:84px"><img src="${p.photo}" alt="${esc(m.name)}" /></div>`
-      : `<div class="avatar" style="width:84px;height:84px;font-size:28px;background:${m.color}">${m.name[0]}</div>`;
+      ? `<div class="tp-avatar-img" style="width:56px;height:56px"><img src="${p.photo}" alt="${esc(m.name)}" /></div>`
+      : `<div class="avatar" style="width:56px;height:56px;font-size:20px;background:${m.color}">${m.name[0]}</div>`;
 
     return `
-    <div class="tp-card" style="--member-color:${m.color}">
+    <div class="tp-card tp-card--compact" style="--member-color:${m.color}">
       <div class="tp-card-header">
         ${avatarHtml}
         <div class="tp-card-info">
@@ -2198,7 +2198,7 @@ function renderTeamProfiles() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         </button>
       </div>
-      <div class="tp-card-body">${fieldsHtml}</div>
+      ${fieldChips ? `<div class="tp-chip-row">${fieldChips}</div>` : ''}
     </div>`;
   }).join('');
 }

@@ -2181,6 +2181,70 @@ body {
   line-height: 1.5;
 }
 
+/* Team profile — compact card override */
+.tp-card--compact {
+  padding: 14px 16px;
+}
+.tp-card--compact .tp-card-header {
+  gap: 12px;
+  padding-bottom: 0;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+.tp-card--compact .tp-card-name { font-size: 14px; }
+.tp-card--compact .tp-card-role { font-size: 11px; }
+.tp-card--compact .tp-card-stats { font-size: 11px; margin-top: 4px; }
+.tp-card--compact .tp-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border-light);
+}
+.tp-chip {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  padding: 3px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+/* Internal-only indicator (topbar pill) */
+.internal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* About hero internal badge */
+.about-hero-internal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+.about-hero-internal svg { color: var(--text-tertiary); }
+
 /* ---------- About Page ---------- */
 .about-hero {
   padding: 40px 0 24px;
@@ -2200,19 +2264,13 @@ body {
   margin-bottom: 16px;
 }
 .about-hero-title {
-  font-size: 34px;
-  font-weight: 800;
-  line-height: 1.25;
-  letter-spacing: -.015em;
-  margin: 0 0 10px;
-  color: var(--text-primary);
-}
-.about-hero-sub {
-  font-size: 15px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  max-width: 720px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.55;
+  letter-spacing: -.01em;
   margin: 0;
+  color: var(--text-primary);
+  max-width: 720px;
 }
 
 .about-section {
@@ -2338,14 +2396,11 @@ body {
 /* RICO */
 .about-rico-acronym {
   display: inline-block;
-  background: var(--primary);
-  color: #fff;
+  color: var(--text-tertiary);
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .06em;
-  padding: 3px 10px;
-  border-radius: 6px;
-  margin-left: 8px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  margin-left: 6px;
   vertical-align: middle;
 }
 .about-rico-grid {
