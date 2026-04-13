@@ -25,45 +25,62 @@ function save() { localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
 
 function seedData() {
   const members = [
-    { id: 'm_joe', name: 'Joe Jo', role: '', color: '#fb923c' },
-    { id: 'm_dana', name: 'Dana Kim', role: '', color: '#a78bfa' },
-    { id: 'm_leezen', name: 'Zen', role: '', color: '#38bdf8' },
-    { id: 'm_ben', name: 'Ben Park', role: '', color: '#34d399' },
-    { id: 'm_luka', name: 'Luka Jung', role: '', color: '#fbbf24' },
-    { id: 'm_june', name: 'June Kim', role: '', color: '#f87171' },
-    { id: 'm_sarah', name: 'Sarah Kim', role: '', color: '#818cf8' },
+    { id: 'm_joe', name: 'Joe Jo', role: 'Brand Designer', color: '#fb923c' },
+    { id: 'm_dana', name: 'Dana Kim', role: 'Brand Language Designer', color: '#a78bfa' },
+    { id: 'm_leezen', name: 'Zen Lee', role: 'Content & Brand Designer', color: '#38bdf8' },
+    { id: 'm_ben', name: 'Ben Park', role: 'Brand Designer', color: '#34d399' },
+    { id: 'm_luka', name: 'Luka Jung', role: 'Graphic Designer', color: '#fbbf24' },
+    { id: 'm_june', name: 'June Kim', role: 'PB Designer', color: '#f87171' },
+    { id: 'm_sarah', name: 'Sarah Kim', role: 'Brand Designer', color: '#818cf8' },
   ];
 
+  // ────────── Source: Notion Weekly (가이드 샘플) ──────────
   const tasks = [
-    // @New — 홈개편 소개 영상
-    { id: 't22', title: '홈개편 소개 영상 제작', desc: 'w/ Ben, Dana ~4/13 / 스토리보드 PD공유 완 - 제작중', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-13', requester: 'Home', createdAt: Date.now() },
+    // ── Dana ──
+    { id: 'd_home_video_copy', title: '[Home] 홈 개편 안내 영상 스토리보드 카피라이팅', desc: 'w/ Ben & Luka', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'Home', createdAt: Date.now() },
+    { id: 'd_writingbot', title: '[Team] 라이팅봇 클로드 확장', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'M', due: '2026-04-16', requester: 'Team', createdAt: Date.now() },
+    { id: 'd_cnc_reviewname', title: '[Content] 실사용 리뷰명, 리뷰어 명칭', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'content', createdAt: Date.now() },
+    { id: 'd_money_naming', title: '[Commerce] 오늘의집 머니 네이밍 논의', desc: '', assignee: 'm_dana', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'commerce', createdAt: Date.now() },
+    { id: 'd_point_voc', title: '[Team] 포인트 소멸 안내 푸시 VoC 처리', desc: '', assignee: 'm_dana', status: 'done', priority: 'medium', size: 'S', due: '2026-04-22', requester: 'Team', createdAt: Date.now() },
 
-    // Ben Park
-    { id: 't23b', title: '카테고리 에셋 적용', desc: '', assignee: 'm_ben', status: 'done', priority: 'medium', size: 'L', due: '2026-04-03', requester: 'Home', createdAt: Date.now() },
-    { id: 't28b', title: 'PNC AI프론티어 티셔츠 그래픽', desc: '', assignee: 'm_ben', status: 'done', priority: 'medium', size: 'XL', due: '2026-04-03', requester: 'commerce', createdAt: Date.now() },
+    // ── Joe ──
+    { id: 'j_neulshin_pdp', title: '[Commerce] 늘신선 상세페이지 제작', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'commerce', createdAt: Date.now() },
+    { id: 'j_o2o_light', title: '[O2O] 라이트 멤버쉽 소개 자료 제작', desc: '', assignee: 'm_joe', status: 'ready', priority: 'medium', size: 'L', due: '', requester: 'O2O', createdAt: Date.now() },
+    { id: 'j_pangyo', title: '[O2O] 판교라운지 시트지 설치 및 제작물 발주', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-17', requester: 'O2O', createdAt: Date.now() },
 
-    // Joe Jo
-    { id: 't27j', title: '사장님센터 랜딩페이지 서비스 소개 영상', desc: '', assignee: 'm_joe', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-10', requester: 'O2O', createdAt: Date.now() },
+    // ── Luka ──
+    { id: 'l_home_video', title: '[Home] 홈개편 소개 영상 제작', desc: 'w/ Ben & Dana', assignee: 'm_luka', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-13', requester: 'Home', createdAt: Date.now() },
+    { id: 'l_category_assets', title: '[Home] 홈개편 카테고리 에셋 적용', desc: '', assignee: 'm_luka', status: 'done', priority: 'medium', size: 'S', due: '2026-04-14', requester: 'Home', createdAt: Date.now() },
+    { id: 'l_delivery_kv', title: '[Commerce] 원하는날 도착 배송트럭 KV 제작', desc: '', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'M', due: '2026-04-15', requester: 'commerce', createdAt: Date.now() },
+    { id: 'l_o2o_video', title: '[O2O] 사장님센터 랜딩페이지 서비스 소개 영상', desc: 'w/ Dana', assignee: 'm_luka', status: 'ready', priority: 'high', size: 'L', due: '2026-04-17', requester: 'O2O', createdAt: Date.now() },
+    { id: 'l_ai_icon_blog', title: '[Team] 홈개편 카테고리 아이콘 AI 활용 개편 & 블로그글 작성', desc: '', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-22', requester: 'Team', createdAt: Date.now() },
+    { id: 'l_hi_proto_blog', title: '[Team] AI를 활용한 Hi-Prototype 제작기 블로그 그래픽 제작', desc: '', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-13', requester: 'Team', createdAt: Date.now() },
 
-    // Luka Jung
-    { id: 't29', title: '카테고리 아이콘 AI 활용 개편 및 블로그글 작성', desc: '초안작성 완', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-10', requester: 'Team', createdAt: Date.now() },
-    { id: 't26l', title: '원하는날 도착 - 배송트럭 KV 제작', desc: '', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'L', due: '2026-04-23', requester: 'commerce', createdAt: Date.now() },
-    { id: 't19l', title: '라이프 바인더', desc: '추후 퀄리티 검수 정도', assignee: 'm_luka', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-05-10', requester: 'Team', createdAt: Date.now() },
+    // ── Ben ──
+    { id: 'b_welcome_kit', title: '[PnC] 웰컴키트', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-13', requester: 'content', createdAt: Date.now() },
+    { id: 'b_nukten', title: '[Commerce] 연합브랜드 눅텐 브랜딩', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-16', requester: 'commerce', createdAt: Date.now() },
+    { id: 'b_large_store', title: '[Commerce] 오늘의집 대형 매장 브랜드 경험 제안', desc: 'w/ June', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'commerce', createdAt: Date.now() },
+    { id: 'b_life_binder', title: '[Team] 라이프 바인더', desc: '', assignee: 'm_ben', status: 'almostdone', priority: 'medium', size: 'S', due: '2026-04-20', requester: 'Team', createdAt: Date.now() },
+    { id: 'b_special_creator', title: '[Team] 스페셜크리에이터', desc: '', assignee: 'm_ben', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'Team', createdAt: Date.now() },
+    { id: 'b_home_video_help', title: '[Home] 홈 개편 영상 도움', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'Home', createdAt: Date.now() },
 
-    // Dana Kim
-    { id: 't24d', title: 'visual language 개발', desc: '실제 진행되는 업무에 적용하면서 디벨롭 중', assignee: 'm_dana', status: 'ready', priority: 'medium', size: 'M', due: '2026-04-12', requester: 'Team', createdAt: Date.now() },
+    // ── June ──
+    { id: 'u_fabric_popup', title: '[offline] 1F 패브릭 팝업', desc: '', link: 'https://www.figma.com/design/cuLuTyZ5nd9SbKk2W3j1o6/%EC%B8%B5%EB%B3%84-%EC%A0%84%EC%8B%9C-%ED%94%8C%EB%9E%98%EB%8B%9D?node-id=1065-5492', assignee: 'm_june', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'offline', createdAt: Date.now() },
+    { id: 'u_giheung', title: '[offline] 기흥 오프라인 매장 브랜딩 프로젝트', desc: '', assignee: 'm_june', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-14', requester: 'offline', createdAt: Date.now() },
+    { id: 'u_3f_house', title: '[offline] 3F 올해의집', desc: '', assignee: 'm_june', status: 'done', priority: 'medium', size: 'L', due: '2026-04-15', requester: 'offline', createdAt: Date.now() },
+    { id: 'u_download_sarah', title: '[Commerce] 업무 다운로드 w/ Sarah', desc: '', assignee: 'm_june', status: 'ready', priority: 'medium', size: 'S', due: '2026-04-16', requester: 'commerce', createdAt: Date.now() },
 
-    // Zen
-    { id: 't20z', title: '(업무명 미입력)', desc: '', assignee: 'm_leezen', status: 'almostdone', priority: 'medium', size: 'L', due: '2026-04-23', requester: '', createdAt: Date.now() },
+    // ── Zen ──
+    { id: 'z_cnc_visit', title: '[Content] 전국내방자랑 리뉴얼', desc: '', assignee: 'm_leezen', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-16', requester: 'content', createdAt: Date.now() },
 
-    // Sarah Kim
-    { id: 't25s', title: '홈개편 히어로 배너 리디자인', desc: '', assignee: 'm_sarah', status: 'done', priority: 'medium', size: 'S', due: '2026-04-23', requester: 'Home', createdAt: Date.now() },
+    // ── Sarah ──
+    { id: 's_download', title: '[Commerce] 업무 다운로드', desc: '', assignee: 'm_sarah', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-13', requester: 'commerce', createdAt: Date.now() },
   ];
 
   const schedules = [
-    { id: 's1', member: 'm_joe', text: '4/11(금) 오후 반차', date: '' },
-    { id: 's2', member: 'm_dana', text: '4/22(화) 연차', date: '' },
-    { id: 's3', member: 'm_luka', text: '4/14(월) ~ 4/23(수) 연차', date: '' },
+    { id: 's1', member: 'm_dana', text: '4/17(금) 오후 반차', date: '2026-04-17' },
+    { id: 's2', member: 'm_ben', text: '4/21(화) 연차', date: '2026-04-21' },
+    { id: 's3', member: 'm_luka', text: '4/20(월) ~ 4/27(월) 연차', date: '2026-04-20' },
   ];
 
   return {
@@ -74,6 +91,10 @@ function seedData() {
     notes: [],
     activity: [{ id: 'a0', message: '주간 업무 데이터가 동기화되었습니다', time: Date.now() }],
     schedules,
+    teamEvents: [
+      { id: 'te_lemonbase', title: '레몬베이스', desc: '', date: '2026-04-29', time: '', emoji: '🍋' },
+      { id: 'te_dinner', title: '팀 회식', desc: '', date: '2026-05-14', time: '', emoji: '🍻' }
+    ],
     teamDiscussion: '양재천- 노상'
   };
 }
@@ -145,6 +166,115 @@ function initDate() {
     `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
 }
 
+// ────────── Dashboard Hero ──────────
+function renderDashHero() {
+  const el = document.getElementById('dashHero');
+  if (!el) return;
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  const dateStr = `${d.getFullYear()}. ${String(d.getMonth()+1).padStart(2,'0')}. ${String(d.getDate()).padStart(2,'0')} (${days[d.getDay()]})`;
+
+  el.innerHTML = `
+    <div class="dash-hero-date">${esc(dateStr)}</div>
+  `;
+}
+
+// ────────── Daily Mood Banner ──────────
+const MOOD_MESSAGES = [
+  // 따뜻한 버전
+  { emoji: '☀️', text: '좋은 아침이에요. 오늘도 만나서 반가워요.' },
+  { emoji: '☕', text: '따뜻한 거 한 잔 마시면서 천천히 시작해요.' },
+  { emoji: '🌿', text: '오늘은 어제보다 조금만 더 가볍게 가봐요.' },
+  { emoji: '✨', text: '오늘도 더 좋은 하루가 될 거예요.' },
+  { emoji: '🍀', text: '오늘은 작은 행운들이 살며시 찾아올 거예요.' },
+  { emoji: '🌻', text: '햇살처럼 포근한 하루 보내세요.' },
+  { emoji: '🌸', text: '스스로에게 조금 더 다정하게 대해줘요.' },
+  { emoji: '🕊️', text: '숨 한 번 크게 쉬고 오늘도 잘 부탁해요.' },
+  { emoji: '🌟', text: '오늘도 충분히 잘하고 있어요.' },
+  { emoji: '🎀', text: '오늘 기분 좋은 일이 꼭 하나 있을 거예요.' },
+  // 드립/웃긴 버전
+  { emoji: '👑', text: '오늘 출근 성공한 것만으로 이미 레전드예요.' },
+  { emoji: '🫣', text: '알람 몇 번 만에 일어났는지 우리는 다 알아요.' },
+  { emoji: '😎', text: '오늘 아침 거울 잠깐 봤죠? 네 맞아요, 잘생겼어요.' },
+  { emoji: '🫂', text: '월요일은 다 같이 힘든 거예요. 혼자 아니에요.' },
+  { emoji: '🍙', text: '지금 배고프면 이미 점심 생각 중인 겁니다.' },
+  { emoji: '⏰', text: '퇴근까지 카운트다운 시작. 무사히 가면 1승이에요.' },
+  { emoji: '💸', text: '월급이 쏜살같아도 다음 월급은 꼭 옵니다.' },
+  { emoji: '🧃', text: '오늘 커피는 따뜻? 아이스? 정답은 둘 다예요.' },
+  { emoji: '🙏', text: '오늘 회의 끝나고 또 회의 아니길 기도합니다.' },
+  { emoji: '🛌', text: '오늘 하루는 사건사고 없이 무사히. 그게 최고의 성과예요.' },
+  { emoji: '🏆', text: '출근한 당신이 오늘의 MVP. 이견 없습니다.' },
+  { emoji: '😴', text: '오전 집중력은 다음 주쯤 찾으러 가볼게요.' },
+  { emoji: '🫠', text: '지금 이 화면 보는 것만으로도 일하는 겁니다.' },
+  { emoji: '🥐', text: '오늘 하루의 목표: 맛있는 거 하나 먹기.' },
+  { emoji: '🎲', text: '오늘 운세: "대체로 괜찮음". 나쁘지 않아요.' },
+  { emoji: '🚀', text: '모니터 앞에 앉은 순간 이미 로켓은 발사됐어요.' },
+  { emoji: '🧘', text: '심호흡 세 번. 이메일은 그 다음에 열어도 늦지 않아요.' },
+  { emoji: '🧋', text: '오후 3시 당도 보충은 필수입니다. 강력 권장.' },
+  { emoji: '🕺', text: '오늘 퇴근하면 제자리에서 한 번 춤춰봐요. 진짜로.' },
+  { emoji: '🍜', text: '점심 뭐 먹을지가 오늘의 최대 고민이면 잘 가고 있는 거예요.' },
+];
+
+const MOVIE_PICKS = [
+  '기생충','올드보이','인터스텔라','라라랜드','어바웃 타임','매트릭스','인셉션',
+  '그랜드 부다페스트 호텔','시네마 천국','소울','인사이드 아웃','너의 이름은',
+  '센과 치히로의 행방불명','마녀 배달부 키키','하울의 움직이는 성','원스',
+  '500일의 썸머','노팅 힐','비포 선라이즈','이터널 선샤인','미드나잇 인 파리',
+  '어바웃 어 보이','어벤져스: 엔드게임','해리포터와 마법사의 돌','주토피아',
+  '월-E','토이 스토리','코코','업','라따뚜이','하이큐!! 극장판','스파이더맨: 뉴 유니버스'
+];
+
+const BOOK_PICKS = [
+  { title: '코스모스', author: '칼 세이건' },
+  { title: '사피엔스', author: '유발 하라리' },
+  { title: '데미안', author: '헤르만 헤세' },
+  { title: '어린 왕자', author: '생텍쥐페리' },
+  { title: '1984', author: '조지 오웰' },
+  { title: '모순', author: '양귀자' },
+  { title: '아몬드', author: '손원평' },
+  { title: '불편한 편의점', author: '김호연' },
+  { title: '달러구트 꿈 백화점', author: '이미예' },
+  { title: '미드나잇 라이브러리', author: '매트 헤이그' },
+  { title: '소년이 온다', author: '한강' },
+  { title: '페스트', author: '알베르 카뮈' },
+  { title: '호밀밭의 파수꾼', author: 'J.D. 샐린저' },
+  { title: '총, 균, 쇠', author: '재레드 다이아몬드' },
+  { title: '아주 작은 습관의 힘', author: '제임스 클리어' },
+  { title: '부의 추월차선', author: 'MJ 드마코' },
+  { title: '도둑맞은 집중력', author: '요한 하리' },
+  { title: '세이노의 가르침', author: '세이노' },
+  { title: '아무튼, 요가', author: '박상영' },
+  { title: '급류', author: '정대건' },
+];
+
+function renderMoodBanner() {
+  const el = document.getElementById('moodBanner');
+  if (!el) return;
+
+  const pool = ['mood','mood','mood','mood','movie','book'];
+  const type = pool[Math.floor(Math.random() * pool.length)];
+
+  let emoji, text;
+  if (type === 'movie') {
+    const movie = MOVIE_PICKS[Math.floor(Math.random() * MOVIE_PICKS.length)];
+    emoji = '🎬';
+    text = `오늘 퇴근하고 '${movie}' 어때요?`;
+  } else if (type === 'book') {
+    const book = BOOK_PICKS[Math.floor(Math.random() * BOOK_PICKS.length)];
+    emoji = '📚';
+    text = `오늘의 책 한 권 — '${book.title}' (${book.author})`;
+  } else {
+    const msg = MOOD_MESSAGES[Math.floor(Math.random() * MOOD_MESSAGES.length)];
+    emoji = msg.emoji;
+    text = msg.text;
+  }
+
+  el.innerHTML = `
+    <span class="mood-banner-emoji" aria-hidden="true">${emoji}</span>
+    <span class="mood-banner-text">${esc(text)}</span>
+  `;
+}
+
 // ────────── Sidebar ──────────
 function initSidebar() {
   document.getElementById('sidebarToggle').addEventListener('click', () => {
@@ -157,14 +287,15 @@ function switchPage(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page)?.classList.add('active');
-  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '업무 캘린더', lunch: '점심 룰렛', vendor: '협력업체 파인더', team: '팀원 소개' };
+  const titles = { dashboard: '대시보드', tasks: '업무 현황', calendar: '업무 캘린더', works: 'Works', lunch: '오늘 점심 뭐먹지?', vendor: '협력업체 파인더', team: '팀원 소개' };
   document.getElementById('pageTitle').textContent = titles[page] || page;
   if (page === 'tasks') { renderKanban(); renderMemberFilter(); }
   if (page === 'projects') renderProjectsPage();
-  if (page === 'calendar') renderCalendar();
+  if (page === 'calendar') { renderCalendar(); renderOKRPage('okrContentInCalendar'); }
   if (page === 'lunch') renderLunchPage();
   if (page === 'vendor') vfRender();
   if (page === 'team') renderTeamProfiles();
+  if (page === 'works') renderWorksPage();
 }
 window.switchPage = switchPage;
 
@@ -239,6 +370,8 @@ window.quickAddTask = function(e) {
 
 // ────────── Render All ──────────
 function renderAll() {
+  renderDashHero();
+  renderMoodBanner();
   renderTeamSummary();
   renderDeadlines();
   renderWeeklySummary();
@@ -260,64 +393,121 @@ function renderDeadlines() {
   if (!container) return;
 
   const today = todayStr();
-  const nextWeek = new Date();
-  nextWeek.setDate(nextWeek.getDate() + 7);
-  const nextWeekStr = `${nextWeek.getFullYear()}-${String(nextWeek.getMonth()+1).padStart(2,'0')}-${String(nextWeek.getDate()).padStart(2,'0')}`;
 
   const urgent = DATA.tasks
-    .filter(t => t.due && t.status !== 'done' && t.due <= nextWeekStr)
-    .sort((a, b) => a.due.localeCompare(b.due));
+    .filter(t => t.due && t.status !== 'done' && t.due === today)
+    .sort((a, b) => (a.assignee || '').localeCompare(b.assignee || ''));
 
   if (urgent.length === 0) {
-    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px">이번 주 마감 업무 없음</div>';
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px">오늘 마감 업무 없음</div>';
     return;
   }
 
-  container.innerHTML = urgent.map(t => {
-    const overdue = t.due < today;
-    const isToday = t.due === today;
-    return `
+  container.innerHTML = urgent.map(t => `
     <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border-light)">
-      <span style="font-size:14px">${overdue ? '🚨' : isToday ? '⏰' : '📌'}</span>
+      <span style="font-size:14px">⏰</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
-        <div style="font-size:11px;color:var(--text-tertiary)">${getMemberName(t.assignee)}</div>
       </div>
-      <span style="font-size:12px;font-weight:600;color:${overdue ? '#dc2626' : isToday ? '#d97706' : 'var(--text-secondary)'}">${overdue ? '기한 초과' : isToday ? '오늘' : fmtDate(t.due)}</span>
-      <span class="size-badge size-${t.size || 'M'}" style="font-size:10px;padding:1px 5px">${t.size || 'M'}</span>
-    </div>`;
-  }).join('');
+      <span style="font-size:12px;color:var(--text-secondary);flex-shrink:0">${esc(getFirstName(t.assignee))}</span>
+    </div>`).join('');
 }
 
 // ────────── Weekly Summary ──────────
+function getWeekRange(offset = 0) {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay(); // 0=Sun
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + mondayOffset + offset * 7);
+  const start = new Date(d);
+  const end = new Date(d);
+  end.setDate(end.getDate() + 6);
+  const fmt = x => `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
+  return { start: fmt(start), end: fmt(end), startDate: start, endDate: end };
+}
+
 function renderWeeklySummary() {
   const container = document.getElementById('weeklySummary');
   if (!container) return;
 
+  const week = getWeekRange(0);
+  const lastWeek = getWeekRange(-1);
   const t = DATA.tasks;
-  const total = t.length;
-  const ongoing = t.filter(x => x.status === 'ongoing').length;
-  const done = t.filter(x => x.status === 'done').length;
-  const ready = t.filter(x => x.status === 'ready' || x.status === 'new').length;
-  const almostDone = t.filter(x => x.status === 'almostdone').length;
-  const hold = t.filter(x => x.status === 'hold').length;
+
+  const inRange = (date, r) => date && date >= r.start && date <= r.end;
+
+  // due in this week (regardless of status)
+  const dueThisWeek = t.filter(x => inRange(x.due, week));
+  const dueDone = dueThisWeek.filter(x => x.status === 'done').length;
+  const dueRemaining = dueThisWeek.length - dueDone;
+
+  // ongoing/almostdone snapshot
+  const inProgress = t.filter(x => x.status === 'ongoing' || x.status === 'almostdone').length;
+
+  // new this week (createdAt within range)
+  const newThisWeek = t.filter(x => {
+    if (!x.createdAt) return false;
+    return x.createdAt >= week.startDate.getTime() && x.createdAt <= week.endDate.getTime() + 86400000;
+  }).length;
+
+  // last-week comparison: how many tasks had due last week & still not done
+  const lastWeekDue = t.filter(x => inRange(x.due, lastWeek)).length;
+  const delta = dueThisWeek.length - lastWeekDue;
+  const deltaLabel = delta === 0 ? '지난 주와 동일' : (delta > 0 ? `지난 주 대비 +${delta}` : `지난 주 대비 ${delta}`);
+
+  const fmtRange = `${week.startDate.getMonth()+1}/${week.startDate.getDate()} ~ ${week.endDate.getMonth()+1}/${week.endDate.getDate()}`;
+
+  // weekday distribution
+  const dayLabels = ['월','화','수','목','금','토','일'];
+  const dayCounts = [0,0,0,0,0,0,0];
+  dueThisWeek.forEach(x => {
+    const d = new Date(x.due + 'T00:00:00');
+    const idx = (d.getDay() + 6) % 7; // Mon=0
+    dayCounts[idx]++;
+  });
+  const maxDay = Math.max(...dayCounts, 1);
+  const todayIdx = (new Date().getDay() + 6) % 7;
 
   container.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div style="text-align:center">
-        <div style="font-size:28px;font-weight:700">${total}</div>
-        <div style="font-size:12px;color:var(--text-tertiary)">전체 업무</div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--text-primary)">이번 주 <span style="color:var(--text-tertiary);font-weight:500;margin-left:4px">${fmtRange}</span></div>
+      <div style="font-size:11px;color:var(--text-tertiary)">${esc(deltaLabel)}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="ws-metric">
+        <div class="ws-metric-value">${dueRemaining}<span class="ws-metric-suffix">/${dueThisWeek.length}</span></div>
+        <div class="ws-metric-label">이번 주 마감 (남은 / 전체)</div>
       </div>
-      <div style="text-align:center">
-        <div style="font-size:28px;font-weight:700;color:#059669">${done}</div>
-        <div style="font-size:12px;color:var(--text-tertiary)">완료</div>
+      <div class="ws-metric">
+        <div class="ws-metric-value" style="color:#059669">${dueDone}</div>
+        <div class="ws-metric-label">이번 주 마감 중 완료</div>
+      </div>
+      <div class="ws-metric">
+        <div class="ws-metric-value" style="color:${STATUS_COLORS.ongoing}">${inProgress}</div>
+        <div class="ws-metric-label">진행 중 + Almost Done</div>
+      </div>
+      <div class="ws-metric">
+        <div class="ws-metric-value" style="color:var(--primary)">${newThisWeek}</div>
+        <div class="ws-metric-label">이번 주 새로 추가</div>
       </div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-      <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.ongoing}15;color:${STATUS_COLORS.ongoing};font-weight:600">Ongoing ${ongoing}</span>
-      <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.ready}15;color:${STATUS_COLORS.ready};font-weight:600">Ready ${ready}</span>
-      <span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.almostdone}15;color:${STATUS_COLORS.almostdone};font-weight:600">Almost ${almostDone}</span>
-      ${hold ? `<span style="font-size:12px;padding:4px 10px;border-radius:12px;background:${STATUS_COLORS.hold}15;color:${STATUS_COLORS.hold};font-weight:600">Hold ${hold}</span>` : ''}
+    <div>
+      <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:6px;font-weight:600">요일별 마감 분포</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+        ${dayLabels.map((lbl, i) => {
+          const h = Math.round((dayCounts[i] / maxDay) * 28) + 4;
+          const isToday = i === todayIdx;
+          return `
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;height:32px;display:flex;align-items:flex-end">
+              <div style="width:100%;height:${h}px;background:${dayCounts[i] ? (isToday ? 'var(--primary)' : STATUS_COLORS.ongoing) : 'var(--border)'};border-radius:3px"></div>
+            </div>
+            <div style="font-size:10px;color:${isToday ? 'var(--primary)' : 'var(--text-tertiary)'};font-weight:${isToday ? '700' : '500'}">${lbl}</div>
+            <div style="font-size:10px;color:var(--text-tertiary)">${dayCounts[i] || ''}</div>
+          </div>`;
+        }).join('')}
+      </div>
     </div>
   `;
 }
@@ -363,9 +553,9 @@ function renderWorkloadChart() {
 
         const ratio = m.activeWeight / maxWeight;
         let emoji = '';
-        if (ratio >= 0.9) emoji = '🤬';
-        else if (ratio >= 0.7) emoji = '😡';
-        else if (ratio >= 0.5) emoji = '😐';
+        if (m.activeWeight >= 20) emoji = '🤬';
+        else if (m.activeWeight >= 15) emoji = '😡';
+        else if (m.activeWeight >= 10) emoji = '😰';
         else emoji = '😊';
         return `
         <div class="wc-row">
@@ -399,39 +589,35 @@ function updateBadge() {
 // ────────── Team Summary (pill bar) ──────────
 function renderTeamSummary() {
   const t = DATA.tasks;
-  const w = {};
-  STATUSES.forEach(s => w[s] = t.filter(x => x.status === s).reduce((sum, x) => sum + (SIZE_WEIGHTS[x.size] || 3), 0));
-  const totalW = Object.values(w).reduce((a, b) => a + b, 0);
-  const donePct = totalW ? Math.round(w.done / totalW * 100) : 0;
+  const c = {};
+  STATUSES.forEach(s => c[s] = t.filter(x => x.status === s).length);
+  const total = t.length;
+  const donePct = total ? Math.round(c.done / total * 100) : 0;
 
   document.getElementById('teamSummary').innerHTML = `
     <div class="summary-pill">
-      <span style="font-weight:600;color:var(--text-secondary)">팀원</span>
-      <span class="pill-value">${DATA.members.length}명</span>
-    </div>
-    <div class="summary-pill">
       <span style="font-weight:600;color:var(--text-secondary)">전체</span>
-      <span class="pill-value">${totalW}</span>
+      <span class="pill-value">${total}건</span>
     </div>
-    <div class="summary-pill">
+    <div class="summary-pill summary-pill--primary" aria-label="진행 중 업무 수">
       <div class="pill-dot" style="background:${STATUS_COLORS.ongoing}"></div>
       <span>Ongoing</span>
-      <span class="pill-value">${w.ongoing}</span>
+      <span class="pill-value">${c.ongoing}건</span>
     </div>
     <div class="summary-pill">
       <div class="pill-dot" style="background:${STATUS_COLORS.ready}"></div>
       <span>Ready</span>
-      <span class="pill-value">${w.ready + (w.new || 0)}</span>
+      <span class="pill-value">${c.ready + (c.new || 0)}건</span>
     </div>
     <div class="summary-pill">
       <div class="pill-dot" style="background:${STATUS_COLORS.almostdone}"></div>
       <span>Almost Done</span>
-      <span class="pill-value">${w.almostdone}</span>
+      <span class="pill-value">${c.almostdone}건</span>
     </div>
     <div class="summary-pill">
       <div class="pill-dot" style="background:${STATUS_COLORS.done}"></div>
       <span>Done</span>
-      <span class="pill-value">${w.done}</span>
+      <span class="pill-value">${c.done}건</span>
       <span style="font-size:12px;color:var(--text-tertiary)">(${donePct}%)</span>
     </div>
   `;
@@ -495,13 +681,25 @@ function renderSchedules() {
     container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px">등록된 근태가 없습니다</div>';
     return;
   }
-  container.innerHTML = DATA.schedules.map(s => `
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border-light)">
-      <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:${getMemberColor(s.member)}22;color:${getMemberColor(s.member)}">${getFirstName(s.member)}</span>
-      <span style="font-size:13px;flex:1">${esc(s.text)}</span>
-      <button onclick="deleteSchedule('${s.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:12px">✕</button>
-    </div>
-  `).join('');
+
+  const sorted = [...DATA.schedules].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+  container.innerHTML = sorted.map(s => {
+    const isPast = s.date && s.date < todayStr();
+    const name = getFirstName(s.member);
+    const cleanText = s.date
+      ? s.text.replace(/^[\d/().\s~월화수목금토일-]+/, '').trim() || s.text
+      : s.text;
+    return `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border-light);${isPast ? 'opacity:.45' : ''}">
+      <div style="flex:1;min-width:0;font-size:14px;display:flex;align-items:baseline;gap:8px">
+        <span style="color:var(--text-primary);flex-shrink:0">${esc(name)}</span>
+        <span style="color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(cleanText)}</span>
+      </div>
+      ${s.date ? `<div style="font-size:13px;color:var(--text-secondary);flex-shrink:0">${fmtDateFull(s.date)}</div>` : ''}
+      <button onclick="deleteSchedule('${s.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:12px;flex-shrink:0">✕</button>
+    </div>`;
+  }).join('');
 }
 
 window.openScheduleModal = function() {
@@ -547,7 +745,7 @@ function renderTeamEvents() {
         ${e.desc ? `<div style="font-size:12px;color:var(--text-tertiary);margin-top:2px">${esc(e.desc)}</div>` : ''}
       </div>
       <div style="flex-shrink:0;text-align:right">
-        ${e.date ? `<div style="font-size:13px;font-weight:600;color:${isPast ? 'var(--text-tertiary)' : 'var(--primary)'}">${fmtDateFull(e.date)}</div>` : ''}
+        ${e.date ? `<div style="font-size:13px;color:var(--text-secondary)">${fmtDateFull(e.date)}</div>` : ''}
         ${e.time ? `<div style="font-size:11px;color:var(--text-tertiary)">${esc(e.time)}</div>` : ''}
       </div>
       <button onclick="deleteTeamEvent('${e.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:12px;flex-shrink:0">✕</button>
@@ -714,7 +912,12 @@ function renderKanban() {
       <div class="kanban-card" draggable="true" data-id="${t.id}"
         ondragstart="dragTask(event)" ondragend="dragEnd(event)">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px">
-          <div class="kanban-card-title" style="margin:0">${esc(t.title)}</div>
+          <div class="kanban-card-title" style="margin:0;display:flex;align-items:center;gap:6px;flex:1;min-width:0">
+            <span style="overflow:hidden;text-overflow:ellipsis">${esc(t.title)}</span>
+            ${t.link ? `<a href="${esc(t.link)}" target="_blank" rel="noopener" title="원본 링크" aria-label="원본 링크 열기" onclick="event.stopPropagation()" style="color:var(--text-tertiary);flex-shrink:0;display:inline-flex">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </a>` : ''}
+          </div>
           <span class="size-badge size-${sz}">${sz}</span>
         </div>
         ${t.requester ? `<div style="margin-bottom:6px"><span class="requester-tag">${esc(t.requester)}</span></div>` : ''}
@@ -1740,7 +1943,7 @@ function initGcal() {
 // ════════════════════════════════════════════════════
 
 const LUNCH_STORE = 'lunch_roulette_v1';
-const WHEEL_COLORS = ['#6366f1','#f59e0b','#10b981','#ec4899','#3b82f6','#f97316','#8b5cf6','#14b8a6','#ef4444','#84cc16','#06b6d4','#e879f9'];
+const WHEEL_COLORS = ['#f1f5f9','#e2e8f0'];
 
 function loadLunch() {
   try { return JSON.parse(localStorage.getItem(LUNCH_STORE)) || null; } catch { return null; }
@@ -1797,14 +2000,14 @@ function drawWheel() {
     ctx.closePath();
     ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
     ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.3)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(148,163,184,.35)';
+    ctx.lineWidth = 1;
     ctx.stroke();
 
     // Text
     ctx.save();
     ctx.rotate(startAngle + arc / 2);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#334155';
     ctx.font = `600 ${n > 16 ? 10 : n > 10 ? 12 : 14}px Pretendard, Inter, sans-serif`;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
@@ -1837,15 +2040,11 @@ window.spinLunchWheel = function() {
 
   const n = data.menus.length;
   const arc = (2 * Math.PI) / n;
-  // Pick random winner
-  const winnerIdx = Math.floor(Math.random() * n);
-  // Target angle: spin several full rotations + land so that winner is at top (3 o'clock = angle 0, arrow is at right/top)
-  // Arrow points right (3 o'clock). Slice i is at angle (i*arc + arc/2). We want that angle + lunchAngle ≡ 0 (mod 2π)
-  const targetSliceAngle = winnerIdx * arc + arc / 2;
-  const spins = 5 + Math.random() * 3; // 5~8 full spins
-  const targetAngle = lunchAngle + spins * 2 * Math.PI - (targetSliceAngle + lunchAngle) % (2 * Math.PI);
-
+  // Random target: 5~8 full spins + random offset
+  const spins = 5 + Math.random() * 3;
+  const randomOffset = Math.random() * 2 * Math.PI;
   const startAngle = lunchAngle;
+  const targetAngle = lunchAngle + spins * 2 * Math.PI + randomOffset;
   const totalDelta = targetAngle - startAngle;
   const duration = 4000;
   const startTime = performance.now();
@@ -1862,7 +2061,13 @@ window.spinLunchWheel = function() {
     } else {
       lunchSpinning = false;
       btn.disabled = false;
-      btn.textContent = '돌리기!';
+      btn.textContent = '메뉴 뽑기';
+      // Derive winner from the ACTUAL final angle
+      // Arrow points at canvas angle 0 (3 o'clock).
+      // A slice i's original range is [i*arc, (i+1)*arc]. After rotation by lunchAngle,
+      // the angle under the arrow relative to the unrotated wheel is (-lunchAngle) mod 2π.
+      const angleUnderArrow = ((-lunchAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      const winnerIdx = Math.floor(angleUnderArrow / arc) % n;
       const winner = data.menus[winnerIdx];
       resultEl.innerHTML = `<span class="lunch-result-text">오늘의 점심은 <strong>${esc(winner)}</strong>!</span>`;
       data.history.unshift({ menu: winner, date: todayStr(), time: new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }) });
@@ -1949,7 +2154,6 @@ const TP_FIELDS = [
   { key:'mbti',   label:'MBTI',       icon:'🧠', placeholder:'INFP' },
   { key:'hobby',  label:'취미',       icon:'🎯', placeholder:'넷플릭스, 러닝...' },
   { key:'food',   label:'최애 음식',  icon:'🍕', placeholder:'떡볶이, 초밥...' },
-  { key:'tmi',    label:'TMI',        icon:'🤫', placeholder:'아무 말 대잔치' },
 ];
 
 function loadProfiles() { try { return JSON.parse(localStorage.getItem(TP_STORE)) || {}; } catch { return {}; } }
@@ -1975,8 +2179,8 @@ function renderTeamProfiles() {
     }).join('');
 
     const avatarHtml = p.photo
-      ? `<div class="tp-avatar-img" style="width:56px;height:56px"><img src="${p.photo}" alt="${esc(m.name)}" /></div>`
-      : `<div class="avatar" style="width:56px;height:56px;font-size:20px;background:${m.color}">${m.name[0]}</div>`;
+      ? `<div class="tp-avatar-img" style="width:84px;height:84px"><img src="${p.photo}" alt="${esc(m.name)}" /></div>`
+      : `<div class="avatar" style="width:84px;height:84px;font-size:28px;background:${m.color}">${m.name[0]}</div>`;
 
     return `
     <div class="tp-card" style="--member-color:${m.color}">
@@ -2100,3 +2304,533 @@ window.saveProfile = function(memberId) {
   showToast('프로필이 저장되었습니다');
 };
 
+// ════════════════════════════════════════════════════
+// OKR (26 H1 Brand eXperience Design)
+// ════════════════════════════════════════════════════
+
+const OKR_DATA = {
+  period: '2026 H1',
+  mission: '비즈니스(브랜드) 성장의 단단한 토대(Foundation)로서 전사 목표를 능동적으로 견인하고, 강제하지 않아도 선택받는 경험과 디자인 기준을 만든다.',
+  principles: [
+    '팀 과업을 넘어, 전사의 목표 달성과 성장에 능동적으로 기여한다.',
+    '모든 협업에서 시너지와 성과로 이어지는 명확한 경험을 제공한다.',
+    '누구나 쉽게 이해하고 적용할 수 있는 직관적인 기준을 만든다.',
+    '기준은 통제 수단이 아닌, 업무 효율을 높이는 검증된 도구로서 자발적으로 사용되도록 설계한다.',
+  ],
+  groups: [
+    {
+      name: 'Brand Design',
+      tagline: '브랜드 철학을 실제 경험으로 구현하고, 완성된 경험을 브랜드 자산으로 축적·확장한다.',
+      okrs: [
+        {
+          priority: 'high',
+          title: 'OKR 1. 과업의 성공을 견인하며, 이를 지속 가능한 기준으로 만든다',
+          tag: '전방위 브랜드 아이덴티티 확산',
+          objective: '전사 핵심 과업의 성공을 주도적으로 견인하며, 실행의 과정을 지속 가능한 브랜드 자산과 기준으로 축적한다.',
+          krs: [
+            { title: 'KR 1. O2O 시공 서비스 통합 브랜드 가이드 정립', desc: '파편화된 시공 서비스 경험을 브랜드 관점으로 재정의하고, 쇼룸·Standard Material·인앱 경험에 일관된 기준 적용' },
+            { title: 'KR 2. 대형 오프라인 브랜드 경험 프레임워크 구축', desc: '카테고리 & 브랜드 쇼룸·팝업의 기획 초기부터 브랜드 경험 가치를 이식, 재사용 가능한 공간 디자인 원칙 정의' },
+            { title: 'KR 3. 멤버십·글린다 브랜드/프로모션 아이덴티티 정립', desc: '오늘의집 안에서의 성격과 역할을 정의하고, 과도한 할인/행사 인상으로 흐르지 않도록 기준 수립' },
+            { title: 'KR 4. 빅 프로모션 시각 체계 기준 정립', desc: '디자인어워드·집요한세일·미식백선 등에서 \'오늘의집다움\' 공통 디자인 요소 도출, Quality Standard 정의' },
+            { title: 'KR 5. 인터널 브랜드의 효율과 효과 개선', desc: '사내 캠페인·공지·스테이셔너리·행사에 \'오늘의집다움\' 공통 시각 자산 개발, 변주 가능한 기준 수립' },
+            { title: 'KR 6. 익스클루시브 브랜딩', desc: '추가 예정', muted: true },
+          ],
+        },
+        {
+          priority: 'medium',
+          title: 'OKR 2. \'오늘의집 표준 시각 자산\' 고도화 및 운영 체계 확립',
+          tag: '시각 자산 정의 및 확산',
+          objective: '브랜드 & 프로덕트 전반에 적용되는 시각 자산을 고도화하고 운영 체계를 확립한다.',
+          krs: [
+            { title: 'KR 1. 그래픽 에셋 프레임워크 정의 (기준 정립 단계)', desc: '사용 목적에 따라 4단계 위계: Icon / Small Assets / Large Assets / Large Motion Assets' },
+            { title: 'KR 2. 표준 시각 자산 라이브러리 개발 (실행·적용 단계)', desc: '실사용 가능한 그래픽 세트 제작, 브랜드·프로덕트·마케팅 지면 적용으로 톤앤매너 검증' },
+            { title: 'KR 3. AI 기반 아이콘 생성 파이프라인 설계 (확장 단계)', desc: '쉐입·두께·컬러·질감·조명을 AI 학습 가능한 프롬프트로 모듈화, 일관된 퀄리티 재생산 테스트' },
+          ],
+          deliverables: ['프레임워크 및 정의 문서', '실사용 가능한 시각 자산 세트', '아이콘 스타일별 AI 프롬프트 설계'],
+        },
+        {
+          priority: 'low',
+          title: 'OKR 3. 브랜드 가이드를 \'조직이 실제로 쓰는 시스템\'으로 만든다',
+          tag: '비주얼 아이덴티티 명문화 및 전파',
+          objective: '리브랜딩으로 정립된 브랜드 기준을 흩어진 문서가 아닌, 조직이 언제든 찾아 쓰고 이해할 수 있는 시스템으로 체계화한다.',
+          krs: [
+            { title: 'KR 1. 전사 공통 브랜드 가이드 \'판단 기준 중심\' 재정리', desc: '핵심 요소(로고·컬러·타이포·그래픽)를 사용 맥락별로 분류, 직관적 판단 기준 중심으로 재구성' },
+            { title: 'KR 2. 브랜드 에셋 라이브러리 \'찾아 쓰기 쉬운 사이트\' 구축', desc: '맥락 설명과 최신성 관리가 가능한 브랜드 에셋 사이트 (개발 리소스 사용 없음)' },
+          ],
+          deliverables: ['전사 공통 Brand Guide 문서', 'Brand Asset Library Site', 'Brand Asset Library Site 활용 추적'],
+        },
+      ],
+    },
+    {
+      name: 'Brand Language',
+      tagline: '브랜드 언어를 \'이해를 돕는 언어\'에서 \'브랜드 태도의 기준\'으로 확장한다.',
+      okrs: [
+        {
+          priority: 'high',
+          title: 'OKR 1. 브랜드 언어를 \'브랜드 태도의 기준\'으로 확장한다',
+          tag: '브랜드 언어 아이덴티티 정의',
+          objective: '브랜드 언어의 역할을 단순한 문구 교정 업무에서 탈피하여, 전사 구성원이 참고하고 의사결정할 수 있는 판단 기준으로 재정의한다.',
+          krs: [
+            { title: 'KR 1. 역할 명확화 및 태도(Authenticity) 기준 문서화', desc: '브랜드 언어 디자이너의 역할·의사결정 권한·책임 범위 문서화, 검토→결정→가이드 구조 명문화' },
+            { title: 'KR 2. 브랜드 언어 기준의 서비스 전반 적용 설계', desc: '시스템(Identity) / 제품(UX Writing) / 커뮤니케이션(Copywriting) 3개 레이어로 구조화, 핵심 지표(태도·거리감·확신의 정도) 정의' },
+          ],
+          deliverables: ['Brand Language Role Definition 문서', 'Brand Voice & Attitude 기준 문서', 'Brand Language Level Map'],
+        },
+        {
+          priority: 'high',
+          title: 'OKR 2. 브랜드 언어 기준을 AI/툴로 \'실현 가능한 자산\'으로 전환',
+          tag: '확산 및 자산화',
+          objective: '정의한 브랜드 언어 기준을 AI와 도구를 통해 조직이 실제로 사용하는 언어 자산으로 만든다. (디지털 자산화)',
+          krs: [
+            { title: 'KR 1. 브랜드 언어 원칙을 AI 최적화 데이터로 변환', desc: '말투·태도 기준을 프롬프트 구조로 재정의, 금지/경계/권장 표현 세트 구축' },
+            { title: 'KR 2. 직무별 맞춤형 Brand Language Bot 설계 및 배포', desc: '인터널 브랜딩·채용·마케팅·프로덕트 등 직무별 전용 AI 봇' },
+            { title: 'KR 3. 도구 접근성 강화 및 실무 도입률 입증', desc: 'Slack·Notion 연동, 사용 사례 발굴, 활용도/피드백 리포트' },
+            { title: 'KR 4. 브랜드 언어 자산화의 장기적 ROI 분석 모델 수립', desc: '리뷰/수정 커뮤니케이션 감소·조직 체감 상승을 정량화, 비즈니스 기여 논리 구조 마련' },
+          ],
+          deliverables: ['Brand Language Master Prompt', '직무별 Brand Language Bot', '사용 사례·피드백 리포트', 'ROI 설명 문서'],
+        },
+        {
+          priority: 'medium',
+          title: 'OKR 3. 디폴트 브랜드 위계와 운영 원칙을 정립한다',
+          tag: '브랜드 구조 명문화',
+          objective: '브랜드 구조 명문화 및 표준 가이드 구축을 통해 전사 브랜드 의사결정 체계를 확립한다.',
+          krs: [
+            { title: 'KR 1. 전사 브랜드 아키텍처 정의 및 마스터-하위 서비스 위계 정립', desc: '디폴트 브랜드 구조 가이드 제작, 예외 케이스 허용 범위와 판단 가이드 구체화' },
+          ],
+          deliverables: ['Brand Architecture Map'],
+        },
+      ],
+    },
+  ],
+};
+
+const OKR_PRIORITY_LABEL = { high: '우선순위 높음', medium: '우선순위 보통', low: '우선순위 낮음' };
+
+const OKR_REVIEW = {
+  period: '2025 H2',
+  title: '지난 분기 회고',
+  groups: [
+    {
+      name: 'Brand Design',
+      resolved: [
+        '리브랜딩 안정적 적용',
+        '리브랜딩 적용에 따른 내/외부 반응 양호 → 성공적 리브랜딩으로 판단',
+        'O2O 브랜딩 참여를 통해 브랜드 완성도 개선',
+        '인터널 브랜딩 100% 완료',
+      ],
+      unresolved: [
+        '브랜드 인덱스 조사의 선호도/퍼스널리티 개선 기여 — 성과 측정 불가',
+        'PR 활동 이미지 가이드 개발 — 우선순위에서 밀려 진행되지 못함',
+      ],
+      lessons: [
+        { title: '성과 측정의 한계', desc: '브랜드 활동은 인식·신뢰·일관성 등 시간에 따라 축적되는 자산. 단기 지표가 아닌 장기 관점의 성과 기준이 필요.' },
+        { title: '파운데이션 조직의 구조적 특성', desc: '성과가 개별 조직의 결과에 흡수되기 쉬워 단독 정량 평가에는 한계. 결과보다 협업 기여도 중심 평가가 적절.' },
+        { title: '운영 관점의 과제', desc: '파운데이션 조직은 실행을 돕되 간섭/추가 비용으로 인식되지 않아야 함. 기준은 최소 개입으로 쉽게 적용 가능해야.' },
+      ],
+    },
+    {
+      name: 'Brand Language (UX Writing)',
+      resolved: [
+        '브랜드 보이스 일관성 선제적 확보 — 1차 기조 기반 라이팅 규칙 수립, AI 툴로 전사 내재화',
+        '실무 내재화 모델 구축 — MD 등 고부하 부서 대상 \'교육+봇\' 패키지 도입, 현업 자생적 생산 구조 마련',
+        '대외 기술 브랜드 인지도 제고 — 외부 강연으로 AI 활용·UX 라이팅 자산화 사례 전파',
+        'GPT 빌더 2종 이상 배포 — 기획전·배너 카피용 봇 구축, 카피 퀄리티 상향 평준화',
+        '문구 평가 시스템 — Do/Don\'t 사례 정리, 첫 질문 자동 답변 세팅으로 사용률 1위 달성',
+      ],
+      unresolved: [
+        'Verbal Identity 내재화 — 가이드 준수율 측정·전사 적용 사례 확보 (브랜드 보이스 확정 후 가능, 2026 이월)',
+        '브랜드 언어 가이드라인 배포 (보이스 확정 후 측정 가능, 2026 이월)',
+        '컴포넌트 문구 DB 구축 (Lokalise 연동 진행 중)',
+      ],
+      lessons: [
+        { title: '선행 과제 의존도 관리', desc: '브랜드 플랫폼(퍼스널리티 등) 설정 완료 후 가능한 연계 과업이 다수. 후속 단계는 2026년으로 이월 결정.' },
+      ],
+    },
+  ],
+};
+
+function renderOKRPage(targetId) {
+  const c = document.getElementById(targetId || 'okrContent');
+  if (!c) return;
+  const d = OKR_DATA;
+
+  c.innerHTML = `
+    <div class="okr-mission-card">
+      <div class="okr-period-chip">${esc(d.period)}</div>
+      <h2 class="okr-mission-text">${esc(d.mission)}</h2>
+      <ol class="okr-principle-list">
+        ${d.principles.map(p => `<li>${esc(p)}</li>`).join('')}
+      </ol>
+    </div>
+
+    ${d.groups.map(g => `
+      <section class="okr-group">
+        <header class="okr-group-header">
+          <h3 class="okr-group-name">${esc(g.name)}</h3>
+          <p class="okr-group-tagline">"${esc(g.tagline)}"</p>
+        </header>
+        <div class="okr-card-grid">
+          ${g.okrs.map(o => `
+            <article class="okr-card okr-card--${o.priority}">
+              <div class="okr-card-head">
+                <span class="okr-priority-chip okr-priority-chip--${o.priority}">${esc(OKR_PRIORITY_LABEL[o.priority] || '')}</span>
+                <span class="okr-tag-chip">${esc(o.tag || '')}</span>
+              </div>
+              <h4 class="okr-card-title">${esc(o.title)}</h4>
+              <p class="okr-card-objective">${esc(o.objective)}</p>
+              <ul class="okr-kr-list">
+                ${o.krs.map(kr => `
+                  <li class="okr-kr-item${kr.muted ? ' okr-kr-item--muted' : ''}">
+                    <div class="okr-kr-title">${esc(kr.title)}</div>
+                    ${kr.desc ? `<div class="okr-kr-desc">${esc(kr.desc)}</div>` : ''}
+                  </li>
+                `).join('')}
+              </ul>
+              ${o.deliverables ? `
+                <div class="okr-deliverables">
+                  <span class="okr-deliverables-label">산출물</span>
+                  <div class="okr-deliverables-tags">
+                    ${o.deliverables.map(x => `<span class="okr-deliverable-tag">${esc(x)}</span>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </article>
+          `).join('')}
+        </div>
+      </section>
+    `).join('')}
+
+    <details class="okr-review">
+      <summary class="okr-review-summary">
+        <span class="okr-review-chevron" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+        <span class="okr-review-period">${esc(OKR_REVIEW.period)}</span>
+        <span class="okr-review-title">${esc(OKR_REVIEW.title)}</span>
+      </summary>
+      <div class="okr-review-body">
+        ${OKR_REVIEW.groups.map(g => `
+          <section class="okr-review-group">
+            <h4 class="okr-review-group-name">${esc(g.name)}</h4>
+            <div class="okr-review-cols">
+              <div class="okr-review-col okr-review-col--resolved">
+                <div class="okr-review-col-head">
+                  <span class="okr-review-icon">✓</span>
+                  <span>문제 해결</span>
+                </div>
+                <ul>${g.resolved.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+              </div>
+              <div class="okr-review-col okr-review-col--unresolved">
+                <div class="okr-review-col-head">
+                  <span class="okr-review-icon">⊘</span>
+                  <span>미해결</span>
+                </div>
+                <ul>${g.unresolved.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+              </div>
+            </div>
+            <div class="okr-review-lessons">
+              <div class="okr-review-col-head">
+                <span class="okr-review-icon">💡</span>
+                <span>레슨런</span>
+              </div>
+              <ul class="okr-review-lesson-list">
+                ${g.lessons.map(l => `
+                  <li>
+                    <div class="okr-lesson-title">${esc(l.title)}</div>
+                    <div class="okr-lesson-desc">${esc(l.desc)}</div>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </section>
+        `).join('')}
+      </div>
+    </details>
+  `;
+}
+window.renderOKRPage = renderOKRPage;
+
+// ════════════════════════════════════════════════════
+// WORKS BOARD (제작물 게시판)
+// ════════════════════════════════════════════════════
+
+const WORKS_CATEGORIES = ['전체', '브랜딩', '그래픽', '영상', '패키지', '오프라인', '인쇄물', '캠페인', '디지털'];
+const WORKS_PERIODS = [
+  { key: 'month',   label: '이번 달' },
+  { key: 'quarter', label: '이번 분기' },
+  { key: 'year',    label: '올해' },
+  { key: 'all',     label: '전체' },
+];
+
+const PROJECTS = [
+  { id: 'p_home',    name: '홈개편',                period: '2026 Q2', desc: '카테고리 개편 · 메인 리디자인 · 안내 영상' },
+  { id: 'p_vl',      name: 'Visual Language',      period: '2026 H1', desc: '브랜드 그래픽 언어 정립 및 디자인 시스템' },
+  { id: 'p_nukten',  name: '연합브랜드 눅텐',        period: '2026 Q2', desc: '연합 브랜딩 프로젝트' },
+  { id: 'p_pangyo',  name: '판교라운지',            period: '2026 Q2', desc: '오프라인 공간 브랜딩 & 시공' },
+  { id: 'p_o2o',     name: '사장님센터 · O2O',      period: '2026 Q2', desc: '라이트 멤버십·랜딩페이지·카피라이팅' },
+  { id: 'p_etc',     name: '기타 단일 작업',         period: '상시',    desc: '프로젝트에 속하지 않는 단발 작업' },
+];
+
+const WORKS_DATA = [
+  {
+    id: 'w_home_video',
+    title: '홈개편 소개 영상',
+    desc: '카테고리 개편을 알리는 메인 모션 영상.',
+    category: '영상',
+    projectId: 'p_home',
+    members: ['m_luka', 'm_ben', 'm_dana'],
+    date: '2026-04-13',
+    link: 'https://www.figma.com/design/DtgQju7v6pruXHhPPgGMud/2024-Brand-Graphics---Interaction-Design?node-id=8660-55815',
+    thumbnail: ''
+  },
+  {
+    id: 'w_hero_banner',
+    title: '홈개편 히어로 배너',
+    desc: '메인 진입 페이지 히어로 영역 비주얼.',
+    category: '그래픽',
+    projectId: 'p_home',
+    members: ['m_luka'],
+    date: '2026-04-10',
+    link: 'https://www.figma.com/design/DtgQju7v6pruXHhPPgGMud/2024-Brand-Graphics---Interaction-Design?node-id=8645-26506',
+    thumbnail: ''
+  },
+  {
+    id: 'w_visual_lang',
+    title: 'Visual Language System',
+    desc: '브랜드 그래픽 언어 정립 및 디자인 시스템 구축.',
+    category: '브랜딩',
+    projectId: 'p_vl',
+    members: ['m_luka'],
+    date: '2026-03-28',
+    link: 'https://www.figma.com/design/JTmMbRsPUbHwslVOEj9qOl/2025-Brand-Graphic-Design-System?node-id=6756-19023',
+    thumbnail: ''
+  },
+];
+
+let worksView = { mode: 'projects', projectId: null, cat: '전체', period: 'all', q: '' };
+
+function matchWorksPeriod(dateStr, period) {
+  if (!dateStr || period === 'all') return true;
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d)) return false;
+  const now = new Date();
+  if (period === 'year') return d.getFullYear() === now.getFullYear();
+  if (period === 'quarter') {
+    if (d.getFullYear() !== now.getFullYear()) return false;
+    return Math.floor(d.getMonth() / 3) === Math.floor(now.getMonth() / 3);
+  }
+  if (period === 'month') {
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }
+  return true;
+}
+
+function getWorksCard(w) {
+  const memberAvatars = (w.members || []).map(id => {
+    const m = getMember(id);
+    if (!m) return '';
+    return `<div class="works-avatar" style="background:${m.color}" title="${esc(m.name)}">${esc(m.name[0])}</div>`;
+  }).join('');
+
+  const thumb = w.thumbnail
+    ? `<div class="works-thumb" style="background-image:url('${esc(w.thumbnail)}')"></div>`
+    : `<div class="works-thumb works-thumb--empty" data-category="${esc(w.category)}">
+        <div class="works-thumb-initial">${esc(w.title[0] || '?')}</div>
+      </div>`;
+
+  const dateLabel = w.date ? w.date.slice(0, 7).replace('-', '.') : '';
+
+  return `
+  <a class="works-card" href="${esc(w.link || '#')}" target="_blank" rel="noopener">
+    ${thumb}
+    <div class="works-card-body">
+      <div class="works-card-head">
+        <span class="works-cat-tag">${esc(w.category)}</span>
+        <span class="works-year">${esc(dateLabel)}</span>
+      </div>
+      <div class="works-card-title">${esc(w.title)}</div>
+      ${w.desc ? `<div class="works-card-desc">${esc(w.desc)}</div>` : ''}
+      <div class="works-card-foot">
+        <div class="works-avatars">${memberAvatars}</div>
+        <span class="works-link-icon" aria-label="원본 링크">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </span>
+      </div>
+    </div>
+  </a>`;
+}
+
+function renderWorksPage() {
+  const grid = document.getElementById('worksGrid');
+  const chips = document.getElementById('worksCatFilter');
+  const meta = document.getElementById('worksCount');
+  if (!grid || !chips) return;
+
+  // Wire search input (once)
+  const search = document.getElementById('worksSearchInput');
+  if (search && !search.dataset.wired) {
+    search.dataset.wired = '1';
+    search.addEventListener('input', e => {
+      worksView.q = e.target.value.trim().toLowerCase();
+      renderWorksPage();
+    });
+  }
+
+  // Build filter chips = period + category
+  const periodChips = WORKS_PERIODS.map(p =>
+    `<button class="works-chip${worksView.period === p.key ? ' active' : ''}" onclick="setWorksPeriod('${p.key}')">${esc(p.label)}</button>`
+  ).join('');
+  const catChips = WORKS_CATEGORIES.map(c =>
+    `<button class="works-chip${worksView.cat === c ? ' active' : ''}" onclick="setWorksFilter('${c}')">${esc(c)}</button>`
+  ).join('');
+  chips.innerHTML = `
+    <div class="works-chip-group">${periodChips}</div>
+    <div class="works-chip-sep"></div>
+    <div class="works-chip-group">${catChips}</div>
+  `;
+
+  // Filter works by period, category, query
+  const filteredWorks = WORKS_DATA.filter(w => {
+    if (!matchWorksPeriod(w.date, worksView.period)) return false;
+    if (worksView.cat !== '전체' && w.category !== worksView.cat) return false;
+    if (worksView.q) {
+      const haystack = (w.title + ' ' + (w.desc || '') + ' ' + (w.members || []).map(getMemberName).join(' ')).toLowerCase();
+      if (!haystack.includes(worksView.q)) return false;
+    }
+    return true;
+  });
+
+  if (worksView.mode === 'project-detail') {
+    renderWorksProjectDetail(filteredWorks);
+    return;
+  }
+
+  // Default: project list view
+  renderWorksProjectList(filteredWorks);
+}
+
+function renderWorksProjectList(filteredWorks) {
+  const grid = document.getElementById('worksGrid');
+  const meta = document.getElementById('worksCount');
+
+  // Group works by project
+  const byProject = {};
+  filteredWorks.forEach(w => {
+    const pid = w.projectId || 'p_etc';
+    if (!byProject[pid]) byProject[pid] = [];
+    byProject[pid].push(w);
+  });
+
+  // Only show projects with at least 1 matched work
+  const projectsWithWorks = PROJECTS
+    .map(p => ({ ...p, works: byProject[p.id] || [] }))
+    .filter(p => p.works.length > 0)
+    .sort((a, b) => {
+      const aLatest = Math.max(...a.works.map(w => w.date ? new Date(w.date).getTime() : 0));
+      const bLatest = Math.max(...b.works.map(w => w.date ? new Date(w.date).getTime() : 0));
+      return bLatest - aLatest;
+    });
+
+  if (meta) meta.textContent = `${projectsWithWorks.length}개 프로젝트 · ${filteredWorks.length}건`;
+
+  if (projectsWithWorks.length === 0) {
+    grid.className = 'works-grid';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-tertiary);font-size:13px">조건에 맞는 프로젝트가 없습니다</div>';
+    return;
+  }
+
+  grid.className = 'works-project-grid';
+  grid.innerHTML = projectsWithWorks.map(p => {
+    // Collect unique members across all works of this project
+    const memberSet = new Set();
+    p.works.forEach(w => (w.members || []).forEach(id => memberSet.add(id)));
+    const memberAvatars = [...memberSet].slice(0, 5).map(id => {
+      const m = getMember(id);
+      if (!m) return '';
+      return `<div class="works-avatar" style="background:${m.color}" title="${esc(m.name)}">${esc(m.name[0])}</div>`;
+    }).join('');
+
+    // Representative category for thumb
+    const firstCat = p.works[0].category;
+    const firstInitial = (p.name[0] || '?');
+
+    return `
+    <button class="works-project-card" onclick="openWorksProject('${esc(p.id)}')">
+      <div class="works-thumb works-thumb--empty" data-category="${esc(firstCat)}">
+        <div class="works-thumb-initial">${esc(firstInitial)}</div>
+      </div>
+      <div class="works-project-body">
+        <div class="works-project-meta">
+          <span class="works-project-period">${esc(p.period)}</span>
+          <span class="works-project-count">${p.works.length}건</span>
+        </div>
+        <div class="works-project-name">${esc(p.name)}</div>
+        ${p.desc ? `<div class="works-project-desc">${esc(p.desc)}</div>` : ''}
+        <div class="works-project-foot">
+          <div class="works-avatars">${memberAvatars}</div>
+          <span class="works-project-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </span>
+        </div>
+      </div>
+    </button>`;
+  }).join('');
+}
+
+function renderWorksProjectDetail(filteredWorks) {
+  const grid = document.getElementById('worksGrid');
+  const meta = document.getElementById('worksCount');
+
+  const project = PROJECTS.find(p => p.id === worksView.projectId);
+  const items = filteredWorks
+    .filter(w => (w.projectId || 'p_etc') === worksView.projectId)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  if (meta) meta.textContent = `${items.length}건`;
+
+  grid.className = 'works-grid';
+  if (!project) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-tertiary)">프로젝트를 찾을 수 없습니다</div>';
+    return;
+  }
+
+  const headerHtml = `
+    <div class="works-detail-header" style="grid-column:1/-1">
+      <button class="works-back-btn" onclick="closeWorksProject()" aria-label="프로젝트 목록으로">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        프로젝트 목록
+      </button>
+      <div>
+        <div class="works-detail-period">${esc(project.period)}</div>
+        <h2 class="works-detail-name">${esc(project.name)}</h2>
+        ${project.desc ? `<div class="works-detail-desc">${esc(project.desc)}</div>` : ''}
+      </div>
+    </div>
+  `;
+
+  const cardsHtml = items.length
+    ? items.map(getWorksCard).join('')
+    : '<div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-tertiary);font-size:13px">조건에 맞는 작품이 없습니다</div>';
+
+  grid.innerHTML = headerHtml + cardsHtml;
+}
+
+window.setWorksFilter = function(cat) {
+  worksView.cat = cat;
+  renderWorksPage();
+};
+window.setWorksPeriod = function(period) {
+  worksView.period = period;
+  renderWorksPage();
+};
+window.openWorksProject = function(id) {
+  worksView.mode = 'project-detail';
+  worksView.projectId = id;
+  renderWorksPage();
+};
+window.closeWorksProject = function() {
+  worksView.mode = 'projects';
+  worksView.projectId = null;
+  renderWorksPage();
+};
+window.renderWorksPage = renderWorksPage;
