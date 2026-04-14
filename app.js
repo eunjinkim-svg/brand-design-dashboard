@@ -442,9 +442,6 @@ function renderWeeklySummary() {
   const dueDone = dueThisWeek.filter(x => x.status === 'done').length;
   const dueRemaining = dueThisWeek.length - dueDone;
 
-  // ongoing/almostdone snapshot
-  const inProgress = t.filter(x => x.status === 'ongoing' || x.status === 'almostdone').length;
-
   // new this week (createdAt within range)
   const newThisWeek = t.filter(x => {
     if (!x.createdAt) return false;
@@ -477,15 +474,7 @@ function renderWeeklySummary() {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div class="ws-metric">
         <div class="ws-metric-value">${dueRemaining}<span class="ws-metric-suffix">/${dueThisWeek.length}</span></div>
-        <div class="ws-metric-label">이번 주 마감 (남은 / 전체)</div>
-      </div>
-      <div class="ws-metric">
-        <div class="ws-metric-value" style="color:#059669">${dueDone}</div>
-        <div class="ws-metric-label">이번 주 마감 중 완료</div>
-      </div>
-      <div class="ws-metric">
-        <div class="ws-metric-value" style="color:${STATUS_COLORS.ongoing}">${inProgress}</div>
-        <div class="ws-metric-label">진행 중 + Almost Done</div>
+        <div class="ws-metric-label">남은 마감 / 전체</div>
       </div>
       <div class="ws-metric">
         <div class="ws-metric-value" style="color:var(--primary)">${newThisWeek}</div>
@@ -594,31 +583,24 @@ function renderTeamSummary() {
   const total = t.length;
   const donePct = total ? Math.round(c.done / total * 100) : 0;
 
+  // This week's due count
+  const week = getWeekRange(0);
+  const dueThisWeek = t.filter(x => x.due && x.due >= week.start && x.due <= week.end && x.status !== 'done').length;
+
   document.getElementById('teamSummary').innerHTML = `
-    <div class="summary-pill">
-      <span style="font-weight:600;color:var(--text-secondary)">전체</span>
-      <span class="pill-value">${total}건</span>
-    </div>
     <div class="summary-pill summary-pill--primary" aria-label="진행 중 업무 수">
       <div class="pill-dot" style="background:${STATUS_COLORS.ongoing}"></div>
       <span>Ongoing</span>
       <span class="pill-value">${c.ongoing}건</span>
     </div>
     <div class="summary-pill">
-      <div class="pill-dot" style="background:${STATUS_COLORS.ready}"></div>
-      <span>Ready</span>
-      <span class="pill-value">${c.ready + (c.new || 0)}건</span>
-    </div>
-    <div class="summary-pill">
-      <div class="pill-dot" style="background:${STATUS_COLORS.almostdone}"></div>
-      <span>Almost Done</span>
-      <span class="pill-value">${c.almostdone}건</span>
+      <span style="font-weight:600;color:var(--text-secondary)">이번 주 마감</span>
+      <span class="pill-value">${dueThisWeek}건</span>
     </div>
     <div class="summary-pill">
       <div class="pill-dot" style="background:${STATUS_COLORS.done}"></div>
       <span>Done</span>
-      <span class="pill-value">${c.done}건</span>
-      <span style="font-size:12px;color:var(--text-tertiary)">(${donePct}%)</span>
+      <span class="pill-value">${donePct}%</span>
     </div>
   `;
 }
