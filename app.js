@@ -11,6 +11,14 @@ const STATUS_LABELS = { new:'New', ready:'Ready', ongoing:'Ongoing', almostdone:
 const STATUS_COLORS = { new:'#7c3aed', ready:'#4338ca', ongoing:'#d97706', almostdone:'#2563eb', done:'#059669', hold:'#94a3b8' };
 const SIZE_COLORS = { S:'#10b981', M:'#3b82f6', L:'#f59e0b', XL:'#ef4444' };
 const SIZE_WEIGHTS = { S:1, M:3, L:5, XL:10 };
+// R.I.C.O. 우선순위 모델: Reach · Impact · Continuity · Ownership (각 1–3)
+function ricoScore(t) {
+  if (t.rico) return (t.rico.r + t.rico.i + t.rico.c + t.rico.o) / 4;
+  return 1; // rico 미입력 시 기본 ×1
+}
+function ricoWeight(t) {
+  return (SIZE_WEIGHTS[t.size] || 3) * ricoScore(t);
+}
 const REQUESTERS = ['commerce','content','O2O','offline','Team','Space AI','Life Event','Home'];
 const REQUESTER_COLORS = {
   'commerce':'#92400e', 'content':'#9f1239', 'O2O':'#1e40af', 'offline':'#5b21b6',
@@ -37,44 +45,45 @@ function seedData() {
   // ────────── Source: Notion Weekly (가이드 샘플) ──────────
   const tasks = [
     // ── Dana ──
-    { id: 'd_home_video_copy', title: '[Home] 홈 개편 안내 영상 스토리보드 카피라이팅', desc: 'w/ Ben & Luka', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'Home', createdAt: Date.now() },
-    { id: 'd_writingbot', title: '[Team] 라이팅봇 클로드 확장', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'M', due: '2026-04-16', requester: 'Team', createdAt: Date.now() },
-    { id: 'd_cnc_reviewname', title: '[Content] 실사용 리뷰명, 리뷰어 명칭', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'content', createdAt: Date.now() },
-    { id: 'd_money_naming', title: '[Commerce] 오늘의집 머니 네이밍 논의', desc: '', assignee: 'm_dana', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 'd_point_voc', title: '[Team] 포인트 소멸 안내 푸시 VoC 처리', desc: '', assignee: 'm_dana', status: 'done', priority: 'medium', size: 'S', due: '2026-04-22', requester: 'Team', createdAt: Date.now() },
+    // R.I.C.O.: Reach(고객 도달) · Impact(정서적 만족) · Continuity(지속성) · Ownership(주도권) — 각 1~3
+    { id: 'd_home_video_copy', title: '[Home] 홈 개편 안내 영상 스토리보드 카피라이팅', desc: 'w/ Ben & Luka', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'Home', rico: {r:3,i:3,c:2,o:2}, createdAt: Date.now() },
+    { id: 'd_writingbot', title: '[Team] 라이팅봇 클로드 확장', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'high', size: 'M', due: '2026-04-16', requester: 'Team', rico: {r:2,i:2,c:3,o:3}, createdAt: Date.now() },
+    { id: 'd_cnc_reviewname', title: '[Content] 실사용 리뷰명, 리뷰어 명칭', desc: '', assignee: 'm_dana', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'content', rico: {r:3,i:2,c:3,o:2}, createdAt: Date.now() },
+    { id: 'd_money_naming', title: '[Commerce] 오늘의집 머니 네이밍 논의', desc: '', assignee: 'm_dana', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'commerce', rico: {r:3,i:2,c:3,o:2}, createdAt: Date.now() },
+    { id: 'd_point_voc', title: '[Team] 포인트 소멸 안내 푸시 VoC 처리', desc: '', assignee: 'm_dana', status: 'done', priority: 'medium', size: 'S', due: '2026-04-22', requester: 'Team', rico: {r:2,i:1,c:1,o:1}, createdAt: Date.now() },
 
     // ── Joe ──
-    { id: 'j_neulshin_pdp', title: '[Commerce] 늘신선 상세페이지 제작', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 'j_o2o_light', title: '[O2O] 라이트 멤버쉽 소개 자료 제작', desc: '', assignee: 'm_joe', status: 'ready', priority: 'medium', size: 'L', due: '', requester: 'O2O', createdAt: Date.now() },
-    { id: 'j_pangyo', title: '[O2O] 판교라운지 시트지 설치 및 제작물 발주', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-17', requester: 'O2O', createdAt: Date.now() },
+    { id: 'j_neulshin_pdp', title: '[Commerce] 늘신선 상세페이지 제작', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'commerce', rico: {r:3,i:2,c:2,o:2}, createdAt: Date.now() },
+    { id: 'j_o2o_light', title: '[O2O] 라이트 멤버쉽 소개 자료 제작', desc: '', assignee: 'm_joe', status: 'ready', priority: 'medium', size: 'L', due: '', requester: 'O2O', rico: {r:2,i:2,c:2,o:2}, createdAt: Date.now() },
+    { id: 'j_pangyo', title: '[O2O] 판교라운지 시트지 설치 및 제작물 발주', desc: '', assignee: 'm_joe', status: 'ongoing', priority: 'high', size: 'L', due: '2026-04-17', requester: 'O2O', rico: {r:1,i:2,c:1,o:3}, createdAt: Date.now() },
 
     // ── Luka ──
-    { id: 'l_home_video', title: '[Home] 홈개편 소개 영상 제작', desc: 'w/ Ben & Dana', assignee: 'm_luka', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-13', requester: 'Home', createdAt: Date.now() },
-    { id: 'l_category_assets', title: '[Home] 홈개편 카테고리 에셋 적용', desc: '', assignee: 'm_luka', status: 'done', priority: 'medium', size: 'S', due: '2026-04-14', requester: 'Home', createdAt: Date.now() },
-    { id: 'l_delivery_kv', title: '[Commerce] 원하는날 도착 배송트럭 KV 제작', desc: '', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'M', due: '2026-04-15', requester: 'commerce', createdAt: Date.now() },
-    { id: 'l_o2o_video', title: '[O2O] 사장님센터 랜딩페이지 서비스 소개 영상', desc: 'w/ Dana', assignee: 'm_luka', status: 'ready', priority: 'high', size: 'L', due: '2026-04-17', requester: 'O2O', createdAt: Date.now() },
-    { id: 'l_ai_icon_blog', title: '[Team] 홈개편 카테고리 아이콘 AI 활용 개편 & 블로그글 작성', desc: '', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-22', requester: 'Team', createdAt: Date.now() },
-    { id: 'l_hi_proto_blog', title: '[Team] AI를 활용한 Hi-Prototype 제작기 블로그 그래픽 제작', desc: '', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-13', requester: 'Team', createdAt: Date.now() },
+    { id: 'l_home_video', title: '[Home] 홈개편 소개 영상 제작', desc: 'w/ Ben & Dana', assignee: 'm_luka', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-13', requester: 'Home', rico: {r:3,i:3,c:3,o:3}, createdAt: Date.now() },
+    { id: 'l_category_assets', title: '[Home] 홈개편 카테고리 에셋 적용', desc: '', assignee: 'm_luka', status: 'done', priority: 'medium', size: 'S', due: '2026-04-14', requester: 'Home', rico: {r:3,i:2,c:3,o:3}, createdAt: Date.now() },
+    { id: 'l_delivery_kv', title: '[Commerce] 원하는날 도착 배송트럭 KV 제작', desc: '', assignee: 'm_luka', status: 'ready', priority: 'medium', size: 'M', due: '2026-04-15', requester: 'commerce', rico: {r:2,i:2,c:1,o:2}, createdAt: Date.now() },
+    { id: 'l_o2o_video', title: '[O2O] 사장님센터 랜딩페이지 서비스 소개 영상', desc: 'w/ Dana', assignee: 'm_luka', status: 'ready', priority: 'high', size: 'L', due: '2026-04-17', requester: 'O2O', rico: {r:2,i:2,c:2,o:2}, createdAt: Date.now() },
+    { id: 'l_ai_icon_blog', title: '[Team] 홈개편 카테고리 아이콘 AI 활용 개편 & 블로그글 작성', desc: '', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-22', requester: 'Team', rico: {r:2,i:2,c:3,o:3}, createdAt: Date.now() },
+    { id: 'l_hi_proto_blog', title: '[Team] AI를 활용한 Hi-Prototype 제작기 블로그 그래픽 제작', desc: '', assignee: 'm_luka', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-13', requester: 'Team', rico: {r:2,i:2,c:2,o:3}, createdAt: Date.now() },
 
     // ── Ben ──
-    { id: 'b_welcome_kit', title: '[PnC] 웰컴키트', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-13', requester: 'content', createdAt: Date.now() },
-    { id: 'b_nukten', title: '[Commerce] 연합브랜드 눅텐 브랜딩', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-16', requester: 'commerce', createdAt: Date.now() },
-    { id: 'b_large_store', title: '[Commerce] 오늘의집 대형 매장 브랜드 경험 제안', desc: 'w/ June', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'commerce', createdAt: Date.now() },
-    { id: 'b_life_binder', title: '[Team] 라이프 바인더', desc: '', assignee: 'm_ben', status: 'almostdone', priority: 'medium', size: 'S', due: '2026-04-20', requester: 'Team', createdAt: Date.now() },
-    { id: 'b_special_creator', title: '[Team] 스페셜크리에이터', desc: '', assignee: 'm_ben', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'Team', createdAt: Date.now() },
-    { id: 'b_home_video_help', title: '[Home] 홈 개편 영상 도움', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'Home', createdAt: Date.now() },
+    { id: 'b_welcome_kit', title: '[PnC] 웰컴키트', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '2026-04-13', requester: 'content', rico: {r:1,i:2,c:2,o:3}, createdAt: Date.now() },
+    { id: 'b_nukten', title: '[Commerce] 연합브랜드 눅텐 브랜딩', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'XL', due: '2026-04-16', requester: 'commerce', rico: {r:3,i:3,c:3,o:3}, createdAt: Date.now() },
+    { id: 'b_large_store', title: '[Commerce] 오늘의집 대형 매장 브랜드 경험 제안', desc: 'w/ June', assignee: 'm_ben', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'commerce', rico: {r:3,i:3,c:3,o:2}, createdAt: Date.now() },
+    { id: 'b_life_binder', title: '[Team] 라이프 바인더', desc: '', assignee: 'm_ben', status: 'almostdone', priority: 'medium', size: 'S', due: '2026-04-20', requester: 'Team', rico: {r:1,i:2,c:2,o:3}, createdAt: Date.now() },
+    { id: 'b_special_creator', title: '[Team] 스페셜크리에이터', desc: '', assignee: 'm_ben', status: 'almostdone', priority: 'medium', size: 'S', due: '', requester: 'Team', rico: {r:1,i:2,c:2,o:3}, createdAt: Date.now() },
+    { id: 'b_home_video_help', title: '[Home] 홈 개편 영상 도움', desc: '', assignee: 'm_ben', status: 'ongoing', priority: 'medium', size: 'M', due: '', requester: 'Home', rico: {r:3,i:2,c:2,o:1}, createdAt: Date.now() },
 
     // ── June ──
-    { id: 'u_fabric_popup', title: '[offline] 1F 패브릭 팝업', desc: '', link: 'https://www.figma.com/design/cuLuTyZ5nd9SbKk2W3j1o6/%EC%B8%B5%EB%B3%84-%EC%A0%84%EC%8B%9C-%ED%94%8C%EB%9E%98%EB%8B%9D?node-id=1065-5492', assignee: 'm_june', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'offline', createdAt: Date.now() },
-    { id: 'u_giheung', title: '[offline] 기흥 오프라인 매장 브랜딩 프로젝트', desc: '', assignee: 'm_june', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-14', requester: 'offline', createdAt: Date.now() },
-    { id: 'u_3f_house', title: '[offline] 3F 올해의집', desc: '', assignee: 'm_june', status: 'done', priority: 'medium', size: 'L', due: '2026-04-15', requester: 'offline', createdAt: Date.now() },
-    { id: 'u_download_sarah', title: '[Commerce] 업무 다운로드 w/ Sarah', desc: '', assignee: 'm_june', status: 'ready', priority: 'medium', size: 'S', due: '2026-04-16', requester: 'commerce', createdAt: Date.now() },
+    { id: 'u_fabric_popup', title: '[offline] 1F 패브릭 팝업', desc: '', link: 'https://www.figma.com/design/cuLuTyZ5nd9SbKk2W3j1o6/%EC%B8%B5%EB%B3%84-%EC%A0%84%EC%8B%9C-%ED%94%8C%EB%9E%98%EB%8B%9D?node-id=1065-5492', assignee: 'm_june', status: 'ongoing', priority: 'high', size: 'L', due: '', requester: 'offline', rico: {r:2,i:3,c:1,o:3}, createdAt: Date.now() },
+    { id: 'u_giheung', title: '[offline] 기흥 오프라인 매장 브랜딩 프로젝트', desc: '', assignee: 'm_june', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-14', requester: 'offline', rico: {r:2,i:3,c:2,o:2}, createdAt: Date.now() },
+    { id: 'u_3f_house', title: '[offline] 3F 올해의집', desc: '', assignee: 'm_june', status: 'done', priority: 'medium', size: 'L', due: '2026-04-15', requester: 'offline', rico: {r:2,i:2,c:1,o:2}, createdAt: Date.now() },
+    { id: 'u_download_sarah', title: '[Commerce] 업무 다운로드 w/ Sarah', desc: '', assignee: 'm_june', status: 'ready', priority: 'medium', size: 'S', due: '2026-04-16', requester: 'commerce', rico: {r:1,i:1,c:1,o:1}, createdAt: Date.now() },
 
     // ── Zen ──
-    { id: 'z_cnc_visit', title: '[Content] 전국내방자랑 리뉴얼', desc: '', assignee: 'm_leezen', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-16', requester: 'content', createdAt: Date.now() },
+    { id: 'z_cnc_visit', title: '[Content] 전국내방자랑 리뉴얼', desc: '', assignee: 'm_leezen', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-16', requester: 'content', rico: {r:3,i:2,c:2,o:2}, createdAt: Date.now() },
 
     // ── Sarah ──
-    { id: 's_download', title: '[Commerce] 업무 다운로드', desc: '', assignee: 'm_sarah', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-13', requester: 'commerce', createdAt: Date.now() },
+    { id: 's_download', title: '[Commerce] 업무 다운로드', desc: '', assignee: 'm_sarah', status: 'ongoing', priority: 'medium', size: 'L', due: '2026-04-13', requester: 'commerce', rico: {r:2,i:1,c:1,o:1}, createdAt: Date.now() },
   ];
 
   const schedules = [
@@ -360,6 +369,7 @@ window.quickAddTask = function(e) {
     status: document.getElementById('qaStatus').value,
     size: document.getElementById('qaSize').value,
     priority: 'medium',
+    rico: {r:2,i:2,c:2,o:2},
     due: document.getElementById('qaDue').value,
     link: document.getElementById('qaLink').value.trim(),
     createdAt: Date.now()
@@ -524,7 +534,7 @@ function renderWorkloadChart() {
     const tasks = DATA.tasks.filter(t => t.assignee === m.id);
     const byStatus = {};
     BAR_STATUSES.forEach(s => {
-      byStatus[s] = tasks.filter(t => t.status === s).reduce((sum, t) => sum + (SIZE_WEIGHTS[t.size] || 3), 0);
+      byStatus[s] = tasks.filter(t => t.status === s).reduce((sum, t) => sum + ricoWeight(t), 0);
     });
     const totalWeight = BAR_STATUSES.reduce((sum, s) => sum + byStatus[s], 0);
     const activeWeight = totalWeight - (byStatus.done || 0);
@@ -552,10 +562,11 @@ function renderWorkloadChart() {
           .map(s => `<span class="size-badge size-${s}" style="font-size:10px;padding:1px 5px">${s}×${sizeCounts[s]}</span>`).join(' ');
 
         const ratio = m.activeWeight / maxWeight;
+        const aw = Math.round(m.activeWeight * 10) / 10;
         let emoji = '';
-        if (m.activeWeight >= 20) emoji = '🤬';
-        else if (m.activeWeight >= 15) emoji = '😡';
-        else if (m.activeWeight >= 10) emoji = '😰';
+        if (aw >= 40) emoji = '🤬';
+        else if (aw >= 30) emoji = '😡';
+        else if (aw >= 20) emoji = '😰';
         else emoji = '😊';
         return `
         <div class="wc-row">
@@ -570,7 +581,7 @@ function renderWorkloadChart() {
           </div>
           <div class="wc-meta">
             <span class="wc-emoji">${emoji}</span>
-            <span class="wc-weight${ratio >= 0.7 ? ' heavy' : ''}">${m.activeWeight}</span>
+            <span class="wc-weight${ratio >= 0.7 ? ' heavy' : ''}">${aw}</span>
             <div class="wc-sizes">${sizeTags}</div>
           </div>
         </div>`;
@@ -624,7 +635,7 @@ function renderRequesterChart() {
   const active = DATA.tasks.filter(t => t.status !== 'done');
   const reqData = REQUESTERS.map(r => {
     const tasks = active.filter(t => t.requester === r);
-    const weight = tasks.reduce((sum, t) => sum + (SIZE_WEIGHTS[t.size] || 3), 0);
+    const weight = Math.round(tasks.reduce((sum, t) => sum + ricoWeight(t), 0) * 10) / 10;
     const byStatus = {};
     STATUSES.forEach(s => { byStatus[s] = tasks.filter(t => t.status === s).length; });
     return { name: r, color: REQUESTER_COLORS[r], count: tasks.length, weight, byStatus };
@@ -912,6 +923,7 @@ function renderKanban() {
             </a>` : ''}
           </div>
           <span class="size-badge size-${sz}">${sz}</span>
+          ${t.rico ? `<span style="font-size:10px;color:var(--text-tertiary);font-weight:600" title="R${t.rico.r} I${t.rico.i} C${t.rico.c} O${t.rico.o}">R${(ricoScore(t)).toFixed(1)}</span>` : ''}
         </div>
         ${t.requester ? `<div style="margin-bottom:6px"><span class="requester-tag">${esc(t.requester)}</span></div>` : ''}
         ${t.desc ? `<div class="kanban-card-desc">${esc(t.desc).substring(0, 80)}</div>` : ''}
@@ -1033,7 +1045,11 @@ function openTaskModal(task) {
   document.getElementById('taskTitle').value = task ? task.title : '';
   document.getElementById('taskDesc').value = task ? (task.desc || '') : '';
   document.getElementById('taskDue').value = task ? (task.due || '') : '';
-  document.getElementById('taskPriority').value = task ? task.priority : 'medium';
+  const rico = task && task.rico ? task.rico : {r:2,i:2,c:2,o:2};
+  document.getElementById('taskRicoR').value = rico.r;
+  document.getElementById('taskRicoI').value = rico.i;
+  document.getElementById('taskRicoC').value = rico.c;
+  document.getElementById('taskRicoO').value = rico.o;
   document.getElementById('taskSize').value = task ? (task.size || 'M') : 'M';
   document.getElementById('taskRequester').value = task ? (task.requester || '') : '';
   refreshRequesterList();
@@ -1058,7 +1074,13 @@ function saveTaskFromModal() {
     title,
     desc: document.getElementById('taskDesc').value.trim(),
     due: document.getElementById('taskDue').value,
-    priority: document.getElementById('taskPriority').value,
+    priority: 'medium',
+    rico: {
+      r: parseInt(document.getElementById('taskRicoR').value),
+      i: parseInt(document.getElementById('taskRicoI').value),
+      c: parseInt(document.getElementById('taskRicoC').value),
+      o: parseInt(document.getElementById('taskRicoO').value)
+    },
     size: document.getElementById('taskSize').value,
     requester: document.getElementById('taskRequester').value.trim(),
     status: document.getElementById('taskStatus').value,

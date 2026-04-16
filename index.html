@@ -240,16 +240,20 @@
                 <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
               <span class="help-tip-bubble" role="tooltip">
-                <strong>업무량 가중치</strong>
-                <span class="help-row"><b>S</b> 반나절 이하 = <b>1</b></span>
-                <span class="help-row"><b>M</b> 1~2일 = <b>3</b></span>
-                <span class="help-row"><b>L</b> 3~4일 = <b>5</b></span>
-                <span class="help-row"><b>XL</b> 1주 이상 = <b>10</b></span>
+                <strong>R.I.C.O. 가중치 모델</strong>
+                <span class="help-row">사이즈 × RICO 평균으로 산출</span>
                 <span class="help-divider"></span>
-                <span>합계 = Done 제외한 모든 업무의 가중치 합</span>
+                <strong>사이즈</strong>
+                <span class="help-row"><b>S</b>=1 · <b>M</b>=3 · <b>L</b>=5 · <b>XL</b>=10</span>
+                <span class="help-divider"></span>
+                <strong>R.I.C.O. (각 1~3점)</strong>
+                <span class="help-row"><b>R</b> Reach — 고객 도달 범위</span>
+                <span class="help-row"><b>I</b> Impact — 정서적 만족</span>
+                <span class="help-row"><b>C</b> Continuity — 지속·확장성</span>
+                <span class="help-row"><b>O</b> Ownership — 설계 주도권</span>
                 <span class="help-divider"></span>
                 <strong>이모지 단계</strong>
-                <span class="help-row">10+ <b>😰</b> · 15+ <b>😡</b> · 20+ <b>🤬</b></span>
+                <span class="help-row">20+ <b>😰</b> · 30+ <b>😡</b> · 40+ <b>🤬</b></span>
               </span>
             </span>
           </h2>
@@ -660,13 +664,26 @@
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="taskPriority">우선순위</label>
-            <select class="form-input" id="taskPriority">
-              <option value="low">낮음</option>
-              <option value="medium" selected>보통</option>
-              <option value="high">높음</option>
-            </select>
+          <div class="form-group" style="flex:1">
+            <label class="form-label">R.I.C.O. 우선순위 <span style="font-weight:400;color:var(--text-tertiary)">(각 1~3)</span></label>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+              <div>
+                <label style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:3px">R <span style="color:var(--text-tertiary)">Reach</span></label>
+                <select class="form-input" id="taskRicoR"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:3px">I <span style="color:var(--text-tertiary)">Impact</span></label>
+                <select class="form-input" id="taskRicoI"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:3px">C <span style="color:var(--text-tertiary)">Continuity</span></label>
+                <select class="form-input" id="taskRicoC"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--text-tertiary);display:block;margin-bottom:3px">O <span style="color:var(--text-tertiary)">Ownership</span></label>
+                <select class="form-input" id="taskRicoO"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select>
+              </div>
+            </div>
           </div>
         </div>
         <div class="form-row">
