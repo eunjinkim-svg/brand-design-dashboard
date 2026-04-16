@@ -14,10 +14,67 @@ const SIZE_WEIGHTS = { S:1, M:3, L:5, XL:10 };
 // R.I.C.O. 우선순위 모델: Reach · Impact · Continuity · Ownership (각 1–3)
 function ricoScore(t) {
   if (t.rico) return (t.rico.r + t.rico.i + t.rico.c + t.rico.o) / 4;
-  return 1; // rico 미입력 시 기본 ×1
+  return 1;
 }
 function ricoWeight(t) {
   return (SIZE_WEIGHTS[t.size] || 3) * ricoScore(t);
+}
+
+// 제목 + 요청팀 기반 RICO 자동 추정
+function ricoEstimate(title, requester) {
+  const t = (title || '').toLowerCase();
+  const req = (requester || '').toLowerCase();
+  let r = 2, i = 2, c = 2, o = 2;
+
+  // ── Reach: 고객 도달 ──
+  // 핵심 플로우(홈·탐색·결정) 관련
+  if (req === 'home' || /홈\s?개편|홈\s?화면|홈\s?배너/.test(t)) r = 3;
+  // 커머스·상세페이지·결제 등 대규모 트래픽
+  else if (req === 'commerce' || /상세페이지|pdp|결제|배송|배너/.test(t)) r = 3;
+  // 콘텐츠 — 리뷰, 탐색 플로우
+  else if (req === 'content' || /리뷰|탐색|콘텐츠/.test(t)) r = 3;
+  // O2O·오프라인 — 특정 지역/매장 한정
+  else if (req === 'o2o' || req === 'offline' || /팝업|매장|라운지|시트지/.test(t)) r = 2;
+  // 팀 내부 도구·블로그
+  else if (req === 'team' || /블로그|팀|내부|도구/.test(t)) r = 1;
+
+  // ── Impact: 정서적 만족 ──
+  // 브랜딩·네이밍·워드마크 — 브랜드 의미 전달
+  if (/브랜딩|네이밍|리브랜딩|워드마크|캠페인|브랜드\s?경험/.test(t)) i = 3;
+  // 영상·모션 — 감성 전달력 높음
+  else if (/영상|비디오|모션|스토리보드/.test(t)) i = 3;
+  // 팝업·전시·공간 경험
+  else if (/팝업|전시|공간|올해의집/.test(t)) i = 3;
+  // 일반 제작물
+  else if (/제작|kv|에셋|자료/.test(t)) i = 2;
+  // 단순 실행·다운로드
+  else if (/다운로드|시트지|발주|voc|처리/.test(t)) i = 1;
+
+  // ── Continuity: 지속·확장성 ──
+  // 가이드라인·폰트·디자인시스템 — 기준이 되는 작업
+  if (/가이드|폰트|디자인\s?시스템|리브랜딩|개편|카테고리/.test(t)) c = 3;
+  // 내부 도구·자동화 — 반복 활용
+  else if (/봇|도구|자동|확장|블로그|아이콘/.test(t)) c = 3;
+  // 브랜딩 — 장기 자산
+  else if (/브랜딩|네이밍|머니/.test(t)) c = 3;
+  // 영상·콘텐츠 — 중간 정도 재활용
+  else if (/영상|콘텐츠|소개/.test(t)) c = 2;
+  // 단발 캠페인·이벤트
+  else if (/팝업|kv|배너|다운로드|voc/.test(t)) c = 1;
+
+  // ── Ownership: 설계 주도권 ──
+  // 팀 내부 프로젝트 — 완전 주도
+  if (req === 'team' || /봇|도구|블로그|팀/.test(t)) o = 3;
+  // 브랜딩·네이밍 — 브랜드 철학 기준으로 주도
+  else if (/브랜딩|네이밍|리브랜딩|워드마크|브랜드\s?경험/.test(t)) o = 3;
+  // 오프라인·팝업 — 공간 설계 주도
+  else if (/팝업|매장|전시|사이니지/.test(t)) o = 3;
+  // 영상·에셋 제작 — 비주얼 주도, 기획은 공유
+  else if (/영상|kv|에셋|상세페이지/.test(t)) o = 2;
+  // 단순 실행·서포트
+  else if (/다운로드|도움|발주|시트지|voc/.test(t)) o = 1;
+
+  return { r, i, c, o };
 }
 const REQUESTERS = ['commerce','content','O2O','offline','Team','Space AI','Life Event','Home'];
 const REQUESTER_COLORS = {
@@ -384,7 +441,7 @@ window.quickAddTask = function(e) {
     status: document.getElementById('qaStatus').value,
     size: document.getElementById('qaSize').value,
     priority: 'medium',
-    rico: {r:2,i:2,c:2,o:2},
+    rico: ricoEstimate(title, document.getElementById('qaRequester').value.trim()),
     due: document.getElementById('qaDue').value,
     link: document.getElementById('qaLink').value.trim(),
     createdAt: Date.now()
@@ -1007,6 +1064,14 @@ function initModals() {
   document.getElementById('confirmAddTask').addEventListener('click', saveTaskFromModal);
   taskModal.addEventListener('click', e => { if (e.target === taskModal) closeModal('addTaskModal'); });
 
+  // RICO 자동 추정: 제목·요청팀 변경 시
+  document.getElementById('taskTitle').addEventListener('input', ricoAutoUpdate);
+  document.getElementById('taskRequester').addEventListener('change', ricoAutoUpdate);
+  // RICO 수동 조정 시 프리뷰 업데이트
+  ['taskRicoR','taskRicoI','taskRicoC','taskRicoO'].forEach(id => {
+    document.getElementById(id).addEventListener('change', updateRicoPreview);
+  });
+
   injectAssigneeField('addTaskModal');
 
   const noteModal = document.getElementById('addNoteModal');
@@ -1060,19 +1125,57 @@ function openTaskModal(task) {
   document.getElementById('taskTitle').value = task ? task.title : '';
   document.getElementById('taskDesc').value = task ? (task.desc || '') : '';
   document.getElementById('taskDue').value = task ? (task.due || '') : '';
-  const rico = task && task.rico ? task.rico : {r:2,i:2,c:2,o:2};
-  document.getElementById('taskRicoR').value = rico.r;
-  document.getElementById('taskRicoI').value = rico.i;
-  document.getElementById('taskRicoC').value = rico.c;
-  document.getElementById('taskRicoO').value = rico.o;
   document.getElementById('taskSize').value = task ? (task.size || 'M') : 'M';
   document.getElementById('taskRequester').value = task ? (task.requester || '') : '';
   refreshRequesterList();
   document.getElementById('taskStatus').value = task ? task.status : 'ongoing';
   refreshAssigneeSelect();
   if (task) document.getElementById('taskAssignee').value = task.assignee || DATA.members[0]?.id;
+
+  // RICO: 수정 시 기존 값, 신규 시 자동 추정
+  const rico = task && task.rico ? task.rico : ricoEstimate(
+    document.getElementById('taskTitle').value,
+    document.getElementById('taskRequester').value
+  );
+  applyRicoToModal(rico);
+  document.getElementById('ricoDetail').style.display = 'none';
+  document.getElementById('ricoToggleBtn').textContent = '조정하기';
+
   openModal('addTaskModal');
   document.getElementById('taskTitle').focus();
+}
+
+// RICO 값을 모달 필드 + 프리뷰에 반영
+function applyRicoToModal(rico) {
+  document.getElementById('taskRicoR').value = rico.r;
+  document.getElementById('taskRicoI').value = rico.i;
+  document.getElementById('taskRicoC').value = rico.c;
+  document.getElementById('taskRicoO').value = rico.o;
+  updateRicoPreview();
+}
+
+function updateRicoPreview() {
+  const r = parseInt(document.getElementById('taskRicoR').value);
+  const i = parseInt(document.getElementById('taskRicoI').value);
+  const c = parseInt(document.getElementById('taskRicoC').value);
+  const o = parseInt(document.getElementById('taskRicoO').value);
+  const avg = ((r + i + c + o) / 4).toFixed(1);
+  const label = document.getElementById('ricoAutoLabel');
+  label.textContent = `R${r} · I${i} · C${c} · O${o}  →  ${avg}`;
+  // 색상 힌트
+  const n = parseFloat(avg);
+  if (n >= 2.5) { label.style.background = '#dcfce7'; label.style.color = '#166534'; }
+  else if (n >= 1.5) { label.style.background = '#fef3c7'; label.style.color = '#92400e'; }
+  else { label.style.background = '#f1f5f9'; label.style.color = '#64748b'; }
+}
+
+// 제목·요청팀 변경 시 자동 재추정 (수동 조정 패널이 닫혀있을 때만)
+function ricoAutoUpdate() {
+  if (document.getElementById('ricoDetail').style.display !== 'none') return;
+  const title = document.getElementById('taskTitle').value;
+  const req = document.getElementById('taskRequester').value;
+  const est = ricoEstimate(title, req);
+  applyRicoToModal(est);
 }
 
 window.editTaskModal = function(id) {
