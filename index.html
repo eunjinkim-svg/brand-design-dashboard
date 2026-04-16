@@ -569,60 +569,12 @@
       </section>
     </div>
 
-    <!-- VENDOR FINDER PAGE -->
+    <!-- VENDOR FINDER PAGE (iframe) -->
     <div class="page" id="page-vendor">
-      <!-- Search -->
-      <div class="vf-search-bar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="vfSearchInput" placeholder="업체명 또는 프로젝트 검색..." />
-      </div>
-      <!-- Filters -->
-      <section class="vf-filters">
-        <div class="vf-filter-row">
-          <span class="vf-filter-label">카테고리</span>
-          <div class="vf-chips" id="vfCatFilter">
-            <button class="vf-chip active" data-val="all">All</button>
-            <button class="vf-chip" data-val="인쇄물">인쇄물</button>
-            <button class="vf-chip" data-val="패키지">패키지</button>
-            <button class="vf-chip" data-val="굿즈">굿즈</button>
-            <button class="vf-chip" data-val="사진/촬영">사진/촬영</button>
-            <button class="vf-chip" data-val="디자인">디자인</button>
-            <button class="vf-chip" data-val="레터링">레터링</button>
-            <button class="vf-chip" data-val="폰트">폰트</button>
-            <button class="vf-chip" data-val="사이니지">사이니지</button>
-            <button class="vf-chip" data-val="시공">시공</button>
-          </div>
-        </div>
-        <div class="vf-filter-row">
-          <span class="vf-filter-label">예산</span>
-          <div class="vf-budget-track">
-            <input type="range" id="vfBudgetSlider" min="0" max="110000000" step="1000000" value="110000000" />
-            <span class="vf-budget-val" id="vfBudgetVal">NO LIMIT</span>
-          </div>
-        </div>
-        <div class="vf-filter-row">
-          <span class="vf-filter-label">프리셋</span>
-          <label class="vf-switch">
-            <input type="checkbox" id="vfRecOnly" />
-            <span class="vf-switch-track"></span>
-            <span class="vf-switch-text">추천 업체만 보기</span>
-          </label>
-        </div>
-      </section>
-
-      <div class="vf-results-meta">
-        <div class="vf-results-count" id="vfResultCount"></div>
-        <div class="vf-results-hint">Sorted by Status / Value</div>
-      </div>
-      <div class="vf-vendor-list" id="vfResults"></div>
-      <div class="vf-sync-bar" id="vfSyncBar"></div>
+      <iframe src="https://noyahjung.github.io/vendor-finder/vendor-finder-v2.html"
+        width="100%" height="800" frameborder="0"
+        style="border:none;border-radius:12px"></iframe>
     </div>
-
-    <!-- VENDOR SIDE PANEL -->
-    <div class="vf-panel-backdrop" id="vfPanelBackdrop"></div>
-    <aside class="vf-panel" id="vfPanel" aria-hidden="true">
-      <div id="vfPanelContent"></div>
-    </aside>
 
   </main>
 
