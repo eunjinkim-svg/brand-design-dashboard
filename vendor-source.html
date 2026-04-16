@@ -69,93 +69,16 @@
     display: flex;
   }
 
-  /* ── Sidebar ── */
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 240px;
-    height: 100vh;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    z-index: 40;
-    transition: width var(--transition), transform var(--transition);
-  }
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--border-light);
-  }
-  .sidebar-logo-icon {
-    width: 32px;
-    height: 32px;
-    background: var(--primary);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .sidebar-logo-icon svg { width: 18px; height: 18px; color: #fff; }
-  .sidebar-logo-text {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-primary);
-    white-space: nowrap;
-  }
-  .sidebar-nav {
-    flex: 1;
-    padding: 12px 10px;
-  }
-  .sidebar-nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: all var(--transition);
-    cursor: pointer;
-  }
-  .sidebar-nav-item.active {
-    background: var(--primary-light);
-    color: var(--primary);
-  }
-  .sidebar-nav-item:hover:not(.active) {
-    background: var(--surface-hover);
-    color: var(--text-primary);
-  }
-  .sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .sidebar-footer {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border-light);
-  }
-  .sidebar-footer-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  .sidebar-footer-sub {
-    font-size: 12px;
-    color: var(--text-tertiary);
-    margin-top: 2px;
-  }
+  /* ── Sidebar (removed for embed) ── */
+  .sidebar, .sidebar-overlay { display: none !important; }
 
   /* ── Main content area ── */
   .main-wrapper {
     flex: 1;
-    margin-left: 240px;
+    margin-left: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    transition: margin-left var(--transition);
   }
 
   /* ── Top bar ── */
@@ -984,53 +907,7 @@
   }
 
   /* ── Responsive ── */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(15,23,42,.5);
-    z-index: 39;
-  }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      transform: translateX(-100%);
-    }
-    .sidebar.open {
-      transform: translateX(0);
-    }
-    .sidebar-overlay.open {
-      display: block;
-    }
-    .main-wrapper {
-      margin-left: 0;
-    }
-    .mobile-menu-btn {
-      display: inline-flex !important;
-    }
-  }
-
-  @media (min-width: 769px) {
-    .mobile-menu-btn {
-      display: none !important;
-    }
-  }
-
-  .mobile-menu-btn {
-    width: 34px;
-    height: 34px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: all var(--transition);
-  }
-  .mobile-menu-btn svg { width: 18px; height: 18px; }
+  .mobile-menu-btn { display: none !important; }
 
   @media (max-width: 640px) {
     .content { padding: 16px; }
@@ -1050,37 +927,12 @@
 </head>
 <body>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-    </div>
-    <span class="sidebar-logo-text">Brand Design</span>
-  </div>
-  <nav class="sidebar-nav">
-    <a class="sidebar-nav-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      협력 업체
-    </a>
-  </nav>
-  <div class="sidebar-footer">
-    <div class="sidebar-footer-title">Vendor Finder</div>
-    <div class="sidebar-footer-sub">업체 관리</div>
-  </div>
-</aside>
-
-<!-- Sidebar overlay for mobile -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- Main content -->
 <div class="main-wrapper">
   <!-- Top bar -->
   <header class="topbar">
     <div style="display:flex;align-items:center;gap:12px;">
-      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="메뉴 열기">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
       <h1 class="topbar-title">협력 업체 파인더</h1>
     </div>
     <div class="search-box">
@@ -1676,15 +1528,6 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   applyTheme(current === "dark" ? "light" : "dark");
 });
 
-// ── Mobile sidebar toggle ────────────────────────────────
-document.getElementById("mobileMenuBtn").addEventListener("click", () => {
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("sidebarOverlay").classList.toggle("open");
-});
-document.getElementById("sidebarOverlay").addEventListener("click", () => {
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("sidebarOverlay").classList.remove("open");
-});
 </script>
 </body>
 </html>
