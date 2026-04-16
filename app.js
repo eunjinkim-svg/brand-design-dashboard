@@ -100,7 +100,7 @@ function seedData() {
     { id: 'm_leezen', name: 'Zen Lee', role: 'Content & Brand Designer', color: '#38bdf8' },
     { id: 'm_ben', name: 'Ben Park', role: 'Brand Designer', color: '#34d399' },
     { id: 'm_luka', name: 'Luka Jung', role: 'Graphic Designer', color: '#fbbf24' },
-    { id: 'm_june', name: 'June Kim', role: 'PB Designer', color: '#f87171' },
+    { id: 'm_june', name: 'June Kim', role: 'Brand Designer', color: '#f87171' },
     { id: 'm_sarah', name: 'Sarah Kim', role: 'Brand Designer', color: '#818cf8' },
   ];
 
