@@ -1482,17 +1482,17 @@ function vfFmt(n) {
 }
 
 function vfStatusBadge(s) {
-  if (s === 'green') return '<span class="vf-badge vf-badge-green">Recommended</span>';
-  if (s === 'orange') return '<span class="vf-badge vf-badge-orange">Quote only</span>';
-  if (s === 'warn') return '<span class="vf-badge vf-badge-warn">Flagged</span>';
+  if (s === 'green') return '<span class="vf-badge vf-badge-green">추천 업체</span>';
+  if (s === 'orange') return '<span class="vf-badge vf-badge-orange">견적만 받음, 진행하지 않음</span>';
+  if (s === 'warn') return '<span class="vf-badge vf-badge-warn">불량 이력</span>';
   return '';
 }
 
 function vfStatusBadgeBig(s) {
-  if (s === 'green') return '<span class="vf-badge vf-badge-green">Recommended</span>';
-  if (s === 'orange') return '<span class="vf-badge vf-badge-orange">Quote only</span>';
-  if (s === 'warn') return '<span class="vf-badge vf-badge-warn">Flagged</span>';
-  return '<span class="vf-badge" style="background:var(--bg-secondary);color:var(--text-tertiary)">Logged</span>';
+  if (s === 'green') return '<span class="vf-badge vf-badge-green">추천 업체</span>';
+  if (s === 'orange') return '<span class="vf-badge vf-badge-orange">견적만 받음, 진행하지 않음</span>';
+  if (s === 'warn') return '<span class="vf-badge vf-badge-warn">불량 이력</span>';
+  return '<span class="vf-badge" style="background:var(--bg-secondary);color:var(--text-tertiary)">등록됨</span>';
 }
 
 const VF_ICON = {
@@ -1519,6 +1519,18 @@ function vfRenderContact(contact) {
   const memo = contact.memo ? `<div class="vf-panel-memo">${esc(contact.memo)}</div>` : '';
   if (rows.length === 0) return `<div class="vf-contact-empty">연락처 항목이 비어 있습니다.</div>${memo}`;
   return rows.join('') + memo;
+}
+
+function vfSummarizeProjects(quotes) {
+  const projects = quotes.map(q => q.project);
+  const unique = [...new Set(projects)];
+  const keywords = unique.map(p => {
+    const parts = p.split('_');
+    return parts.length > 1 ? parts[parts.length - 1] : p;
+  });
+  if (keywords.length === 1) return keywords[0] + ' 제작';
+  if (keywords.length === 2) return keywords[0] + '과 ' + keywords[1] + ' 제작';
+  return keywords.slice(0, 2).join(', ') + ` 외 ${keywords.length - 2}건 제작`;
 }
 
 function vfRender() {
@@ -1559,7 +1571,7 @@ function vfRender() {
   const n = groups.length;
   const totalQuotes = filtered.length;
   const countEl = document.getElementById('vfResultCount');
-  if (countEl) countEl.innerHTML = `<span class="num">${String(n).padStart(2, '0')}</span> ${n === 1 ? 'vendor' : 'vendors'} · ${totalQuotes} quotes`;
+  if (countEl) countEl.innerHTML = `<span class="num">${String(n).padStart(2, '0')}</span> ${n === 1 ? 'vendor' : 'vendors'} found`;
 
   if (n === 0) {
     container.innerHTML = '<div class="empty-state" style="padding:60px"><p>조건에 맞는 업체가 없습니다</p></div>';
@@ -1568,9 +1580,7 @@ function vfRender() {
 
   container.innerHTML = groups.map((g, i) => {
     const isRec = g.bestStatus === 'green';
-    const projectSummary = g.quotes.length <= 2
-      ? g.quotes.map(q => q.project).join(', ')
-      : g.quotes.slice(0, 2).map(q => q.project).join(', ') + ` 외 ${g.quotes.length - 2}건`;
+    const projectSummary = vfSummarizeProjects(g.quotes);
     const priceRange = vfPriceRange(g.quotes);
     const hasFiles = g.quotes.some(q => q.hasFiles);
     const hasPreview = g.quotes.some(q => q.hasPreview);
@@ -1581,7 +1591,7 @@ function vfRender() {
           <div class="vf-vendor-name-wrap">
             <span class="vf-vendor-name">${esc(g.name)}</span>
             ${vfStatusBadge(g.bestStatus)}
-            ${g.quotes.length > 1 ? `<span class="vf-quote-count">${g.quotes.length} quotes</span>` : ''}
+            ${g.quotes.length > 1 ? `<span class="vf-quote-count">${g.quotes.length}건</span>` : ''}
           </div>
           <div class="vf-card-price">${priceRange}</div>
         </div>
@@ -1633,13 +1643,13 @@ function vfOpenPanel(vendorName) {
   const historyHtml = quotes.map(q => {
     const priceObj = vfFmt(q.price);
     const fileLinks = [];
-    if (q.hasFiles) fileLinks.push(`<a class="vf-file-link" href="${esc(q.url)}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 견적서 보기</a>`);
-    if (q.hasPreview) fileLinks.push(`<a class="vf-file-link vf-file-preview" href="${esc(q.url)}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 결과물 보기</a>`);
+    if (q.hasFiles) fileLinks.push(`<a class="vf-file-link" href="${esc(q.url)}" target="_blank" rel="noopener noreferrer">견적서 보기 ↗</a>`);
+    if (q.hasPreview) fileLinks.push(`<a class="vf-file-link vf-file-preview" href="${esc(q.url)}" target="_blank" rel="noopener noreferrer">결과물 보기 ↗</a>`);
     return `
       <div class="vf-history-item">
         <div style="flex:1;min-width:0">
           <div class="vf-history-project">${esc(q.project)}</div>
-          <div class="vf-history-meta">${q.duration ? esc(q.duration) + ' · ' : ''}${q.cat.join(' / ')}${q.note ? ' · ' + esc(q.note) : ''}</div>
+          <div class="vf-history-meta">${q.duration ? '제작에 걸린 시간 ' + esc(q.duration) + ' · ' : ''}${q.cat.join(' / ')}${q.note ? ' · ' + esc(q.note) : ''}</div>
           ${fileLinks.length ? `<div class="vf-history-files">${fileLinks.join('')}</div>` : ''}
         </div>
         <a class="vf-history-price${priceObj.unset ? ' unset' : ''}" href="${esc(q.url)}" target="_blank" rel="noopener" style="text-decoration:none">${priceObj.text}</a>
@@ -1651,8 +1661,8 @@ function vfOpenPanel(vendorName) {
   document.getElementById('vfPanelContent').innerHTML = `
     <div class="vf-panel-header">
       <div class="vf-panel-eyebrow">
-        <span>Vendor / ${quotes.length} ${quotes.length === 1 ? 'quote' : 'quotes'}</span>
-        <button class="vf-panel-close" id="vfPanelCloseBtn">Close</button>
+        <span>협력업체 / ${quotes.length}건</span>
+        <button class="vf-panel-close" id="vfPanelCloseBtn">닫기</button>
       </div>
       <h2 class="vf-panel-name">${esc(vendorName)}</h2>
       <div>${vfStatusBadgeBig(primaryStatus)}</div>
@@ -1660,17 +1670,17 @@ function vfOpenPanel(vendorName) {
     </div>
     <div class="vf-panel-body">
       <section class="vf-panel-section">
-        <div class="vf-panel-section-title">Contact</div>
+        <div class="vf-panel-section-title">연락처</div>
         ${vfRenderContact(contact)}
       </section>
       <section class="vf-panel-section">
-        <div class="vf-panel-section-title">History · ${quotes.length}</div>
+        <div class="vf-panel-section-title">견적 이력 · ${quotes.length}건</div>
         ${historyHtml}
       </section>
     </div>
     <div class="vf-panel-footer">
       <a class="vf-panel-cta" href="${esc(quotes[0].url)}" target="_blank" rel="noopener">
-        Open first quote in Notion ${VF_ICON.ext}
+        Notion에서 열기 ${VF_ICON.ext}
       </a>
     </div>`;
 
