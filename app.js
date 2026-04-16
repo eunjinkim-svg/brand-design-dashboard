@@ -12,12 +12,17 @@ const STATUS_COLORS = { new:'#7c3aed', ready:'#4338ca', ongoing:'#d97706', almos
 const SIZE_COLORS = { S:'#10b981', M:'#3b82f6', L:'#f59e0b', XL:'#ef4444' };
 const SIZE_WEIGHTS = { S:1, M:3, L:5, XL:10 };
 // R.I.C.O. 우선순위 모델: Reach · Impact · Continuity · Ownership (각 1–3)
+// 가중치 = R+I+C+O 합산 (4~12)
 function ricoScore(t) {
   if (t.rico) return (t.rico.r + t.rico.i + t.rico.c + t.rico.o) / 4;
   return 1;
 }
+function ricoSum(t) {
+  if (t.rico) return t.rico.r + t.rico.i + t.rico.c + t.rico.o;
+  return 4;
+}
 function ricoWeight(t) {
-  return (SIZE_WEIGHTS[t.size] || 3) * ricoScore(t);
+  return ricoSum(t);
 }
 
 // 제목 + 요청팀 기반 RICO 자동 추정
@@ -634,10 +639,10 @@ function renderWorkloadChart() {
           .map(s => `<span class="size-badge size-${s}" style="font-size:10px;padding:1px 5px">${s}×${sizeCounts[s]}</span>`).join(' ');
 
         const ratio = m.activeWeight / maxWeight;
-        const aw = Math.round(m.activeWeight * 10) / 10;
+        const aw = Math.round(m.activeWeight);
         let emoji = '';
-        if (aw >= 40) emoji = '🤬';
-        else if (aw >= 30) emoji = '😡';
+        if (aw >= 36) emoji = '🤬';
+        else if (aw >= 28) emoji = '😡';
         else if (aw >= 20) emoji = '😰';
         else emoji = '😊';
         return `
@@ -707,7 +712,7 @@ function renderRequesterChart() {
   const active = DATA.tasks.filter(t => t.status !== 'done');
   const reqData = REQUESTERS.map(r => {
     const tasks = active.filter(t => t.requester === r);
-    const weight = Math.round(tasks.reduce((sum, t) => sum + ricoWeight(t), 0) * 10) / 10;
+    const weight = Math.round(tasks.reduce((sum, t) => sum + ricoWeight(t), 0));
     const byStatus = {};
     STATUSES.forEach(s => { byStatus[s] = tasks.filter(t => t.status === s).length; });
     return { name: r, color: REQUESTER_COLORS[r], count: tasks.length, weight, byStatus };
