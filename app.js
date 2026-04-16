@@ -111,6 +111,21 @@ function seedData() {
 let DATA = load() || seedData();
 if (!DATA.schedules) DATA.schedules = [];
 
+// RICO 마이그레이션: 기존 저장된 태스크에 rico 필드가 없으면 시드에서 가져오거나 기본값 부여
+(function migrateRico() {
+  const seed = seedData();
+  const seedMap = {};
+  seed.tasks.forEach(t => { seedMap[t.id] = t.rico; });
+  let changed = false;
+  DATA.tasks.forEach(t => {
+    if (!t.rico) {
+      t.rico = seedMap[t.id] || {r:2,i:2,c:2,o:2};
+      changed = true;
+    }
+  });
+  if (changed) save();
+})();
+
 // ────────── Helpers ──────────
 function uid() { return '_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
