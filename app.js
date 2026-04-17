@@ -170,10 +170,17 @@ function seedData() {
   };
 }
 
+// v2 데이터 리셋: RICO + 타임라인 전환에 따른 1회성 초기화
+const DATA_VERSION = 'v2-rico-timeline';
+if (localStorage.getItem('_data_version') !== DATA_VERSION) {
+  localStorage.removeItem(STORE_KEY);
+  localStorage.setItem('_data_version', DATA_VERSION);
+}
+
 let DATA = load() || seedData();
 if (!DATA.schedules) DATA.schedules = [];
 
-// RICO 마이그레이션: 기존 저장된 태스크에 rico 필드가 없으면 시드에서 가져오거나 기본값 부여
+// RICO 마이그레이션
 (function migrateRico() {
   const seed = seedData();
   const seedMap = {};
