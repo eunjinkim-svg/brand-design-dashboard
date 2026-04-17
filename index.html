@@ -329,28 +329,26 @@
       </div>
     </div>
 
-    <!-- CALENDAR PAGE (업무 캘린더) -->
+    <!-- CALENDAR PAGE (업무 캘린더 — 타임라인) -->
     <div class="page" id="page-calendar">
-      <div class="calendar-layout">
-        <div class="calendar-main">
-          <div class="calendar-nav">
-            <button class="cal-nav-btn" id="prevMonth" aria-label="이전 달">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <h2 class="cal-month-title" id="calMonthTitle"></h2>
-            <button class="cal-nav-btn" id="nextMonth" aria-label="다음 달">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
+      <!-- 필터 바 -->
+      <div class="tl-toolbar">
+        <div class="tl-filters">
+          <div class="tl-filter-group" id="tlMemberFilter"></div>
+          <div class="tl-filter-group" id="tlRequesterFilter"></div>
         </div>
-        <div class="calendar-sidebar">
-          <div class="card" style="padding: 20px;">
-            <h3 class="card-title" id="selectedDateTitle">선택된 날의 일정</h3>
-            <div class="upcoming-events-list" id="sidebarEventList"></div>
-          </div>
+        <div class="tl-nav">
+          <button class="cal-nav-btn" id="prevMonth" aria-label="이전 주">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <h2 class="cal-month-title" id="calMonthTitle" style="font-size:15px;min-width:auto"></h2>
+          <button class="cal-nav-btn" id="nextMonth" aria-label="다음 주">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
       </div>
+      <!-- 타임라인 -->
+      <div class="tl-container" id="timelineContainer"></div>
 
       <details class="calendar-okr-toggle">
         <summary>

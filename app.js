@@ -1377,87 +1377,162 @@ window.filterProjects = function() {
   renderProjectsPage();
 };
 
-// ────────── Calendar ──────────
-let calYear, calMonth, selectedDate;
+// ────────── Calendar (Timeline) ──────────
+let calYear, calMonth;
+let tlFilterMember = 'all';
+let tlFilterRequester = 'all';
 
 function initCalendar() {
   const today = new Date();
   calYear = today.getFullYear();
   calMonth = today.getMonth();
-  selectedDate = todayStr();
   const prev = document.getElementById('prevMonth');
   const next = document.getElementById('nextMonth');
-  const addBtn = document.getElementById('addEventBtn');
   if (prev) prev.addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
   if (next) next.addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
-  if (addBtn) addBtn.addEventListener('click', addEventFromForm);
   renderCalendar();
 }
 
+function renderTlFilters() {
+  // 사람 필터
+  const mf = document.getElementById('tlMemberFilter');
+  if (mf) {
+    mf.innerHTML = `<span style="font-size:11px;color:var(--text-tertiary);font-weight:600;margin-right:2px">사람</span>` +
+      `<button class="tl-filter-btn${tlFilterMember === 'all' ? ' active' : ''}" onclick="setTlMember('all')">전체</button>` +
+      DATA.members.map(m =>
+        `<button class="tl-filter-btn${tlFilterMember === m.id ? ' active' : ''}" onclick="setTlMember('${m.id}')" style="${tlFilterMember === m.id ? '' : `border-color:${m.color}40;color:${m.color}`}">${m.name.split(' ')[0]}</button>`
+      ).join('');
+  }
+  // 부서 필터
+  const rf = document.getElementById('tlRequesterFilter');
+  if (rf) {
+    const activeRequesters = [...new Set(DATA.tasks.map(t => t.requester).filter(Boolean))].sort();
+    rf.innerHTML = `<span style="font-size:11px;color:var(--text-tertiary);font-weight:600;margin-right:2px">부서</span>` +
+      `<button class="tl-filter-btn${tlFilterRequester === 'all' ? ' active' : ''}" onclick="setTlRequester('all')">전체</button>` +
+      activeRequesters.map(r =>
+        `<button class="tl-filter-btn${tlFilterRequester === r ? ' active' : ''}" onclick="setTlRequester('${esc(r)}')">${esc(r)}</button>`
+      ).join('');
+  }
+}
+window.setTlMember = function(id) { tlFilterMember = id; renderCalendar(); };
+window.setTlRequester = function(r) { tlFilterRequester = r; renderCalendar(); };
+
 function renderCalendar() {
   document.getElementById('calMonthTitle').textContent = `${calYear}년 ${calMonth + 1}월`;
-  const grid = document.getElementById('calendarGrid');
-  const headers = ['일','월','화','수','목','금','토'];
-  let html = headers.map(h => `<div class="cal-header">${h}</div>`).join('');
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-  const prevDays = new Date(calYear, calMonth, 0).getDate();
-  const todayS = todayStr();
+  renderTlFilters();
 
-  for (let i = firstDay - 1; i >= 0; i--) html += `<div class="cal-day other-month">${prevDays - i}</div>`;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const todayS = todayStr();
+  const dayNames = ['일','월','화','수','목','금','토'];
+
+  // 날짜 배열
+  const dates = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dayEvents = DATA.events.filter(e => e.date === ds);
-    const dayTasks = DATA.tasks.filter(t => t.due === ds);
-    html += `<div class="cal-day${ds === todayS ? ' today' : ''}${ds === selectedDate ? ' selected' : ''}" onclick="selectDate('${ds}')">
-      ${d}
-      ${(dayEvents.length || dayTasks.length) ? `<div class="cal-day-events">${dayEvents.map(e => `<div class="cal-event-dot" style="background:${e.color}"></div>`).join('')}${dayTasks.map(t => `<div class="cal-event-dot" style="background:${getMemberColor(t.assignee)}"></div>`).join('')}</div>` : ''}
-    </div>`;
+    const dow = new Date(calYear, calMonth, d).getDay();
+    dates.push({ d, ds, dow, isToday: ds === todayS, isWeekend: dow === 0 || dow === 6 });
   }
-  const totalCells = firstDay + daysInMonth;
-  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-  for (let i = 1; i <= remaining; i++) html += `<div class="cal-day other-month">${i}</div>`;
-  grid.innerHTML = html;
-  renderSidebarEvents();
-}
 
-window.selectDate = function(ds) { selectedDate = ds; document.getElementById('selectedDateTitle').textContent = fmtDateFull(ds) + ' 일정'; renderCalendar(); };
+  // 필터링된 멤버
+  let members = DATA.members;
+  if (tlFilterMember !== 'all') members = members.filter(m => m.id === tlFilterMember);
 
-function renderSidebarEvents() {
-  const container = document.getElementById('sidebarEventList');
-  const events = DATA.events.filter(e => e.date === selectedDate);
-  const tasks = DATA.tasks.filter(t => t.due === selectedDate);
-  let html = `<h4 style="margin:16px 0 8px;font-size:13px;color:var(--text-secondary)">선택된 날의 일정</h4>`;
-  if (events.length === 0 && tasks.length === 0) {
-    html += '<div class="empty-state" style="padding:16px"><p>일정 없음</p></div>';
-  } else {
-    html += events.map(e => `
-      <div class="sidebar-event-item">
-        <div style="width:3px;height:28px;border-radius:2px;background:${e.color};flex-shrink:0"></div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(e.title)}</div><div style="font-size:11px;color:var(--text-tertiary)">${e.time || '종일'}</div></div>
-        <button onclick="deleteEvent('${e.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:12px">✕</button>
-      </div>
-    `).join('');
-    html += tasks.map(t => `
-      <div class="sidebar-event-item">
-        <div style="width:3px;height:28px;border-radius:2px;background:${getMemberColor(t.assignee)};flex-shrink:0"></div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(t.title)}</div><div style="font-size:11px;color:var(--text-tertiary)">${getMemberName(t.assignee)} · ${STATUS_LABELS[t.status]}</div></div>
-      </div>
-    `).join('');
-  }
-  container.innerHTML = html;
-}
+  // 필터링된 태스크
+  let tasks = DATA.tasks.filter(t => t.status !== 'done');
+  if (tlFilterRequester !== 'all') tasks = tasks.filter(t => t.requester === tlFilterRequester);
 
-function addEventFromForm() {
-  const title = document.getElementById('eventTitle').value.trim();
-  if (!title) { showToast('일정 제목을 입력해주세요'); return; }
-  DATA.events.push({ id: uid(), title, date: selectedDate, time: document.getElementById('eventTime').value, color: document.getElementById('eventColor').value });
-  addActivity(`일정 "${title}" 추가됨`);
-  save();
-  document.getElementById('eventTitle').value = '';
-  document.getElementById('eventTime').value = '';
-  renderCalendar(); renderAll();
-  showToast('일정이 추가되었습니다');
+  // 상태 색상
+  const barColors = {
+    new: '#a855f7', ready: '#6366f1', ongoing: '#f59e0b',
+    almostdone: '#3b82f6', hold: '#94a3b8'
+  };
+
+  // 헤더
+  let html = '<table class="tl-table"><thead><tr>';
+  html += '<th class="tl-corner">팀원</th>';
+  dates.forEach(dt => {
+    const cls = [dt.isToday ? 'today' : '', dt.isWeekend ? 'weekend' : ''].filter(Boolean).join(' ');
+    html += `<th class="tl-date-header ${cls}">${dt.d}<br><span style="font-size:10px">${dayNames[dt.dow]}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  // 멤버별 행
+  members.forEach(m => {
+    const memberTasks = tasks.filter(t => t.assignee === m.id);
+
+    // 태스크를 행으로 배치 (겹침 방지)
+    const rows = [];
+    memberTasks.forEach(t => {
+      if (!t.due) return; // 마감일 없는 건 스킵
+      const dueDay = parseInt(t.due.split('-')[2]);
+      const dueMonth = parseInt(t.due.split('-')[1]);
+      const dueYear = parseInt(t.due.split('-')[0]);
+      if (dueYear !== calYear || dueMonth !== calMonth + 1) return;
+
+      // 시작일 추정: due - leadDays or size 기반
+      const sizeSpan = { S: 1, M: 2, L: 4, XL: 7 };
+      const span = sizeSpan[t.size] || 2;
+      const startDay = Math.max(1, dueDay - span + 1);
+
+      const bar = { task: t, start: startDay, end: dueDay, color: barColors[t.status] || '#94a3b8' };
+
+      // 빈 행 찾기
+      let placed = false;
+      for (const row of rows) {
+        if (row.every(b => b.end < bar.start || b.start > bar.end)) {
+          row.push(bar);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) rows.push([bar]);
+    });
+
+    // 마감일 없는 태스크
+    const noDueTasks = memberTasks.filter(t => !t.due || (() => {
+      const parts = t.due.split('-');
+      return parseInt(parts[0]) !== calYear || parseInt(parts[1]) !== calMonth + 1;
+    })());
+
+    const totalRows = Math.max(rows.length + (noDueTasks.length > 0 ? 1 : 0), 1);
+
+    for (let ri = 0; ri < totalRows; ri++) {
+      html += '<tr>';
+      if (ri === 0) {
+        html += `<td class="tl-member-name" rowspan="${totalRows}"><div class="avatar" style="background:${m.color}">${m.name[0]}</div>${m.name.split(' ')[0]}</td>`;
+      }
+
+      if (ri < rows.length) {
+        // 바가 있는 행
+        const barsInRow = rows[ri].sort((a, b) => a.start - b.start);
+        let col = 1;
+        barsInRow.forEach(bar => {
+          // 바 앞 빈 칸
+          if (bar.start > col) {
+            html += `<td class="tl-cell tl-empty" colspan="${bar.start - col}"></td>`;
+          }
+          const span = bar.end - bar.start + 1;
+          const cls = span === 1 ? 'tl-bar-single' : 'tl-bar-start';
+          const title = esc(bar.task.title.replace(/\[.*?\]\s*/, ''));
+          html += `<td class="tl-cell" colspan="${span}" title="${esc(bar.task.title)}">
+            <div class="tl-bar ${cls}" style="background:${bar.color}" onclick="editTaskModal('${bar.task.id}')">${title}</div>
+          </td>`;
+          col = bar.end + 1;
+        });
+        if (col <= daysInMonth) html += `<td class="tl-cell tl-empty" colspan="${daysInMonth - col + 1}"></td>`;
+      } else if (noDueTasks.length > 0 && ri === rows.length) {
+        // 마감일 없는 태스크 표시
+        const labels = noDueTasks.map(t => `<span class="tl-bar tl-bar-single tl-bar-noduedate" style="border-color:${barColors[t.status] || '#94a3b8'}" onclick="editTaskModal('${t.id}')" title="${esc(t.title)}">${esc(t.title.replace(/\[.*?\]\s*/, ''))}</span>`).join(' ');
+        html += `<td class="tl-cell" colspan="${daysInMonth}" style="text-align:left;padding:4px 8px"><div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center"><span style="font-size:10px;color:var(--text-tertiary);flex-shrink:0">마감일 미정</span>${labels}</div></td>`;
+      } else {
+        html += `<td class="tl-cell tl-empty" colspan="${daysInMonth}"></td>`;
+      }
+      html += '</tr>';
+    }
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('timelineContainer').innerHTML = html;
 }
 
 // ────────── Notes ──────────
