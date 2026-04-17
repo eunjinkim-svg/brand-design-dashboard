@@ -1383,14 +1383,16 @@ let tlFilterMember = 'all';
 let tlFilterRequester = 'all';
 
 function initCalendar() {
-  const today = new Date();
-  calYear = today.getFullYear();
-  calMonth = today.getMonth();
-  const prev = document.getElementById('prevMonth');
-  const next = document.getElementById('nextMonth');
-  if (prev) prev.addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
-  if (next) next.addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
-  renderCalendar();
+  try {
+    const today = new Date();
+    calYear = today.getFullYear();
+    calMonth = today.getMonth();
+    const prev = document.getElementById('prevMonth');
+    const next = document.getElementById('nextMonth');
+    if (prev) prev.addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+    if (next) next.addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+    renderCalendar();
+  } catch (e) { console.error('initCalendar error:', e); }
 }
 
 function renderTlFilters() {
@@ -1418,6 +1420,8 @@ window.setTlMember = function(id) { tlFilterMember = id; renderCalendar(); };
 window.setTlRequester = function(r) { tlFilterRequester = r; renderCalendar(); };
 
 function renderCalendar() {
+  const container = document.getElementById('timelineContainer');
+  if (!container) return;
   document.getElementById('calMonthTitle').textContent = `${calYear}년 ${calMonth + 1}월`;
   renderTlFilters();
 
@@ -1488,11 +1492,12 @@ function renderCalendar() {
       if (!placed) rows.push([bar]);
     });
 
-    // 마감일 없는 태스크
-    const noDueTasks = memberTasks.filter(t => !t.due || (() => {
+    // 마감일 없거나 이번 달이 아닌 태스크
+    const noDueTasks = memberTasks.filter(t => {
+      if (!t.due) return true;
       const parts = t.due.split('-');
       return parseInt(parts[0]) !== calYear || parseInt(parts[1]) !== calMonth + 1;
-    })());
+    });
 
     const totalRows = Math.max(rows.length + (noDueTasks.length > 0 ? 1 : 0), 1);
 
