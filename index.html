@@ -263,16 +263,7 @@
 
     <!-- TASKS PAGE -->
     <div class="page" id="page-tasks">
-      <div class="page-toolbar">
-        <div class="filter-tabs">
-          <button class="filter-tab active" id="filterAll" onclick="filterTasks('all')">전체</button>
-          <button class="filter-tab" id="filterNew" onclick="filterTasks('new')">New</button>
-          <button class="filter-tab" id="filterReady" onclick="filterTasks('ready')">Ready</button>
-          <button class="filter-tab" id="filterOngoing" onclick="filterTasks('ongoing')">Ongoing</button>
-          <button class="filter-tab" id="filterAlmostdone" onclick="filterTasks('almostdone')">Almost Done</button>
-          <button class="filter-tab" id="filterDone" onclick="filterTasks('done')">Done</button>
-          <button class="filter-tab" id="filterHold" onclick="filterTasks('hold')">Hold</button>
-        </div>
+      <div class="page-toolbar" style="justify-content:flex-end">
         <button class="btn-primary" id="openAddTaskModal">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
