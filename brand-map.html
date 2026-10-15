@@ -123,6 +123,13 @@ button,input,select,textarea{font:inherit;color:inherit}
 .lockup{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--hair);border-radius:10px;background:var(--bg);flex-wrap:wrap}
 .lockup .wm{font-weight:700;font-size:20px;color:var(--accent);letter-spacing:-.03em}
 .lockup .bar{width:1px;height:20px;background:var(--hair-2)}
+.lostyles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.lostyle{border:1px solid var(--hair);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--muted);opacity:.6}
+.lostyle.on{border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px var(--accent)}
+.lostyle b{color:var(--ink);font-size:13.5px}
+.lostyle .lockup{padding:12px}
+.lockup .svc.indep{font-weight:800;letter-spacing:-.04em;font-size:19px}
+.result-big.free .state{color:var(--ink)}
 .lockup .svc{font-size:17px;font-weight:600}
 .note{font-size:12.5px;color:var(--muted)}
 
@@ -139,6 +146,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .checks .tx .ref{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-left:4px}
 .addc{display:flex;gap:8px}
 .addc input{flex:1;min-width:0;border:1px solid var(--hair-2);border-radius:10px;padding:8px 12px;background:var(--bg)}
+.forms{display:flex;flex-wrap:wrap;gap:6px}
+.forms span{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--hair-2);border-radius:8px;padding:3px 9px;font-weight:600;font-size:13.5px}
+.forms i{font-style:normal;font-weight:500;font-size:11.5px;color:var(--muted)}
 .verdict-pick{font-weight:600;font-size:15px}
 .cand-v{padding:10px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;font-size:14px;color:var(--ink)}
 .cand.v-ok{border-color:var(--ok)} .cand.v-bad{border-color:var(--bad)} .cand.v-fix{border-color:var(--warn)}
@@ -217,6 +227,8 @@ details.more summary h2{font-size:14px;font-weight:700}
 .mtx .rowh b{display:block;font-size:13.5px;margin:4px 0 2px}
 .mtx .rowh span{display:block;color:var(--muted);font-size:11.5px;line-height:1.45}
 .lg{display:inline-block!important;font-size:10.5px!important;font-weight:600;padding:1px 6px;border-radius:4px}
+.lg.pf{margin-left:4px;background:var(--panel);color:var(--ink-2)!important;border:1px solid var(--hair-2)}
+.lg.pf.must{color:var(--ok)!important}.lg.pf.never{color:var(--bad)!important}
 .lg.ok{background:var(--ok-bg);color:var(--ok)!important} .lg.no{background:var(--info-bg);color:var(--info)!important}
 .mtx tr.myrow .rowh{box-shadow:inset 3px 0 0 var(--accent)}
 .mtx th.mecol{color:var(--accent)!important}
@@ -268,13 +280,13 @@ details.more summary h2{font-size:14px;font-weight:700}
     <button type="submit" id="landGo" aria-label="확인하기" disabled>→</button>
   </form>
   <div class="sugs" id="sugs"></div>
-  <p class="foot">이름·로고, 편하게 물어보세요 · 브랜드 네이밍 매트릭스(초안)로 만든 프로토타입이에요</p>
+  <p class="foot">이름·로고, 편하게 물어보세요 · 서비스 카테고리 매트릭스(디벨롭2)로 만든 프로토타입이에요</p>
 </section>
 <div class="shell" id="shell" hidden>
   <header class="top">
     <h1>Brand Map</h1>
     
-    <span class="proto">매트릭스 초안 기준</span>
+    <span class="proto">매트릭스 디벨롭2 기준</span>
     <button class="ghost" id="resetBtn" type="button">처음부터</button>
   </header>
   <main class="app">
@@ -292,33 +304,37 @@ details.more summary h2{font-size:14px;font-weight:700}
 <div id="mapRoot"></div>
 
 <script>
-/* ───────── 기준 데이터: 브랜드 네이밍 매트릭스(초안) ─────────
+/* ───────── 기준 데이터: 서비스 카테고리 매트릭스 디벨롭2 (Figma, 2026-10-15 회의 반영) ─────────
    이름 뒤 표시: + 추가 · * 변경 · ~ 보강 (매트릭스 원본의 태그) */
-const DOCS={map:{name:'브랜드 네이밍 매트릭스',ver:'초안'},tm:{name:'상표 검토 절차',ver:'예시'}};
+const DOCS={map:{name:'서비스 카테고리 매트릭스',ver:'디벨롭2'},mtg:{name:'10/15 회의',ver:'결정'},tm:{name:'상표 검토 절차',ver:'예시'}};
 const ENT={ohouse:'오늘의집',interior:'오늘의집인테리어 (시공)',pay:'오늘의집페이',pb:'오늘의집 PB',retail:'오늘의집 리테일'};
 const ENTX={...ENT,unknown:'잘 모르겠어요',other:'기타'};
 const TGT={user:'유저',owner:'사장님',creator:'파트너·크리에이터',payer:'결제사'};
-const PERIOD={always:'계속 운영',campaign:'기간 운영'};
+const PERIOD={always:'상시',campaign:'기간 한정'};
+const CHANNEL={external:'대외 소통 있음',internal:'대내만 (인앱·온드미디어·사내)'};
+const INDEP={yes:'독립 브랜드',no:'오늘의집 안에서'};
 const COLS=[['ohouse','owner'],['ohouse','creator'],['ohouse','user'],['interior','owner'],['interior','user'],['pay','payer'],['pay','user'],['pb','user'],['retail','user']];
+/* prefix: 대외 채널에서 이름 앞 ‘오늘의집’ 표기 — must 필수 · may 선택 · never 불가 · tbd 미정. 대내는 모두 불가 */
 const TYPES={
-  service:{label:'서비스',group:'상시',logo:true,desc:'따로 들어가는 입구가 있고, 그곳에서 거래·이용이 일어나요',ask:'따로 들어가서 이용하는 곳'},
-  cert:{label:'보증·인증',group:'상시',logo:true,desc:'상품·업체·사람에 붙는 약속·선별·등급 표시예요',ask:'상품·업체에 붙는 약속이나 표시'},
-  feature:{label:'기능',group:'상시',logo:false,desc:'이용자가 앱 안에서 직접 하거나 받는 장치예요 (도구·참여·혜택)',ask:'앱 안에서 쓰는 도구나 혜택'},
-  content:{label:'콘텐츠',group:'상시',logo:false,desc:'이용자가 보고 읽는 거예요',ask:'보고 읽는 콘텐츠'},
-  campaign:{label:'기간 운영 캠페인',group:'비상시',logo:null,desc:'끝나는 날이 있고 정해진 때 반복되는 캠페인이에요'},
+  service:{label:'서비스',group:'상시',logo:true,prefix:'must',desc:'따로 들어가는 입구(독립된 페이지·공간)가 있고, 그곳에서 거래·이용이 일어나요',ask:'독립된 페이지·공간이 있어요'},
+  cert:{label:'보증·인증',group:'상시',logo:true,prefix:'must',desc:'상품·업체·사람에 붙는 약속·선별·등급 표시예요',ask:'상품·업체·사람에 붙는 약속이나 표시예요'},
+  feature:{label:'기능',group:'상시',logo:false,prefix:'may',desc:'이용자가 앱 안에서 직접 하거나 받는 장치예요 (도구·참여·혜택·리워드)',ask:'앱 안에서 쓰는 도구·혜택·리워드예요'},
+  content:{label:'콘텐츠',group:'상시',logo:false,prefix:'tbd',desc:'이용자가 보고 읽는 거예요 (범위 재정리 중)',ask:'보고 읽는 콘텐츠예요'},
+  campaign:{label:'기간 운영 캠페인',group:'비상시',logo:null,prefix:'never',desc:'끝나는 날이 있고 정례로 반복되는 캠페인이에요'},
   generic:{label:'앱 일반 명칭',group:'참고',desc:'오늘의집을 붙이기 어색한 일반명사예요'},
   merge:{label:'합치거나 뺄 것',group:'참고',desc:'같은 건 합치고, 단발이거나 고객용이 아니면 빼요'},
 };
+const PREFIX={must:'대외 표기 필수',may:'대외 표기 선택',never:'표기 불가',tbd:'대외 규칙 미정'};
 const KINDS={service:'서비스',cert:'보증·인증',feature:'기능',content:'콘텐츠',unknown:'잘 모르겠어요',other:'기타'};
 const TGTX={...{user:'유저',owner:'사장님',creator:'파트너·크리에이터',payer:'결제사'},other:'기타'};
 const isUnk=v=>v==='unknown'||v==='other';
 const L=k=>{const v=S.svc[k],m={target:TGTX,entity:ENTX,kind:KINDS}[k];return v==='other'?`기타(${S.notes[k]||'직접 입력'})`:m[v]};
 const RAW={
-  service:{0:'파트너센터|오늘의집 O.rora (표기 통일 필요)*|오하우스메즈|TOPS+',
-    1:'콘텐츠수익화|오늘의집 리서치 패널|콜라보마켓|큐레이터 부스터+|크리에이터 플러스',
-    2:'쇼핑|리퍼마켓|오늘의딜|오늘의딜 › 오!마트*|오늘의딜 › 오!쇼룸*|오늘의딜 › LIVE*|오늘의집 설치|무빙패스|공동구매 (비정기→상시)*|특가 코너 (비정기→상시)*|바이너리샵',
-    3:'건자재몰|사장님센터',
-    4:'인테리어/생활|키친|도배|마루|이사|전체시공|부분시공|이사청소·입주청소·인터넷신청·제품설치|오늘의집 구독|인테리어 상담소 / Q&A|오늘의집 스탠다드|라이프서비스+',
+  service:{0:'파트너센터|오늘의집 O.rora (표기 통일 필요)*|오하우스애즈|TOPS+',
+    1:'콘텐츠수익화|오늘의집 리서치 패널|콜라보마켓|큐레이터 부스터+|크리에이터 플러스|큐레이터|오메이커스|크리에이터|메이트하우스',
+    2:'쇼핑|리퍼마켓|오늘의딜|오늘의딜 › 오!마트*|오늘의딜 › 오!쇼룸*|오늘의딜 › LIVE*|오늘의집 설치|무빙패스|공동구매 (비정기→상시)*|특가 코너 (비정기→상시)*|바이너리샵|집구경|집들이',
+    3:'건자재몰|사장님센터|사장님센터 아카데미+',
+    4:'인테리어/생활|키친|도배|마루|이사|전체시공|부분시공|이사청소·입주청소·인터넷신청·제품설치|오늘의집 구독|인테리어 상담소 / Q&A|오늘의집 스탠다드|라이프서비스+|아파트 시공사례|포트폴리오|시공사례+',
     6:'머니|계좌 간편결제+|상품권 (27.02 예정)*|PLCC (27.04 예정)*',
     7:'layer|layer › 쇼파*|layer › 잠옷*|layer › 데일리*|늘신선|더레인 (The Lane)+|프락트 (FRKT)+|컬렉토리+',
     8:'판교라운지 (인테리어→리테일)*|목동라운지 (인테리어→리테일)*|오늘의집 분당'},
@@ -326,16 +342,13 @@ const RAW={
     2:'원하는날도착|오늘출발|희망일배송|최저가보상제|PICK|Only|특별인증가|오늘의집배송+',
     3:'시공파트너 구독 (라이트·라이트플러스·스탠다드)~',
     4:'책임보장|원가검수|책임시공 (도배)'},
-  feature:{2:'오감지수|오집렌즈|3D방꾸미기|선물하기|오늘의집 AI|오늘의가든|행운출첵|친구초대|회원등급 (WELCOME ~ VIP)|첫구매 쿠폰|N-Shot 적립 (12/7 시작)+',
+  feature:{2:'오감지수|오집렌즈|3D방꾸미기|선물하기|오늘의집 AI|오늘의가든|행운출첵|친구초대|회원등급 (WELCOME ~ VIP)|첫구매 쿠폰|N-Shot 적립 (12/7 시작)+|숏츠|챌린지|스타일링샷',
     4:'우리동네업체찾기|견적계산기 (3D)|인테리어 계약서 진단|집보기 체크리스트|시공자재 랭킹|업체지도|간편매칭|업체찾기 (= 우리동네업체찾기?)+'},
-  content:{1:'큐레이터|크리에이터|오메이커스|메이트하우스',
-    2:'집구경|숏츠|챌린지|집들이|스타일링샷',
-    3:'사장님센터 아카데미+',
-    4:'아파트 시공사례|포트폴리오|시공사례+|100인의 시공일지 (미분류→여기)*|시공반장님 (미분류→여기)*'},
+  content:{},
   campaign:{2:'O!SALE (정기→기간, 매월)*|에디션 (정기→기간, 매월)*|집요한세일|바이너리위크~|살림의달인|로컬의선택|식탁 위 예술|집요한블프~|끝내주는세일·해넘해맞|월간가구세일|이달의키친|새로입주|스페셜 브랜드위크|미식100선|비욘드 라이브러리|월간자취+|오늘의집 디자인어워드+',
-    3:'파트너어워즈|시공페스타',6:'카드사 결제혜택+'},
+    3:'파트너어워즈|시공페스타',4:'100인의 시공일지 (미분류→여기)*|시공반장님 (미분류→여기)*',6:'카드사 결제혜택+'},
   generic:{2:'스크랩|태그|집사진|쇼핑수다|집꾸미기|시공질문|시공정보|BEST|이벤트|챌린지참여'},
-  merge:{1:'FTC (뜻 확인)*',2:'가드닝게임 → 오늘의가든 (확인)*|오집가전구독 → 오늘의집 구독*|라이프 바인더 (단발)*|단독 콜라보 (정체 확인)*',4:'시공 (법인)·대고객 아님*'},
+  merge:{1:'FTC (뜻 확인)*',2:'가드닝게임 → 오늘의가든 (확인)*|오집가전구독 → 오늘의집 구독*|라이프 바인더 (단발)*|단독 콜라보 (정례 확인)*',4:'시공 (법인)·대고객 아님*'},
 };
 const ALIAS={'PICK':['픽'],'Only':['온리'],'layer':['레이어'],'BEST':['베스트'],'TOPS':['탑스'],'O!SALE':['오세일'],'LIVE':['라이브']};
 const TAGS={'+':'추가','*':'변경','~':'보강'};
@@ -347,18 +360,18 @@ for(const [type,cols] of Object.entries(RAW)) for(const [ci,str] of Object.entri
   REG.push({name,base,seg,type,col:+ci,tag,alias:(ALIAS[seg]||[])});
 });
 const cellOf=(type,col)=>REG.filter(r=>r.type===type&&r.col===col);
-const SAMPLE_DESC='고객이 집 사진을 올리면 비슷한 스타일의 상품을 찾아주는 기능이에요. 앱 검색 탭 안에서 계속 쓸 거예요.';
+const SAMPLE_DESC='고객이 집 사진을 올리면 비슷한 스타일의 상품을 찾아주는 기능이에요. 앱 검색 탭 안에서 상시로 쓰고, 광고에도 소개할 예정이에요.';
 const EXAMPLES=[
-  {label:'이름 정하기, 뭐부터 해요?',text:'서비스 이름을 정해야 하는데 뭐부터 하면 돼?'},
-  {label:'로고도 만들어야 해요?',text:'새 서비스가 나오는데 로고도 따로 만들어야 해?'},
-  {label:"‘오늘의집 픽’ 어때요?",text:"'오늘의집 픽' 어때?"},
-  {label:'후보 3개 봐주세요',text:"사진으로 비슷한 상품 찾는 기능이야. 앱 검색 탭 안에서 써. 후보는 '오늘의집 렌즈', '스타일찾기', '집Lens'. 써도 괜찮은지 봐줘."},
-  {label:'상표도 챙겨야 해요?',text:'이 이름으로 출시하려는데 상표 등록도 해야 해?'},
+  {label:'아직 이름이 없어요',text:'새 서비스를 준비 중인데 아직 이름이 없어요. 뭐부터 하면 돼?'},
+  {label:'생각해 둔 이름이 있어요',text:'생각해 둔 이름이 있는데 써도 되는지 봐줘.'},
+  {label:'지금 쓰는 이름이 궁금해요',text:'다른 팀에서 이미 쓰는 이름인지 궁금해요.'},
+  {label:'로고 붙여도 돼요?',text:'새 서비스에 로고를 붙여도 돼?'},
+  {label:'‘오늘의집’ 붙여도 돼요?',text:"이름 앞에 '오늘의집'을 붙여도 돼?"},
 ];
 
 /* ───────── 상태 ───────── */
 let S;
-function fresh(){return{svc:{summary:null,target:null,entity:null,period:null,kind:null},candidates:[],notes:{},typing:false,intent:null,awaiting:null,topics:[],msgs:[],editing:false,showGuide:false,draft:null,draftKey:null,requests:{},send:{phase:'idle'}}}
+function fresh(){return{svc:{summary:null,target:null,entity:null,period:null,channel:null,kind:null,indep:null},candidates:[],notes:{},typing:false,intent:null,awaiting:null,topics:[],msgs:[],editing:false,showGuide:false,draft:null,draftKey:null,requests:{},send:{phase:'idle'}}}
 S=fresh();
 
 const $=s=>document.querySelector(s);
@@ -374,16 +387,20 @@ function extract(t){
   if(/크리에이터|큐레이터|인플루언서/.test(t)) set('target','creator');
   if(/결제사|카드사/.test(t)) set('target','payer');
   if(/시공|도배|이사|청소|견적/.test(t)) set('entity','interior');
-  if(/결제|페이|머니|상품권/.test(t)) set('entity','pay');
+  if(/결제|페이(?!지)|머니|상품권/.test(t)) set('entity','pay');
   if(/PB|자체 ?브랜드|layer|레이어/.test(t)) set('entity','pb');
   if(/오프라인|매장|라운지/.test(t)) set('entity','retail');
   if(/쇼핑|상품|커뮤니티|집들이|콘텐츠|배송|딜|앱/.test(t)) set('entity','ohouse');
   if(/기간|한정|세일|캠페인|매월|시즌|프로모션|페스타|어워드/.test(t)) set('period','campaign');
   if(/상시|계속|정식 운영/.test(t)) set('period','always');
+  if(/(독립|전용|별도)(된|적인|의)?[^.,]{0,10}(페이지|공간)/.test(t)) set('kind','service');
   if(/인증|보증|보장|배지|도착|등급 표시|최저가/.test(t)) set('kind','cert');
   if(/기능|도구|계산기|쿠폰|적립|혜택|체크리스트|찾아주|진단|추천/.test(t)) set('kind','feature');
-  if(/콘텐츠|영상|아티클|사례|읽을|구경|숏폼/.test(t)) set('kind','content');
-  if(/입구|센터|몰|마켓|전용 ?(페이지|공간)/.test(t)) set('kind','service');
+  if(/콘텐츠|영상|아티클|읽을거리|블로그|뉴스/.test(t)) set('kind','content');
+  if(/입구|센터|몰|마켓|독립(된)? ?(페이지|공간)|전용 ?(페이지|공간)/.test(t)) set('kind','service');
+  if(/사내|임직원|내부 ?(용|커뮤니케이션|행사)|인앱|앱 안에서만|온드 ?미디어/.test(t)) set('channel','internal');
+  if(/광고|SNS|인스타|유튜브|보도|언론|제휴|외부|대외|옥외|오프라인 ?홍보/.test(t)) set('channel','external');
+  if(/독립 ?브랜드|오늘의집(을|과)? ?(벗어|떼고|없이)/.test(t)) set('indep','yes');
   const q=[...t.matchAll(/[‘'"“]([^’'"”]{1,24})[’'"”]/g)].map(m=>m[1].trim()).filter(x=>x&&x!=='오늘의집'&&!/○/.test(x));
   q.forEach(n=>{if(!S.candidates.includes(n))S.candidates.push(n)});
   return {found,names:q};
@@ -391,6 +408,7 @@ function extract(t){
 function classify(t,names){
   if(/상표/.test(t)) return 'trademark';
   if(/로고/.test(t)) return 'logo';
+  if(/오늘의집.{0,6}(붙|달|빼)/.test(t)) return 'prefix';
   if(names.length||/후보|어때|써도|괜찮|이미 쓰|쓰고 있|내보내/.test(t)) return 'names';
   if(/뭐부터|어디서부터|시작|처음/.test(t)) return 'start';
   return null;
@@ -416,17 +434,38 @@ function position(){
   return {col,tk,type,why,cases,
     path:`버킷플레이스 › ${L('entity')} › ${L('target')} › ${type?type.label:'유형 모름'} (예상)`};
 }
+/* ‘오늘의집’ 표기: 대내(인앱·온드미디어·사내)는 모두 불가, 대외는 유형별 */
+function prefixRule(){
+  const s=S.svc, tk=typeKey();
+  if(!tk||isUnk(tk)) return null;
+  const ext=TYPES[tk].prefix;
+  return {ext, extLabel:PREFIX[ext], channel:s.channel,
+    appText:'대내(인앱·온드미디어·사내)에서는 이름 앞에 ‘오늘의집’을 붙이지 않아요.',
+    extText:{must:'대외 채널에서는 이름 앞에 ‘오늘의집’을 꼭 붙여요.',may:'대외 채널에서는 필요할 때 ‘오늘의집’을 붙일 수 있어요.',never:'기간 캠페인에는 대외 채널에서도 ‘오늘의집’을 붙이지 않아요.',tbd:'콘텐츠의 대외 표기 규칙은 아직 정해지지 않았어요.'}[ext]};
+}
+function nameForms(n){
+  const core=coreOf(n), r=prefixRule();
+  if(!r) return null;
+  if(GENERIC.includes(norm(core))) return {app:core,ext:core};
+  const ext=r.ext==='must'?`오늘의집 ${core}`:r.ext==='may'?`${core} 또는 오늘의집 ${core}`:r.ext==='never'?core:null;
+  return {app:core, ext};
+}
 function logoResult(){
   const s=S.svc, tk=typeKey();
   if(!s.target||!s.entity||!tk) return {state:'pending',label:'조금 더 알려주세요',reason:'누가 쓰는지, 어느 사업 쪽인지, 어떤 유형인지 알아야 정할 수 있어요.',basis:[]};
   const p=position();
   if(isUnk(s.entity)||p.col<0||isUnk(tk)) return {state:'review',label:'담당 팀 확인이 필요해요',reason:'매트릭스에서 들어갈 칸을 찾지 못했어요. 짐작으로 정하지 않고 담당 팀에 넘길게요.',
     basis:[{k:'map',cl:'칸 없음',kind:'gap',t:'이 조합에 해당하는 칸이 매트릭스에 없어요.'}]};
-  if(tk==='campaign') return {state:'review',label:'담당 팀 확인이 필요해요',reason:'기간 운영 캠페인은 로고를 붙여도 되는지 매트릭스에 표시가 없어요. 담당 팀에 물어볼게요.',
-    basis:[{k:'map',cl:'비상시 · 기간 운영 캠페인',kind:'gap',t:'로고 부착 가능·불가 표시가 없어요.'}]};
+  if(tk==='campaign') return {state:'free',label:'오늘의집 로고는 붙이지 않아요',reason:'기간 캠페인에는 오늘의집 로고·표기를 붙이지 않아요. 캠페인 그래픽은 캠페인에 맞게 자유롭게 만들 수 있어요.',
+    basis:[{k:'map',cl:'비상시 · 기간 운영 캠페인',kind:'rule',t:'오늘의집 표기 불가'},{k:'mtg',cl:'그래픽',kind:'interp',t:'한시 빅프로모션 그래픽은 자유롭게 제작하는 방향으로 논의했어요.'}]};
   const T=TYPES[tk];
-  if(T.logo) return {state:'yes',label:'로고를 붙일 수 있어요',reason:`‘${T.label}’${josa(T.label)} 로고를 붙일 수 있는 유형이에요. 전용 로고가 필요하면 담당 팀에 요청해주세요.`,
-    basis:[{k:'map',cl:`상시 · ${T.label}`,kind:'rule',t:'로고 부착 가능'},{k:'map',cl:'분류',kind:'interp',t:`설명을 보고 ‘${T.label}’ 유형으로 봤어요.`}]};
+  if(T.logo){
+    if(s.indep===null) return {state:'pending',label:'로고를 붙일 수 있어요',reason:`‘${T.label}’${josa(T.label)} 로고를 붙일 수 있는 유형이에요. 오늘의집 안에서 갈지, 독립 브랜드로 갈지 알려주시면 로고 방식을 안내해드릴게요.`,basis:[{k:'map',cl:`상시 · ${T.label}`,kind:'rule',t:'로고 부착 가능'}],ask:'indep'};
+    const wm=s.indep==='no';
+    return {state:'yes',label:wm?'워드마크형 로고를 쓰세요':'독립 로고를 만들 수 있어요',style:wm?'wordmark':'independent',
+      reason:wm?'오늘의집 워드마크에 서비스명을 결합하는 방식이에요. 오늘의집 키친처럼 기존 워드마크 스타일을 따라요.':'오늘의집과 다른 독자적인 로고를 만드는 방식이에요. 프락트, 바이너리샵처럼 독립 브랜드로 운영할 때 써요. 상표 등록과 법무 검토가 함께 필요해요.',
+      basis:[{k:'map',cl:`상시 · ${T.label}`,kind:'rule',t:'로고 부착 가능'},{k:'mtg',cl:'로고 제작 유형',kind:'rule',t:'로고는 워드마크형 또는 독립형, 두 가지로 나눠요.'},{k:'map',cl:'분류',kind:'interp',t:`설명을 보고 ‘${T.label}’ 유형으로 봤어요.`}]};
+  }
   return {state:'no',label:'로고는 붙이지 않아요',reason:`‘${T.label}’${josa(T.label)} 로고를 붙이지 않는 유형이에요. 오늘의집 로고 옆에 이름만 글자로 써요.`,
     basis:[{k:'map',cl:`상시 · ${T.label}`,kind:'rule',t:'로고 부착 불가'},{k:'map',cl:'분류',kind:'interp',t:`설명을 보고 ‘${T.label}’ 유형으로 봤어요.`}]};
 }
@@ -453,10 +492,12 @@ const placeOf=r=>{const c=COLS[r.col];return`${TYPES[r.type].label}, ${ENT[c[0]]
 function reviewName(n){
   const hasBrand=/^오늘의집/.test(n), core=coreOf(n), p=position();
   let combo;
+  const r=prefixRule(), f=nameForms(n);
   if(GENERIC.includes(norm(core))) combo=hasBrand?{st:'fix',t:`‘${core}’${josa(core)} 앱 일반 명칭이라 ‘오늘의집’을 붙이지 않아요.`,ref:'참고 · 앱 일반 명칭'}:{st:'ok',t:'앱 일반 명칭이라 이름만 쓰는 게 맞아요.',ref:'참고 · 앱 일반 명칭'};
-  else if(p&&p.cases.length){const m=p.cases.filter(r=>/^오늘의집/.test(r.base)).length;
-    combo={st:'ref',t:`같은 칸 이름 ${p.cases.length}개 중 ${m}개가 ‘오늘의집’을 붙였어요. ${hasBrand?'붙인 쪽이에요.':'안 붙인 쪽이에요.'} 정해진 기준은 아직 없어요.`,ref:''}}
-  else combo={st:'check',t:'같은 칸 사례가 없어서 비교하지 못했어요. 담당 팀에 확인해보세요.',ref:''};
+  else if(!r) combo={st:'check',t:'유형을 몰라서 ‘오늘의집’ 표기 규칙을 정하지 못했어요.',ref:''};
+  else if(r.ext==='tbd') combo={st:'check',t:r.extText+' 담당 팀에 확인해주세요.',ref:'매트릭스 · 콘텐츠'};
+  else if(r.ext==='never'&&hasBrand) combo={st:'fix',t:`기간 캠페인에는 ‘오늘의집’을 붙이지 않아요. ‘${core}’로 써주세요.`,ref:'매트릭스 · 비상시'};
+  else combo={st:'ok',t:`앱 안: ‘${f.app}’${S.svc.channel==='external'?` · 대외: ‘${f.ext}’`:''}. ${r.appText}${S.svc.channel==='external'?' '+r.extText:''}`,ref:'매트릭스 · 표기 기준'};
   const nota=/[가-힣][A-Za-z]|[A-Za-z][가-힣]/.test(core)
     ?{st:'check',t:'한글과 영문이 붙어 있으면 표기가 흔들리기 쉬워요. 매트릭스에도 ‘오늘의집 O.rora’가 표기 통일 필요로 표시돼 있어요.',ref:''}
     :{st:'ok',t:'표기에서 걸리는 건 없어요.',ref:''};
@@ -474,11 +515,12 @@ function reviewName(n){
 const ST={ok:'좋아요',fix:'고쳐보세요',check:'확인 필요',bad:'이미 있어요',none:'없어요',info:'따로 확인',ref:'참고'};
 
 /* ───────── 대화 진행 ───────── */
-const NEEDS={overview:['summary','target','entity','period','kind'],names:['summary','target','entity','period','kind','candidates'],logo:['summary','target','entity','period','kind'],start:[],trademark:[]};
+const NEEDS={overview:['summary','target','entity','period','channel','kind'],prefix:['summary','target','entity','period','channel','kind'],names:['summary','target','entity','period','channel','kind','candidates'],logo:['summary','target','entity','period','channel','kind','indep'],start:[],trademark:[]};
 function missing(intent){
   return (NEEDS[intent]||[]).find(k=>{
     if(k==='candidates') return !S.candidates.length;
     if(k==='kind') return S.svc.period!=='campaign'&&S.svc.kind===null;
+    if(k==='indep') return S.svc.period!=='campaign'&&TYPES[S.svc.kind]?.logo===true&&S.svc.indep===null;
     return S.svc[k]===null;
   });
 }
@@ -487,7 +529,9 @@ function knownChips(){
   if(s.target)a.push(L('target')+' 대상');
   if(s.entity&&s.entity!=='unknown')a.push(L('entity'));
   if(s.period)a.push(PERIOD[s.period]);
+  if(s.channel)a.push(CHANNEL[s.channel]);
   if(s.kind&&s.kind!=='unknown'&&s.period!=='campaign')a.push(L('kind'));
+  if(s.indep)a.push(INDEP[s.indep]);
   if(S.candidates.length)a.push('후보 '+S.candidates.length+'개');
   return a;
 }
@@ -495,8 +539,10 @@ function questionFor(k){
   return {
     target:['누가 쓰나요?',[{label:'고객',v:'user'},{label:'사장님·업체',v:'owner'},{label:'파트너·크리에이터',v:'creator'},{label:'결제사',v:'payer'},{label:'맞는 게 없어요',v:'other'}]],
     entity:['어느 사업 쪽이에요?',[{label:'오늘의집 (쇼핑·커뮤니티)',v:'ohouse'},{label:'인테리어·시공',v:'interior'},{label:'오늘의집페이',v:'pay'},{label:'PB (자체 브랜드)',v:'pb'},{label:'오프라인 매장',v:'retail'},{label:'잘 모르겠어요',v:'unknown'}]],
-    period:['끝나는 날이 있나요?',[{label:'아니요, 계속 운영해요',v:'always'},{label:'네, 기간을 정해 운영해요',v:'campaign'}]],
-    kind:['어떤 쪽에 가까워요?',[...['service','cert','feature','content'].map(v=>({label:TYPES[v].ask,v})),{label:'잘 모르겠어요',v:'unknown'}]],
+    period:['한정된 기간이 있나요?',[{label:'아니요, 상시로 운영해요',v:'always'},{label:'네, 기간을 정해 운영해요',v:'campaign'}]],
+    channel:['대외적인 소통이 예정되어 있나요?',[{label:'네, 광고·SNS·제휴처 등 밖으로도 나가요',v:'external'},{label:'아니요, 앱 안·온드미디어·사내에서만 써요',v:'internal'}]],
+    kind:['독립된 페이지나 공간이 있나요? 가장 가까운 걸 골라주세요.',[...['service','cert','feature','content'].map(v=>({label:TYPES[v].ask,v})),{label:'잘 모르겠어요',v:'unknown'}]],
+    indep:['오늘의집을 벗어나 독립 브랜드로 가고 싶으신가요?',[{label:'아니요, 오늘의집 안에서 운영해요',v:'no'},{label:'네, 독립 브랜드로 운영할 거예요',v:'yes'}]],
   }[k];
 }
 function ask(k){
@@ -505,7 +551,7 @@ function ask(k){
     S.awaiting='desc';
     const t=S.intent==='names'&&S.candidates.length
       ? `${S.candidates.map(c=>`‘${c}’`).join(', ')}, 좋아요.\n어떤 서비스에 붙일 이름인지 한두 문장으로 알려주세요. 그래야 정확하게 봐드릴 수 있어요.`
-      : '어떤 서비스인지 한두 문장으로 알려주세요.\n누가 쓰는지, 무엇을 하는지 정도면 충분해요.';
+      : '어떤 걸 부르는 이름인가요?\n고객이 무엇을 할 수 있는지 간단히 알려주세요. 기획 내용을 그대로 붙여주셔도 돼요.';
     bot(t,[{label:'예시 설명 넣기',act:'fill'}]);return;
   }
   if(k==='candidates'){S.awaiting='names';bot('봐드릴 이름을 알려주세요. 여러 개면 ‘따옴표’로 하나씩 묶어주세요.',[{label:"예시: '오늘의집 렌즈', '스타일찾기'",act:'say',text:"'오늘의집 렌즈', '스타일찾기'"}],known);return}
@@ -528,22 +574,25 @@ function respond(){
   }
   if(i==='overview'){addTopic('overview');bot(`매트릭스에서 들어갈 칸과 지켜야 할 기준을 오른쪽에 정리했어요.\n생각해둔 이름이 있으면 알려주세요.`,[{label:'이름 봐주세요',act:'intent',v:'names'},{label:'로고도 필요해요?',act:'intent',v:'logo'}]);return}
   if(i==='names'){addTopic('names');const {vs,pick}=verdictSummary();bot(`매트릭스로 검토한 결과예요.\n${vs.map(([n,v])=>`· ‘${n}’ → ${v.label}`).join('\n')}\n\n${pick}`,S.topics.includes('logo')?[]:[{label:'로고도 필요해요?',act:'intent',v:'logo'}]);return}
-  if(i==='logo'){addTopic('logo');const r=logoResult();bot(`${r.label}\n이유는 오른쪽에 정리했어요.`);return}
+  if(i==='logo'){addTopic('logo');const r=logoResult();bot(`${r.label}\n${r.reason}`);return}
+  if(i==='prefix'){addTopic('overview');const r=prefixRule();bot(r?`${r.appText}\n${S.svc.channel==='external'?r.extText:'대외 소통이 없으면 이름만 쓰면 돼요.'}`:'유형을 알 수 없어서 ‘오늘의집’ 표기 규칙을 정하지 못했어요. 담당 팀에 확인해주세요.',[{label:'이름 봐주세요',act:'intent',v:'names'},{label:'로고도 필요해요?',act:'intent',v:'logo'}]);return}
   if(i==='trademark'){addTopic('trademark');bot('상표 등록 여부는 여기서 정하지 않아요. 누구에게, 언제 확인하면 되는지 정리했어요.');return}
 }
 /* ── 자유 입력 해석: 뷰어에서는 Claude가, 아니면 키워드 규칙이 맡아요 ── */
 let SAMPLE=null, busy=false;
 try{ if(window.claude&&claude.use) claude.use('sample').then(x=>{SAMPLE=x}).catch(()=>{}) }catch(e){}
-const FIELD={target:'누가 쓰는지',entity:'어느 사업 쪽인지',period:'끝나는 날이 있는지',kind:'어떤 유형인지'};
-const ALLOWED={target:['user','owner','creator','payer','other'],entity:['ohouse','interior','pay','pb','retail','unknown','other'],period:['always','campaign'],kind:['service','cert','feature','content','unknown','other']};
+const FIELD={target:'누가 쓰는지',entity:'어느 사업 쪽인지',period:'한정된 기간이 있는지',channel:'대외 소통이 있는지',kind:'어떤 유형인지',indep:'독립 브랜드로 갈지'};
+const ALLOWED={target:['user','owner','creator','payer','other'],entity:['ohouse','interior','pay','pb','retail','unknown','other'],period:['always','campaign'],channel:['external','internal'],kind:['service','cert','feature','content','unknown','other'],indep:['yes','no']};
 function aiPrompt(text){
   return `너는 오늘의집 사내 브랜드 안내 툴 "Brand Map"의 입력 해석기야. 사용자 메시지를 읽고 JSON 객체 하나로만 답해.
 
 매트릭스 정의
 - entity(사업자): ohouse=오늘의집 앱(쇼핑·커뮤니티), interior=오늘의집인테리어(시공·이사·청소 등), pay=오늘의집페이(결제·머니), pb=오늘의집 PB(자체 브랜드 상품), retail=오늘의집 리테일(오프라인 매장)
 - target(대상): user=유저(고객), owner=사장님(입점 판매자·시공 업체), creator=파트너·크리에이터, payer=결제사
-- period: always=상시 운영, campaign=끝나는 날이 있는 기간 운영(세일·캠페인·어워드 등)
-- kind(유형, 상시일 때만): service=${TYPES.service.desc} / cert=${TYPES.cert.desc} / feature=${TYPES.feature.desc} / content=${TYPES.content.desc}
+- period: always=상시 운영, campaign=한정된 기간이 있는 운영(세일·캠페인·어워드 등)
+- channel: external=광고·SNS·제휴처·언론 등 대외 소통이 예정됨, internal=인앱·온드미디어(소속이 드러나는 자사 채널)·사내에서만 씀
+- indep: yes=오늘의집을 벗어나 독립 브랜드로 운영하고 싶음, no=오늘의집 안에서 운영
+- kind(유형, 상시일 때만, 독립된 페이지·공간이 있으면 service): service=${TYPES.service.desc} / cert=${TYPES.cert.desc} / feature=${TYPES.feature.desc} / content=${TYPES.content.desc}
 
 지금까지 확인한 것: ${JSON.stringify({...S.svc,summary:undefined,candidates:S.candidates})}
 방금 사용자에게 한 질문: ${S.awaiting&&FIELD[S.awaiting]?FIELD[S.awaiting]:'없음'}
@@ -555,11 +604,12 @@ function aiPrompt(text){
 - 대상이 둘 이상이면 주된 하나를 고르고 나머지는 notes.target에 적어.
 - "잘 모르겠다"고 하면 entity/kind는 "unknown".
 - candidates: 사용자가 검토를 원하는 이름 후보 배열. 따옴표가 없어도 이름이면 넣어. 없으면 [].
-- intent: names(이름을 써도 되는지·후보 검토), logo(로고), trademark(상표), start(어디서부터 할지), info(서비스 설명이나 질문에 대한 답), question(가이드·매트릭스에 대해 묻는 말) 중 하나.
-- answer: intent가 question일 때만. 위 정의만 근거로 해요체 2문장 이내. 정의로 답할 수 없으면 "그건 매트릭스에 없어서 담당 팀 확인이 필요해요."
+- intent: names(이름을 써도 되는지·후보 검토), logo(로고), prefix(이름 앞에 ‘오늘의집’을 붙여도 되는지), trademark(상표), start(어디서부터 할지), info(서비스 설명이나 질문에 대한 답), question(가이드·매트릭스에 대해 묻는 말) 중 하나.
+- 표기 기준(답변 근거): 대내에서는 모든 이름 앞에 ‘오늘의집’ 표기 불가. 대외에서는 서비스·보증인증 필수, 기능 선택, 기간 캠페인 불가, 콘텐츠 미정. 로고는 서비스·보증인증만 부착 가능하고, 방식은 워드마크형(오늘의집 워드마크+서비스명) 또는 독립형 두 가지.
+- answer: intent가 question일 때만. 위 정의와 표기 기준만 근거로 해요체 2문장 이내. 정의로 답할 수 없으면 "그건 매트릭스에 없어서 담당 팀 확인이 필요해요."
 - describes: 메시지가 서비스가 무엇인지 설명하면 true.
 
-형식: {"intent":"info","target":null,"entity":null,"period":null,"kind":null,"notes":{},"candidates":[],"describes":false,"answer":null}`;
+형식: {"intent":"info","target":null,"entity":null,"period":null,"channel":null,"kind":null,"indep":null,"notes":{},"candidates":[],"describes":false,"answer":null}`;
 }
 function applyAI(r,text){
   if(!r||typeof r!=='object') return false;
@@ -572,7 +622,7 @@ function applyAI(r,text){
   if(!s.summary&&(r.describes||aw==='desc')) s.summary=text.split(/후보는|후보:/)[0].trim()||text;
   const it=r.intent;
   if(it==='question'&&r.answer){bot(String(r.answer).slice(0,400));if(S.awaiting){const k=S.awaiting;S.awaiting=null;setTimeout(()=>{ask(k);render()},200)}render();return true}
-  if(['names','logo','trademark','start'].includes(it)) S.intent=it;
+  if(['names','logo','prefix','trademark','start'].includes(it)) S.intent=it;
   if(!S.intent) S.intent=S.candidates.length?'names':'overview';
   setTimeout(advance,120);render();return true;
 }
@@ -637,12 +687,12 @@ function renderThread(){
 
 /* ───────── 결과 패널 ───────── */
 function pill(cls,t){return`<span class="pill ${cls}">${esc(t)}</span>`}
-const KIND={rule:['rule','매트릭스'],interp:['interp','판단'],gap:['gap','기준 없음']};
+const KIND={rule:['rule','기준'],interp:['interp','판단'],gap:['gap','기준 없음']};
 const chip=r=>`<span class="nm ${r.tag?'t'+({'+':'add','*':'chg','~':'sup'})[r.tag]:''}">${esc(r.name)}${r.tag?`<i>${TAGS[r.tag]}</i>`:''}</span>`;
 function secSummary(){
   const s=S.svc;
-  const conds=[s.target?L('target')+' 대상':null,s.entity?L('entity'):null,s.period?PERIOD[s.period]:null,s.kind&&s.period!=='campaign'?L('kind'):null];
-  const miss=[['target','누가 쓰는지'],['entity','사업 분류'],['period','운영 기간'],['kind','유형']].filter(([k])=>s[k]===null&&!(k==='kind'&&s.period==='campaign'));
+  const conds=[s.target?L('target')+' 대상':null,s.entity?L('entity'):null,s.period?PERIOD[s.period]:null,s.channel?CHANNEL[s.channel]:null,s.kind&&s.period!=='campaign'?L('kind'):null,s.indep?INDEP[s.indep]:null];
+  const miss=[['target','누가 쓰는지'],['entity','사업 분류'],['period','운영 기간'],['channel','대내외'],['kind','유형']].filter(([k])=>s[k]===null&&!(k==='kind'&&s.period==='campaign'));
   if(S.editing){
     const seg=(k,map)=>`<div class="seg" role="group">${Object.entries(map).map(([v,l])=>`<button type="button" data-edit="${k}" data-v="${v}" aria-pressed="${s[k]===v}">${esc(l)}</button>`).join('')}</div>`;
     return`<div class="card"><div class="sec-h"><span class="eyebrow">내 서비스</span><button class="btn sec right" type="button" id="doneEdit" style="padding:6px 12px">완료</button></div>
@@ -651,7 +701,9 @@ function secSummary(){
       <div><span class="l">누가 쓰나요</span>${seg('target',TGTX)}</div>
       <div><span class="l">사업 분류</span>${seg('entity',ENTX)}</div>
       <div><span class="l">운영 기간</span>${seg('period',PERIOD)}</div>
+      <div><span class="l">대내외</span>${seg('channel',CHANNEL)}</div>
       <div><span class="l">유형</span>${seg('kind',KINDS)}</div>
+      <div><span class="l">브랜드 독립</span>${seg('indep',INDEP)}</div>
       <p class="note">바꾸면 결과가 바로 바뀌어요.</p>
     </div></div>`;
   }
@@ -678,13 +730,19 @@ function secLogo(){
   let act='';
   if(r.state==='yes') act=req?`<button class="btn sec" type="button" data-open="make">요청 보냄 · ${esc(req.no)}</button>`:`<button class="btn" type="button" data-open="make">로고 만들어달라고 요청하기</button>`;
   if(r.state==='review') act=req?`<button class="btn sec" type="button" data-open="review">요청 보냄 · ${esc(req.no)}</button>`:`<button class="btn" type="button" data-open="review">담당 팀에 물어보기</button>`;
-  if(r.state==='pending') act=`<button class="btn sec" type="button" id="editBtn2">알려주기</button>`;
+  if(r.state==='pending') act=r.ask==='indep'?`<button class="btn sec" type="button" data-edit="indep" data-v="no">오늘의집 안에서 운영해요</button><button class="btn sec" type="button" data-edit="indep" data-v="yes">독립 브랜드로 갈 거예요</button>`:`<button class="btn sec" type="button" id="editBtn2">알려주기</button>`;
+  if(r.state==='free') act=`<button class="linkish" type="button" data-open="review">담당 팀에 물어보기</button>`;
   if(r.state==='no') act=`<button class="btn sec" type="button" id="guideBtn" aria-expanded="${S.showGuide}">이름 쓰는 법 ${S.showGuide?'닫기':'보기'}</button><button class="linkish" type="button" id="objectBtn">다른 조건이 있어요</button>`;
   const name=S.candidates[0]?coreOf(S.candidates[0]):'서비스명';
   return`<div class="card"><div class="sec-h"><h2>로고</h2></div>
   <div class="result-big ${r.state}"><div><div class="state">${esc(r.label)}</div><p class="summary-text">${esc(r.reason)}</p></div></div>
   ${r.state==='no'&&S.showGuide?`<div class="lockup" aria-label="표기 예시"><span class="wm">오늘의집</span><span class="bar"></span><span class="svc">${esc(name)}</span></div><p class="note">예시예요. 오늘의집 로고 옆에 선을 하나 긋고 이름을 글자로 써요.</p>`:''}
-  ${r.state==='yes'?`<p class="note">요청이 접수돼도 바로 만들어지는 건 아니에요. 담당 팀이 보고 연락드려요.</p>`:''}
+  ${r.state==='yes'?`<div class="lostyles">
+      <div class="lostyle ${r.style==='wordmark'?'on':''}"><div class="lockup"><span class="wm">오늘의집</span><span class="svc">${esc(name)}</span></div><b>워드마크형</b><span>오늘의집 워드마크 + 서비스명. 예: 오늘의집 키친</span></div>
+      <div class="lostyle ${r.style==='independent'?'on':''}"><div class="lockup"><span class="svc indep">${esc(name)}</span></div><b>독립형</b><span>완전히 다른 로고. 예: 프락트, 바이너리샵 · 상표·법무 검토 필요</span></div>
+    </div>
+    <p class="note">로고 방식은 이 두 가지예요. 기존 아이콘을 그대로 쓰는 경우(예: 시공 서비스)는 로고를 따로 만들지 않아도 돼요. 요청이 접수돼도 바로 만들어지는 건 아니에요.</p>`:''}
+  ${(r.state==='yes'||r.state==='no')&&S.svc.kind==='cert'?`<p class="note">배송 관련 보증·인증(원하는날도착 등)은 로고를 붙이지 않는 예외를 검토 중이에요.</p>`:''}
   <div class="actions">${act}</div></div>`;
 }
 function verdict(n){
@@ -698,13 +756,17 @@ function verdict(n){
   const same=[...m.alias,...m.sim.filter(r=>formsOf(r).some(f=>nc.length>1&&(f.includes(nc)||nc.includes(f))))].filter(r=>r.col===col);
   if(same.length) return {v:'bad',label:'쓰면 안 돼요',reason:`같은 칸에 사실상 같은 이름이 있어요: ‘${same[0].name}’. 고객이 같은 걸로 알기 쉬워요.`};
   if(!p||col<0||!p.type) return {v:'review',label:'담당 팀 확인이 필요해요',reason:'매트릭스에서 들어갈 칸을 찾지 못해서 판단할 기준이 없어요.'};
+  if(p.tk==='content') return {v:'review',label:'담당 팀 확인이 필요해요',reason:'콘텐츠는 분류 범위와 대외 표기 규칙을 다시 정리하고 있어요. 담당 팀에 확인해주세요.'};
   const fixes=[];let fixTo=null;
+  if(p.tk==='campaign'&&hasBrand){fixes.push('기간 캠페인에는 ‘오늘의집’을 붙이지 않아요.');fixTo=core}
   if(GENERIC.includes(nc)&&hasBrand){fixes.push('일반명사라 ‘오늘의집’을 빼야 해요.');fixTo=core}
   if(/[가-힣][A-Za-z]|[A-Za-z][가-힣]/.test(core)) fixes.push('한글과 영문이 붙어 있어요. 하나로 통일해주세요.');
   const near=m.sim.filter(r=>r.col===col&&!same.includes(r));
   if(near.length) fixes.push(`같은 칸의 ‘${near[0].name}’${jo(near[0].base,'과','와')} 헷갈릴 수 있어요. 겹치는 말을 바꿔주세요.`);
-  if(fixes.length) return {v:'fix',label:'고쳐서 쓰세요',reason:fixes.join(' '),fixTo};
-  return {v:'ok',label:'써도 돼요',reason:'매트릭스 기준에 걸리는 게 없어요. 출시 전에 상표만 따로 확인해주세요.'};
+  const forms=nameForms(fixTo||n);
+  const note=/패스|멤버십|클럽|구독/.test(n)?'멤버십·패스 이름 규칙은 아직 정리 중이에요.':'';
+  if(fixes.length) return {v:'fix',label:'고쳐서 쓰세요',reason:fixes.join(' '),fixTo,forms,note};
+  return {v:'ok',label:'써도 돼요',reason:'매트릭스 기준에 걸리는 게 없어요. 출시 전에 상표만 따로 확인해주세요.',forms,note};
 }
 const VPILL={ok:'ok',fix:'fix',bad:'bad',review:'review'};
 function verdictSummary(){
@@ -718,10 +780,10 @@ function secNames(){
   return`<div class="card"><div class="sec-h"><h2>이 이름, 써도 될까요?</h2><span class="note">${S.candidates.length}개</span></div>
   <p class="verdict-pick">${esc(pick)}</p>
   <div class="cands">${vs.map(([n,v],i)=>{const rows=reviewName(n);return`<div class="cand v-${v.v}"><div class="cand-h"><span class="name">${esc(n)}</span>${pill(VPILL[v.v],v.label)}<button class="x" type="button" data-rm="${i}" aria-label="${esc(n)} 빼기">빼기</button></div>
-    <div class="cand-v"><p>${esc(v.reason)}</p>${v.fixTo&&!S.candidates.includes(v.fixTo)?`<button class="linkish" type="button" data-try="${esc(v.fixTo)}">‘${esc(v.fixTo)}’${jo(v.fixTo,'으로','로')} 다시 보기</button>`:''}</div>
+    <div class="cand-v"><p>${esc(v.reason)}</p>${v.forms?`<div class="forms"><span><i>앱 안</i>${esc(v.forms.app)}</span>${S.svc.channel==='external'&&v.forms.ext?`<span><i>대외</i>${esc(v.forms.ext)}</span>`:''}</div>`:''}${v.note?`<p class="note">${esc(v.note)}</p>`:''}${v.fixTo&&!S.candidates.includes(v.fixTo)?`<button class="linkish" type="button" data-try="${esc(v.fixTo)}">‘${esc(v.fixTo)}’${jo(v.fixTo,'으로','로')} 다시 보기</button>`:''}</div>
     <details class="cand-d"><summary>매트릭스 검토 내용</summary><div class="checks">${rows.map(([k,c])=>`<div class="ck">${k}</div><div class="st">${pill(c.st,ST[c.st])}</div><div class="tx">${esc(c.t)}${c.ref?`<span class="ref">${esc(c.ref)}</span>`:''}</div>`).join('')}</div></details></div>`}).join('')}</div>
   <form class="addc" id="addCand"><input id="candIn" placeholder="이름 더 넣기" aria-label="이름 후보 추가"><button class="btn sec" type="submit">추가</button></form>
-  <p class="limit">브랜드 네이밍 매트릭스(초안)의 이름 ${REG.length}개와 비교한 결과예요. 상표 등록 가능 여부는 포함하지 않아요.</p></div>`;
+  <p class="limit">서비스 카테고리 매트릭스(디벨롭2)의 이름 ${REG.length}개와 비교한 결과예요. 상표 등록 가능 여부는 포함하지 않아요.</p></div>`;
 }
 function secTrademark(){
   return`<div class="card"><div class="sec-h"><h2>상표</h2></div>
@@ -734,30 +796,35 @@ function secTrademark(){
 }
 function secStart(){return''}
 function secOverview(){
-  const p=position(), r=logoResult();
-  const m=p&&p.cases.length?p.cases.filter(x=>/^오늘의집/.test(x.base)).length:null;
-  return`<div class="card"><div class="sec-h"><h2>지켜야 할 기준</h2></div>
+  const p=position(), r=logoResult(), pr=prefixRule(), s=S.svc;
+  const logoLine=r.state==='yes'||(r.state==='pending'&&r.ask==='indep')?'로고를 붙일 수 있어요. 방식은 워드마크형 또는 독립형이에요.':r.state==='no'?'로고는 붙이지 않아요.':r.state==='free'?'오늘의집 로고는 붙이지 않고, 캠페인 그래픽은 자유롭게 만들어요.':r.state==='review'?'로고는 담당 팀 확인이 필요해요.':'로고는 유형을 알면 정할 수 있어요.';
+  const graphic=p&&p.tk==='campaign'?'한시 프로모션 그래픽은 자유롭게 만들어요.':'상시 서비스 그래픽은 브랜드 에셋 라이브러리를 써요. (링크 준비 중)';
+  return`<div class="card"><div class="sec-h"><h2>지켜야 할 기준</h2>${pr?pill(pr.ext==='must'?'ok':pr.ext==='may'?'interp':pr.ext==='never'?'bad':'info',pr.extLabel):''}</div>
   <ul class="steps">
-    <li>${p&&p.type?`‘${esc(p.type.label)}’ 유형이에요. `:''}${r.state==='yes'?'로고를 붙일 수 있어요.':r.state==='no'?'로고는 붙이지 않아요.':r.state==='review'?'로고는 담당 팀 확인이 필요해요.':'로고는 유형을 알면 정할 수 있어요.'}</li>
-    ${m!==null?`<li>같은 칸 이름 ${p.cases.length}개 중 ${m}개가 ‘오늘의집’을 붙였어요. 정해진 기준은 아직 없어요.</li>`:''}
-    <li>스크랩, 태그 같은 일반명사에는 ‘오늘의집’을 붙이지 않아요.</li>
-    <li>밖에 공개하기 전에 상표를 확인해요.</li>
+    ${p&&p.type?`<li><b>유형</b>‘${esc(p.type.label)}’ (${esc(p.type.group)})</li>`:''}
+    ${pr?`<li><b>‘오늘의집’ 표기</b>${esc(pr.appText)}${s.channel==='external'?' '+esc(pr.extText):s.channel===null?' 대외로 나가면 유형별 규칙이 따로 있어요.':''}</li>`:''}
+    <li><b>로고</b>${esc(logoLine)}</li>
+    <li><b>그래픽</b>${esc(graphic)}</li>
+    <li><b>일반명사</b>스크랩, 태그 같은 일반명사에는 ‘오늘의집’을 붙이지 않아요.</li>
+    <li><b>상표</b>밖에 공개하기 전에 확인해요.</li>
+    <li><b>하위 라인업</b>키친, 원하는날도착처럼 하위 항목에도 같은 규칙을 적용해요.</li>
   </ul></div>`;
 }
 function secBasis(){
   const rows=[];
   if(S.topics.includes('logo')) logoResult().basis.forEach(b=>rows.push(b));
+  const pr=prefixRule();if(pr&&(S.topics.includes('overview')||S.topics.includes('names')))rows.push({k:'map',cl:'오늘의집 표기 기준',kind:'rule',t:`대내 표기 불가 · 대외 ${pr.extLabel.replace('대외 ','')}`});
   if(S.topics.includes('names')) rows.push({k:'map',cl:`이름 ${REG.length}개`,kind:'rule',t:'겹치는 이름은 매트릭스에 있는 이름 안에서만 찾았어요.'});
   if(position()) rows.push({k:'map',cl:'사업자 × 대상 × 유형',kind:'interp',t:'위치는 설명을 보고 예상한 거예요. 공식 분류는 아니에요.'});
   const s=S.svc,unk=[];
-  if(s.summary)[['target','누가 쓰는지'],['entity','어느 사업 쪽인지'],['period','끝나는 날이 있는지'],['kind','어떤 유형인지']].forEach(([k,l])=>{if((s[k]===null||isUnk(s[k]))&&!(k==='kind'&&s.period==='campaign'))unk.push(l)});
+  if(s.summary)[['target','누가 쓰는지'],['entity','어느 사업 쪽인지'],['period','한정된 기간이 있는지'],['channel','대외 소통이 있는지'],['kind','어떤 유형인지']].forEach(([k,l])=>{if((s[k]===null||isUnk(s[k]))&&!(k==='kind'&&s.period==='campaign'))unk.push(l)});
   if(S.candidates.length) unk.push('이름을 확정했는지');
   if(S.topics.includes('names')||S.topics.includes('trademark')) unk.push('상표를 확인했는지');
   if(!rows.length&&!unk.length) return'';
   return`<details class="card more" ${S.basisOpen?'open':''}><summary><h2>왜 이렇게 봤나요?</h2></summary>
   ${rows.length?`<div class="basis">${rows.map(b=>`<div class="brow">${pill(...KIND[b.kind])}<span>${esc(b.t)}</span><span class="doc bt">${esc(docRef(b.k,b.cl))}</span></div>`).join('')}</div>`:''}
   ${unk.length?`<div><div class="eyebrow" style="margin-bottom:4px">아직 모르는 것</div><ul class="unk">${unk.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
-  <p class="note">로고 부착 가능·불가는 매트릭스 표시를 따랐고, 유형 분류와 나머지 안내는 프로토타입용 해석이에요.</p>
+  <p class="note">로고 부착 가능·불가와 ‘오늘의집’ 표기 기준은 서비스 카테고리 매트릭스 디벨롭2와 10/15 회의 결정을 따랐어요. 대외 표기 규칙은 아직 정리 중이라 바뀔 수 있어요. 유형 분류는 설명을 보고 예상한 거예요.</p>
   </details>`;
 }
 function renderPanel(){
@@ -937,15 +1004,15 @@ function openMap(){
   const rows=['service','cert','feature','content','campaign','generic','merge'];
   const groups={상시:4,비상시:1,참고:2};let lastG=null;
   const body=rows.map(t=>{const T=TYPES[t];const g=T.group;const gcell=g!==lastG?`<th class="grp g-${g}" rowspan="${groups[g]}">${g}</th>`:'';lastG=g;
-    const logo=T.logo===true?'<span class="lg ok">로고 부착 가능</span>':T.logo===false?'<span class="lg no">로고 부착 불가</span>':'';
+    const logo=(T.logo===true?'<span class="lg ok">로고 부착 가능</span>':T.logo===false?'<span class="lg no">로고 부착 불가</span>':'')+(T.prefix?`<span class="lg pf ${T.prefix}">${PREFIX[T.prefix]}</span>`:'');
     return`<tr class="${t===myType?'myrow':''}">${gcell}<th class="rowh">${logo}<b>${esc(T.label)}</b><span>${esc(T.desc)}</span></th>${COLS.map((c,ci)=>`<td class="${t===myType&&ci===myCol?'me':''}">${cellOf(t,ci).map(chip).join('')}${t===myType&&ci===myCol?'<span class="here">이번 서비스</span>':''}</td>`).join('')}</tr>`}).join('');
-  $('#mapRoot').innerHTML=`<div class="scrim" data-mclose></div><div class="mapdlg" role="dialog" aria-modal="true" aria-label="브랜드 네이밍 매트릭스">
-  <div class="dr-h"><h2>브랜드 네이밍 매트릭스</h2><span class="note">초안 · 이름 ${REG.length}개</span><button class="ghost" type="button" data-mclose>닫기</button></div>
+  $('#mapRoot').innerHTML=`<div class="scrim" data-mclose></div><div class="mapdlg" role="dialog" aria-modal="true" aria-label="서비스 카테고리 매트릭스">
+  <div class="dr-h"><h2>서비스 카테고리 매트릭스</h2><span class="note">디벨롭2 · 이름 ${REG.length}개</span><button class="ghost" type="button" data-mclose>닫기</button></div>
   <div class="map-wrap"><table class="mtx"><thead>
     <tr><th colspan="2" class="corner">사업자</th>${ents.map(([e,n])=>`<th colspan="${n}" class="ent">${esc(ENT[e])}</th>`).join('')}</tr>
     <tr><th colspan="2" class="corner">대상</th>${COLS.map(([,t],ci)=>`<th class="tgt ${ci===myCol?'mecol':''}">${esc(TGT[t])}</th>`).join('')}</tr>
   </thead><tbody>${body}</tbody></table></div>
-  <div class="map-legend"><span class="nm tadd">이름<i>추가</i></span><span class="nm tchg">이름<i>변경</i></span><span class="nm tsup">이름<i>보강</i></span><span class="note">매트릭스 원본에 표시된 정리 상태예요.</span></div>
+  <div class="map-legend"><span class="note"><b>오늘의집 표기</b> 대내(인앱·온드미디어·사내)는 모든 이름 앞에 표기 불가 · 대외는 줄마다 표시된 규칙을 따라요.</span><span class="nm tadd">이름<i>추가</i></span><span class="nm tchg">이름<i>변경</i></span><span class="nm tsup">이름<i>보강</i></span><span class="note">매트릭스 원본에 표시된 정리 상태예요.</span></div>
   </div>`;
   document.querySelectorAll('#mapRoot [data-mclose]').forEach(b=>b.addEventListener('click',closeMap));
   const me=$('#mapRoot td.me');me&&me.scrollIntoView({block:'center',inline:'center'});
