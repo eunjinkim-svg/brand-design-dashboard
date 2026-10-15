@@ -1,0 +1,965 @@
+<title>Brand Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 왼쪽 대화(설명하기) · 오른쪽 결과 패널(위치·검토·근거·다음 행동). 좁은 화면에선 위아래로 쌓여요. */
+:root{
+  --bg:#FFFFFF; --panel:#F4F7FA; --raise:#FFFFFF;
+  --ink:#111A22; --ink-2:#3E4C59; --muted:#687786; --hair:#E0E7EE; --hair-2:#C9D4DE;
+  --accent:#0090E6; --accent-ink:#FFFFFF; --accent-soft:#E5F4FD;
+  --ok:#0B7F55; --ok-bg:#E7F5EE; --warn:#9A5B00; --warn-bg:#FBF1E1; --bad:#C2271D; --bad-bg:#FCEBEA;
+  --info:#46566A; --info-bg:#EDF1F5;
+  --shadow:0 1px 2px rgba(17,26,34,.05),0 12px 32px rgba(17,26,34,.10);
+  --scrim:rgba(17,26,34,.38);
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1419; --panel:#141C23; --raise:#1A242D;
+  --ink:#E6EDF3; --ink-2:#B4C1CD; --muted:#8696A5; --hair:#24313C; --hair-2:#33424F;
+  --accent:#3DB2FF; --accent-ink:#06121B; --accent-soft:#11293A;
+  --ok:#4CC995; --ok-bg:#0F2A20; --warn:#E6A848; --warn-bg:#2E2412; --bad:#FF7A70; --bad-bg:#33171A;
+  --info:#A8B6C4; --info-bg:#1E2933;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.45); --scrim:rgba(0,0,0,.55); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1419; --panel:#141C23; --raise:#1A242D;
+  --ink:#E6EDF3; --ink-2:#B4C1CD; --muted:#8696A5; --hair:#24313C; --hair-2:#33424F;
+  --accent:#3DB2FF; --accent-ink:#06121B; --accent-soft:#11293A;
+  --ok:#4CC995; --ok-bg:#0F2A20; --warn:#E6A848; --warn-bg:#2E2412; --bad:#FF7A70; --bad-bg:#33171A;
+  --info:#A8B6C4; --info-bg:#1E2933;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.45); --scrim:rgba(0,0,0,.55); color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;letter-spacing:-.01em;text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:0}
+
+.shell{display:flex;flex-direction:column;height:100%}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--hair);background:var(--bg)}
+.top h1{font-size:16px;font-weight:700}
+.top .sub{color:var(--muted);font-size:13px}
+.proto{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--warn);background:var(--warn-bg);padding:4px 10px;border-radius:999px}
+.ghost{background:none;border:1px solid var(--hair-2);border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;color:var(--ink-2)}
+.ghost:hover{border-color:var(--ink-2)}
+
+.app{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+.chat{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--hair)}
+.thread{flex:1;min-height:0;overflow:auto;padding:24px 24px 12px;display:flex;flex-direction:column;gap:18px}
+.msg{max-width:560px;display:flex;flex-direction:column;gap:8px}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.msg.user .bubble{background:var(--accent);color:var(--accent-ink);padding:9px 14px;border-radius:16px 16px 4px 16px;white-space:pre-wrap}
+.msg.bot .who{font-size:12px;font-weight:600;color:var(--muted)}
+.msg.bot .text{color:var(--ink);white-space:pre-line}
+.msg.bot .text b{font-weight:600}
+.msg.bot .text.typing{color:var(--muted)}
+.known{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.known span.k{background:var(--panel);border:1px solid var(--hair);color:var(--ink-2);padding:2px 8px;border-radius:999px}
+.replies{display:flex;flex-wrap:wrap;gap:8px}
+.reply{background:var(--raise);border:1px solid var(--hair-2);border-radius:999px;padding:6px 13px;font-size:14px;cursor:pointer;text-align:left}
+.reply:hover{border-color:var(--accent);color:var(--accent)}
+.reply.ex{border-radius:10px;font-size:13.5px;color:var(--ink-2)}
+.replies[aria-disabled="true"] .reply{opacity:.45;pointer-events:none}
+.composer{padding:12px 24px 18px;border-top:1px solid var(--hair);display:flex;gap:10px;align-items:flex-end;background:var(--bg)}
+.composer textarea{flex:1;min-width:0;resize:none;border:1px solid var(--hair-2);border-radius:12px;padding:10px 14px;background:var(--raise);min-height:46px;max-height:160px;line-height:1.5}
+.composer textarea:focus{outline:none;border-color:var(--accent)}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink);white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.card{background:var(--raise);color:var(--ink);border:1px solid var(--hair-2)}
+.linkish{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+
+.panel{min-height:0;overflow:auto;background:var(--panel);padding:24px}
+.panel-inner{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--raise);border:1px solid var(--hair);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.sec-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sec-h h2{font-size:14px;font-weight:700}
+.sec-h .right{margin-left:auto}
+.eyebrow{font-size:11.5px;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.empty{border:1px dashed var(--hair-2);border-radius:14px;padding:28px;color:var(--muted);display:flex;flex-direction:column;gap:14px}
+.empty h2{color:var(--ink);font-size:16px}
+.empty ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{color:var(--ok);background:var(--ok-bg)} .pill.fix,.pill.check,.pill.review{color:var(--warn);background:var(--warn-bg)}
+.pill.bad{color:var(--bad);background:var(--bad-bg)} .pill.none,.pill.info,.pill.no{color:var(--info);background:var(--info-bg)}
+.pill.yes{color:var(--accent-ink);background:var(--accent)} .pill.tent{color:var(--warn);background:transparent;border:1px dashed var(--warn)}
+.pill.rule{color:var(--ink-2);background:var(--panel);border:1px solid var(--hair-2)}
+.pill.interp{color:var(--accent);background:var(--accent-soft)}
+.pill.gap{color:var(--bad);background:var(--bad-bg)}
+
+.summary-text{color:var(--ink-2)}
+.conds{display:flex;flex-wrap:wrap;gap:6px}
+.cond{font-size:12.5px;border:1px solid var(--hair);border-radius:8px;padding:3px 9px;color:var(--ink-2);background:var(--panel)}
+.cond.missing{border-style:dashed;color:var(--muted);background:transparent}
+.edit{display:flex;flex-direction:column;gap:12px}
+.edit label.l{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.edit textarea{width:100%;border:1px solid var(--hair-2);border-radius:10px;padding:9px 12px;background:var(--bg);resize:vertical;min-height:70px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--hair-2);background:var(--bg);border-radius:8px;padding:5px 11px;font-size:13px;cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+
+.tree{display:flex;flex-direction:column;gap:0;font-size:14px}
+.node{display:flex;align-items:center;gap:8px;padding:6px 0}
+.node .dot{width:9px;height:9px;border-radius:50%;border:2px solid var(--hair-2);flex:none}
+.node.l1{padding-left:0}.node.l2{padding-left:22px}.node.l3{padding-left:44px}
+.node .lv{font-size:12px;color:var(--muted)}
+.node.me{font-weight:600}
+.node.me .dot{border-color:var(--accent);background:var(--accent)}
+.node.unk .dot{border-style:dashed}
+.why{font-size:13.5px;color:var(--ink-2);background:var(--panel);border-radius:10px;padding:10px 12px}
+.cases{display:flex;flex-direction:column;gap:6px}
+.case{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;font-size:13.5px;padding:8px 0;border-top:1px solid var(--hair)}
+.case .meta{color:var(--muted);font-size:12.5px;grid-column:1/-1}
+.case .exc{grid-column:1/-1;color:var(--warn);font-size:12.5px}
+
+.result-big{display:flex;align-items:flex-start;gap:12px}
+.result-big .state{font-size:18px;font-weight:700}
+.result-big.yes .state{color:var(--accent)} .result-big.no .state{color:var(--ink)} .result-big.review .state{color:var(--warn)} .result-big.pending .state{color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lockup{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--hair);border-radius:10px;background:var(--bg);flex-wrap:wrap}
+.lockup .wm{font-weight:700;font-size:20px;color:var(--accent);letter-spacing:-.03em}
+.lockup .bar{width:1px;height:20px;background:var(--hair-2)}
+.lockup .svc{font-size:17px;font-weight:600}
+.note{font-size:12.5px;color:var(--muted)}
+
+.cands{display:flex;flex-direction:column;gap:12px}
+.cand{border:1px solid var(--hair);border-radius:12px;overflow:hidden}
+.cand-h{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel);flex-wrap:wrap}
+.cand-h .name{font-weight:700;font-size:15px}
+.cand-h .x{margin-left:auto;background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px}
+.checks{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:0 12px;font-size:13.5px}
+.checks > div{padding:9px 0;border-top:1px solid var(--hair)}
+.checks > div:nth-child(-n+3){border-top:0}
+.checks .ck{padding-left:14px;color:var(--ink-2);font-weight:500;white-space:nowrap}
+.checks .tx{padding-right:14px;color:var(--ink-2)}
+.checks .tx .ref{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-left:4px}
+.addc{display:flex;gap:8px}
+.addc input{flex:1;min-width:0;border:1px solid var(--hair-2);border-radius:10px;padding:8px 12px;background:var(--bg)}
+.verdict-pick{font-weight:600;font-size:15px}
+.cand-v{padding:10px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;font-size:14px;color:var(--ink)}
+.cand.v-ok{border-color:var(--ok)} .cand.v-bad{border-color:var(--bad)} .cand.v-fix{border-color:var(--warn)}
+.cand-h .pill{font-size:12.5px}
+.cand-d{border-top:1px solid var(--hair)}
+.cand-d summary{cursor:pointer;padding:8px 14px;font-size:12.5px;color:var(--muted)}
+.cand-d[open] summary{border-bottom:1px solid var(--hair)}
+.limit{font-size:12.5px;color:var(--muted);border-left:2px solid var(--hair-2);padding-left:10px}
+
+.basis{display:flex;flex-direction:column}
+.brow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;padding:9px 0;border-top:1px solid var(--hair);font-size:13.5px}
+.brow:first-child{border-top:0}
+.brow .doc{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.brow .bt{grid-column:2;color:var(--ink-2)}
+.unk{margin:0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--ink-2)}
+.steps b{color:var(--ink);font-weight:600;margin-right:6px}
+details.more summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:'+';margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
+details.more[open] summary::after{content:'–'}
+details.more summary h2{font-size:14px;font-weight:700}
+
+/* 요청 패널 */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);z-index:21;display:flex;flex-direction:column;box-shadow:var(--shadow);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dr-h{padding:18px 22px;border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:10px}
+.dr-h h2{font-size:17px}
+.dr-h .ghost{margin-left:auto}
+.dr-b{flex:1;overflow:auto;padding:18px 22px;display:flex;flex-direction:column;gap:16px}
+.dr-f{padding:14px 22px;border-top:1px solid var(--hair);display:flex;flex-direction:column;gap:10px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.field .hint{font-size:12px;color:var(--muted);font-weight:400}
+.field input,.field select,.field textarea{border:1px solid var(--hair-2);border-radius:10px;padding:9px 12px;background:var(--raise);width:100%}
+.field textarea{resize:vertical;min-height:72px}
+.field .ro{border:1px solid var(--hair);border-radius:10px;padding:9px 12px;background:var(--panel);font-size:14px;color:var(--ink-2)}
+.field .err{color:var(--bad);font-size:12.5px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.banner{border-radius:10px;padding:11px 14px;font-size:13.5px;display:flex;flex-direction:column;gap:8px}
+.banner.info{background:var(--accent-soft);color:var(--ink)}
+.banner.warn{background:var(--warn-bg);color:var(--ink)}
+.banner.bad{background:var(--bad-bg);color:var(--ink)}
+.to{display:flex;align-items:center;gap:10px;font-size:13.5px;flex-wrap:wrap}
+.to b{font-weight:600}
+.sim{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sim select{font-size:12px;border:1px solid var(--hair-2);border-radius:6px;padding:2px 6px;background:var(--raise)}
+.receipt{display:flex;flex-direction:column;gap:14px}
+.receipt .no{font-family:var(--mono);font-size:20px;font-weight:500}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;font-size:13.5px}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.spin{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;display:inline-block;animation:sp .8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.spin{animation:none}}
+
+.node.l4{padding-left:66px}
+.nms{display:flex;flex-wrap:wrap;gap:6px}
+.nm{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;border:1px solid var(--hair-2);border-radius:7px;padding:2px 8px;background:var(--raise);color:var(--ink);white-space:nowrap}
+.nm i{font-style:normal;font-size:10.5px;font-weight:600;padding:0 5px;border-radius:4px}
+.nm.tadd{border-color:var(--accent)} .nm.tadd i{background:var(--accent);color:var(--accent-ink)}
+.nm.tchg{border-color:var(--warn)} .nm.tchg i{background:var(--warn-bg);color:var(--warn)}
+.nm.tsup i{background:var(--info-bg);color:var(--info)}
+.mapdlg{position:fixed;inset:24px;z-index:21;background:var(--bg);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.mapdlg .dr-h .note{margin-left:4px}
+.map-wrap{flex:1;overflow:auto}
+.mtx{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:1500px}
+.mtx th,.mtx td{border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:10px;vertical-align:top;text-align:left}
+.mtx thead th{position:sticky;background:var(--panel);z-index:2;font-weight:600}
+.mtx thead tr:first-child th{top:0}.mtx thead tr:nth-child(2) th{top:39px;color:var(--muted);font-weight:500}
+.mtx .corner{color:var(--muted);font-weight:600;left:0;z-index:3}
+.mtx td{min-width:150px}
+.mtx td .nm{margin:0 4px 4px 0}
+.mtx .grp{writing-mode:vertical-rl;letter-spacing:.2em;font-weight:700;text-align:center;width:36px;position:sticky;left:0;z-index:1}
+.g-상시{background:var(--accent-soft);color:var(--accent)} .g-비상시{background:var(--warn-bg);color:var(--warn)} .g-참고{background:var(--info-bg);color:var(--info)}
+.mtx .rowh{position:sticky;left:36px;z-index:1;background:var(--panel);width:170px;min-width:170px;font-weight:400}
+.mtx .rowh b{display:block;font-size:13.5px;margin:4px 0 2px}
+.mtx .rowh span{display:block;color:var(--muted);font-size:11.5px;line-height:1.45}
+.lg{display:inline-block!important;font-size:10.5px!important;font-weight:600;padding:1px 6px;border-radius:4px}
+.lg.ok{background:var(--ok-bg);color:var(--ok)!important} .lg.no{background:var(--info-bg);color:var(--info)!important}
+.mtx tr.myrow .rowh{box-shadow:inset 3px 0 0 var(--accent)}
+.mtx th.mecol{color:var(--accent)!important}
+.mtx td.me{background:var(--accent-soft);outline:2px solid var(--accent);outline-offset:-2px}
+.here{display:inline-block;font-size:11.5px;font-weight:700;color:var(--accent);border:1.5px dashed var(--accent);border-radius:7px;padding:1px 8px}
+.map-legend{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 22px;border-top:1px solid var(--hair)}
+@media (max-width:700px){.mapdlg{inset:0;border-radius:0;padding-top:env(safe-area-inset-top,0px)}}
+/* 시작 화면: 검색창 하나 */
+.landing{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:48px 16px 15vh}
+.brandmark{font-size:clamp(30px,6vw,44px);font-weight:700;letter-spacing:-.035em;text-align:center}
+.brandmark span{color:var(--accent)}
+.searchbox{width:min(620px,100%);display:flex;align-items:center;gap:8px;border:1px solid var(--hair-2);border-radius:999px;padding:6px 6px 6px 22px;background:var(--raise);transition:box-shadow .15s,border-color .15s}
+.searchbox:hover,.searchbox:focus-within{box-shadow:var(--shadow);border-color:var(--hair)}
+.searchbox input{flex:1;min-width:0;border:0;background:transparent;font-size:16px;padding:10px 0;outline:none}
+.searchbox button{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:18px;cursor:pointer;display:grid;place-items:center}
+.searchbox button:disabled{background:var(--hair-2);color:var(--muted);cursor:default}
+.sugs{width:min(620px,100%);display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.sugs button{border:1px solid var(--hair);background:transparent;border-radius:999px;padding:6px 13px;font-size:13.5px;color:var(--ink-2);cursor:pointer}
+.sugs button:hover{border-color:var(--accent);color:var(--accent)}
+.tagline{margin:-14px 0 0;color:var(--ink-2);font-size:15px;text-align:center;text-wrap:balance}
+.landing .foot{font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion: reduce){.searchbox{transition:none}}
+
+@media (max-width: 900px){
+  .shell{height:auto}
+  .app{grid-template-columns:minmax(0,1fr)}
+  .chat{border-right:0;border-bottom:1px solid var(--hair)}
+  .thread{max-height:none;overflow:visible;padding:20px 16px 12px}
+  .composer{position:sticky;bottom:0;padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+  .panel{overflow:visible;padding:20px 16px}
+  .top{padding:12px 16px}
+  .row2{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width: 520px){
+  .checks{grid-template-columns:auto minmax(0,1fr)}
+  .checks .ck{grid-column:1/-1;padding-bottom:0}
+  .checks > div:nth-child(-n+3){border-top:1px solid var(--hair)}
+  .checks > div:nth-child(-n+1){border-top:0}
+  .checks .st{padding-left:14px;border-top:0!important}
+  .checks .tx{border-top:0!important}
+}
+</style>
+
+<section class="landing" id="landing" aria-label="시작">
+  <h1 class="brandmark">Brand <span>Map</span></h1>
+  <p class="tagline">어떤 서비스인지 알려주시면, 지도에서 자리를 찾아드릴게요.</p>
+  <form class="searchbox" id="landForm" role="search">
+    <input id="landIn" autocomplete="off" placeholder="준비 중인 서비스나 이름을 알려주세요" aria-label="질문 입력">
+    <button type="submit" id="landGo" aria-label="확인하기" disabled>→</button>
+  </form>
+  <div class="sugs" id="sugs"></div>
+  <p class="foot">이름·로고, 편하게 물어보세요 · 브랜드 네이밍 매트릭스(초안)로 만든 프로토타입이에요</p>
+</section>
+<div class="shell" id="shell" hidden>
+  <header class="top">
+    <h1>Brand Map</h1>
+    
+    <span class="proto">매트릭스 초안 기준</span>
+    <button class="ghost" id="resetBtn" type="button">처음부터</button>
+  </header>
+  <main class="app">
+    <section class="chat" aria-label="대화">
+      <div class="thread" id="thread" aria-live="polite"></div>
+      <form class="composer" id="composer">
+        <textarea id="input" rows="1" placeholder="답하거나 더 물어보세요" aria-label="메시지 입력"></textarea>
+        <button class="btn" type="submit" id="sendBtn">보내기</button>
+      </form>
+    </section>
+    <section class="panel" aria-label="확인 결과"><div class="panel-inner" id="panel"></div></section>
+  </main>
+</div>
+<div id="drawerRoot"></div>
+<div id="mapRoot"></div>
+
+<script>
+/* ───────── 기준 데이터: 브랜드 네이밍 매트릭스(초안) ─────────
+   이름 뒤 표시: + 추가 · * 변경 · ~ 보강 (매트릭스 원본의 태그) */
+const DOCS={map:{name:'브랜드 네이밍 매트릭스',ver:'초안'},tm:{name:'상표 검토 절차',ver:'예시'}};
+const ENT={ohouse:'오늘의집',interior:'오늘의집인테리어 (시공)',pay:'오늘의집페이',pb:'오늘의집 PB',retail:'오늘의집 리테일'};
+const ENTX={...ENT,unknown:'잘 모르겠어요',other:'기타'};
+const TGT={user:'유저',owner:'사장님',creator:'파트너·크리에이터',payer:'결제사'};
+const PERIOD={always:'계속 운영',campaign:'기간 운영'};
+const COLS=[['ohouse','owner'],['ohouse','creator'],['ohouse','user'],['interior','owner'],['interior','user'],['pay','payer'],['pay','user'],['pb','user'],['retail','user']];
+const TYPES={
+  service:{label:'서비스',group:'상시',logo:true,desc:'따로 들어가는 입구가 있고, 그곳에서 거래·이용이 일어나요',ask:'따로 들어가서 이용하는 곳'},
+  cert:{label:'보증·인증',group:'상시',logo:true,desc:'상품·업체·사람에 붙는 약속·선별·등급 표시예요',ask:'상품·업체에 붙는 약속이나 표시'},
+  feature:{label:'기능',group:'상시',logo:false,desc:'이용자가 앱 안에서 직접 하거나 받는 장치예요 (도구·참여·혜택)',ask:'앱 안에서 쓰는 도구나 혜택'},
+  content:{label:'콘텐츠',group:'상시',logo:false,desc:'이용자가 보고 읽는 거예요',ask:'보고 읽는 콘텐츠'},
+  campaign:{label:'기간 운영 캠페인',group:'비상시',logo:null,desc:'끝나는 날이 있고 정해진 때 반복되는 캠페인이에요'},
+  generic:{label:'앱 일반 명칭',group:'참고',desc:'오늘의집을 붙이기 어색한 일반명사예요'},
+  merge:{label:'합치거나 뺄 것',group:'참고',desc:'같은 건 합치고, 단발이거나 고객용이 아니면 빼요'},
+};
+const KINDS={service:'서비스',cert:'보증·인증',feature:'기능',content:'콘텐츠',unknown:'잘 모르겠어요',other:'기타'};
+const TGTX={...{user:'유저',owner:'사장님',creator:'파트너·크리에이터',payer:'결제사'},other:'기타'};
+const isUnk=v=>v==='unknown'||v==='other';
+const L=k=>{const v=S.svc[k],m={target:TGTX,entity:ENTX,kind:KINDS}[k];return v==='other'?`기타(${S.notes[k]||'직접 입력'})`:m[v]};
+const RAW={
+  service:{0:'파트너센터|오늘의집 O.rora (표기 통일 필요)*|오하우스메즈|TOPS+',
+    1:'콘텐츠수익화|오늘의집 리서치 패널|콜라보마켓|큐레이터 부스터+|크리에이터 플러스',
+    2:'쇼핑|리퍼마켓|오늘의딜|오늘의딜 › 오!마트*|오늘의딜 › 오!쇼룸*|오늘의딜 › LIVE*|오늘의집 설치|무빙패스|공동구매 (비정기→상시)*|특가 코너 (비정기→상시)*|바이너리샵',
+    3:'건자재몰|사장님센터',
+    4:'인테리어/생활|키친|도배|마루|이사|전체시공|부분시공|이사청소·입주청소·인터넷신청·제품설치|오늘의집 구독|인테리어 상담소 / Q&A|오늘의집 스탠다드|라이프서비스+',
+    6:'머니|계좌 간편결제+|상품권 (27.02 예정)*|PLCC (27.04 예정)*',
+    7:'layer|layer › 쇼파*|layer › 잠옷*|layer › 데일리*|늘신선|더레인 (The Lane)+|프락트 (FRKT)+|컬렉토리+',
+    8:'판교라운지 (인테리어→리테일)*|목동라운지 (인테리어→리테일)*|오늘의집 분당'},
+  cert:{1:'스페셜크리에이터|오감리뷰 (프로/루키)',
+    2:'원하는날도착|오늘출발|희망일배송|최저가보상제|PICK|Only|특별인증가|오늘의집배송+',
+    3:'시공파트너 구독 (라이트·라이트플러스·스탠다드)~',
+    4:'책임보장|원가검수|책임시공 (도배)'},
+  feature:{2:'오감지수|오집렌즈|3D방꾸미기|선물하기|오늘의집 AI|오늘의가든|행운출첵|친구초대|회원등급 (WELCOME ~ VIP)|첫구매 쿠폰|N-Shot 적립 (12/7 시작)+',
+    4:'우리동네업체찾기|견적계산기 (3D)|인테리어 계약서 진단|집보기 체크리스트|시공자재 랭킹|업체지도|간편매칭|업체찾기 (= 우리동네업체찾기?)+'},
+  content:{1:'큐레이터|크리에이터|오메이커스|메이트하우스',
+    2:'집구경|숏츠|챌린지|집들이|스타일링샷',
+    3:'사장님센터 아카데미+',
+    4:'아파트 시공사례|포트폴리오|시공사례+|100인의 시공일지 (미분류→여기)*|시공반장님 (미분류→여기)*'},
+  campaign:{2:'O!SALE (정기→기간, 매월)*|에디션 (정기→기간, 매월)*|집요한세일|바이너리위크~|살림의달인|로컬의선택|식탁 위 예술|집요한블프~|끝내주는세일·해넘해맞|월간가구세일|이달의키친|새로입주|스페셜 브랜드위크|미식100선|비욘드 라이브러리|월간자취+|오늘의집 디자인어워드+',
+    3:'파트너어워즈|시공페스타',6:'카드사 결제혜택+'},
+  generic:{2:'스크랩|태그|집사진|쇼핑수다|집꾸미기|시공질문|시공정보|BEST|이벤트|챌린지참여'},
+  merge:{1:'FTC (뜻 확인)*',2:'가드닝게임 → 오늘의가든 (확인)*|오집가전구독 → 오늘의집 구독*|라이프 바인더 (단발)*|단독 콜라보 (정체 확인)*',4:'시공 (법인)·대고객 아님*'},
+};
+const ALIAS={'PICK':['픽'],'Only':['온리'],'layer':['레이어'],'BEST':['베스트'],'TOPS':['탑스'],'O!SALE':['오세일'],'LIVE':['라이브']};
+const TAGS={'+':'추가','*':'변경','~':'보강'};
+const REG=[];
+for(const [type,cols] of Object.entries(RAW)) for(const [ci,str] of Object.entries(cols)) str.split('|').forEach(raw=>{
+  let tag=null,name=raw;const last=raw.slice(-1);if(TAGS[last]){tag=last;name=raw.slice(0,-1)}
+  const base=name.split(' → ')[0].replace(/\s*\(.*\)\s*$/,'').trim();
+  const seg=base.split(' › ').pop();
+  REG.push({name,base,seg,type,col:+ci,tag,alias:(ALIAS[seg]||[])});
+});
+const cellOf=(type,col)=>REG.filter(r=>r.type===type&&r.col===col);
+const SAMPLE_DESC='고객이 집 사진을 올리면 비슷한 스타일의 상품을 찾아주는 기능이에요. 앱 검색 탭 안에서 계속 쓸 거예요.';
+const EXAMPLES=[
+  {label:'이름 정하기, 뭐부터 해요?',text:'서비스 이름을 정해야 하는데 뭐부터 하면 돼?'},
+  {label:'로고도 만들어야 해요?',text:'새 서비스가 나오는데 로고도 따로 만들어야 해?'},
+  {label:"‘오늘의집 픽’ 어때요?",text:"'오늘의집 픽' 어때?"},
+  {label:'후보 3개 봐주세요',text:"사진으로 비슷한 상품 찾는 기능이야. 앱 검색 탭 안에서 써. 후보는 '오늘의집 렌즈', '스타일찾기', '집Lens'. 써도 괜찮은지 봐줘."},
+  {label:'상표도 챙겨야 해요?',text:'이 이름으로 출시하려는데 상표 등록도 해야 해?'},
+];
+
+/* ───────── 상태 ───────── */
+let S;
+function fresh(){return{svc:{summary:null,target:null,entity:null,period:null,kind:null},candidates:[],notes:{},typing:false,intent:null,awaiting:null,topics:[],msgs:[],editing:false,showGuide:false,draft:null,draftKey:null,requests:{},send:{phase:'idle'}}}
+S=fresh();
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const docRef=(k,cl)=>`${DOCS[k].name} ${DOCS[k].ver}${cl?' · '+cl:''}`;
+
+/* ───────── 이해하기: 추출·의도 ───────── */
+function extract(t){
+  const s=S.svc, found=[];
+  const set=(k,v)=>{if(s[k]===null){s[k]=v;found.push(k)}};
+  if(/고객|유저|사용자|이용자|회원|소비자/.test(t)) set('target','user');
+  if(/사장님|판매자|셀러|입점|시공 ?업체/.test(t)) set('target','owner');
+  if(/크리에이터|큐레이터|인플루언서/.test(t)) set('target','creator');
+  if(/결제사|카드사/.test(t)) set('target','payer');
+  if(/시공|도배|이사|청소|견적/.test(t)) set('entity','interior');
+  if(/결제|페이|머니|상품권/.test(t)) set('entity','pay');
+  if(/PB|자체 ?브랜드|layer|레이어/.test(t)) set('entity','pb');
+  if(/오프라인|매장|라운지/.test(t)) set('entity','retail');
+  if(/쇼핑|상품|커뮤니티|집들이|콘텐츠|배송|딜|앱/.test(t)) set('entity','ohouse');
+  if(/기간|한정|세일|캠페인|매월|시즌|프로모션|페스타|어워드/.test(t)) set('period','campaign');
+  if(/상시|계속|정식 운영/.test(t)) set('period','always');
+  if(/인증|보증|보장|배지|도착|등급 표시|최저가/.test(t)) set('kind','cert');
+  if(/기능|도구|계산기|쿠폰|적립|혜택|체크리스트|찾아주|진단|추천/.test(t)) set('kind','feature');
+  if(/콘텐츠|영상|아티클|사례|읽을|구경|숏폼/.test(t)) set('kind','content');
+  if(/입구|센터|몰|마켓|전용 ?(페이지|공간)/.test(t)) set('kind','service');
+  const q=[...t.matchAll(/[‘'"“]([^’'"”]{1,24})[’'"”]/g)].map(m=>m[1].trim()).filter(x=>x&&x!=='오늘의집'&&!/○/.test(x));
+  q.forEach(n=>{if(!S.candidates.includes(n))S.candidates.push(n)});
+  return {found,names:q};
+}
+function classify(t,names){
+  if(/상표/.test(t)) return 'trademark';
+  if(/로고/.test(t)) return 'logo';
+  if(names.length||/후보|어때|써도|괜찮|이미 쓰|쓰고 있|내보내/.test(t)) return 'names';
+  if(/뭐부터|어디서부터|시작|처음/.test(t)) return 'start';
+  return null;
+}
+
+/* ───────── 판단: 위치·로고·후보 ───────── */
+function typeKey(){const s=S.svc;if(s.period==='campaign')return'campaign';return s.kind}
+function position(){
+  const s=S.svc;
+  if(!s.target||!s.entity) return null;
+  const tk=typeKey();
+  const col=isUnk(s.entity)?-1:COLS.findIndex(([e,t])=>e===s.entity&&t===s.target);
+  const type=tk&&!isUnk(tk)?TYPES[tk]:null;
+  let why;
+  if(s.entity==='other') why=`‘${S.notes.entity||'말씀하신 사업'}’에 맞는 사업자 칸이 매트릭스에 없어요. 새 칸이 필요한지 담당 팀 확인이 필요해요.`;
+  else if(s.entity==='unknown') why='어느 사업 쪽인지 몰라서 칸을 정하지 못했어요. 담당 팀이 확인해줄 거예요.';
+  else if(s.target==='other') why=`‘${S.notes.target||'말씀하신 대상'}’ 대상 칸은 매트릭스에 없어요. 새 칸이 필요한지 담당 팀 확인이 필요해요.`;
+  else if(tk==='other') why=`‘${S.notes.kind||'말씀하신 성격'}’에 맞는 유형이 매트릭스에 없어요. 담당 팀 확인이 필요해요.`;
+  else if(col<0) why=`매트릭스에는 ‘${ENT[s.entity]}’ 아래 ‘${TGT[s.target]}’ 칸이 없어요. 새 칸이 필요한지 담당 팀 확인이 필요해요.`;
+  else if(!type) why='어떤 유형인지 아직 몰라서 줄을 정하지 못했어요.';
+  else why=`${ENT[s.entity]} · ${TGT[s.target]} 칸의 ‘${type.label}’ 유형으로 봤어요. 이 유형은 “${type.desc}”에 해당해요.`;
+  const cases=col>=0&&tk&&!isUnk(tk)?cellOf(tk,col):[];
+  return {col,tk,type,why,cases,
+    path:`버킷플레이스 › ${L('entity')} › ${L('target')} › ${type?type.label:'유형 모름'} (예상)`};
+}
+function logoResult(){
+  const s=S.svc, tk=typeKey();
+  if(!s.target||!s.entity||!tk) return {state:'pending',label:'조금 더 알려주세요',reason:'누가 쓰는지, 어느 사업 쪽인지, 어떤 유형인지 알아야 정할 수 있어요.',basis:[]};
+  const p=position();
+  if(isUnk(s.entity)||p.col<0||isUnk(tk)) return {state:'review',label:'담당 팀 확인이 필요해요',reason:'매트릭스에서 들어갈 칸을 찾지 못했어요. 짐작으로 정하지 않고 담당 팀에 넘길게요.',
+    basis:[{k:'map',cl:'칸 없음',kind:'gap',t:'이 조합에 해당하는 칸이 매트릭스에 없어요.'}]};
+  if(tk==='campaign') return {state:'review',label:'담당 팀 확인이 필요해요',reason:'기간 운영 캠페인은 로고를 붙여도 되는지 매트릭스에 표시가 없어요. 담당 팀에 물어볼게요.',
+    basis:[{k:'map',cl:'비상시 · 기간 운영 캠페인',kind:'gap',t:'로고 부착 가능·불가 표시가 없어요.'}]};
+  const T=TYPES[tk];
+  if(T.logo) return {state:'yes',label:'로고를 붙일 수 있어요',reason:`‘${T.label}’${josa(T.label)} 로고를 붙일 수 있는 유형이에요. 전용 로고가 필요하면 담당 팀에 요청해주세요.`,
+    basis:[{k:'map',cl:`상시 · ${T.label}`,kind:'rule',t:'로고 부착 가능'},{k:'map',cl:'분류',kind:'interp',t:`설명을 보고 ‘${T.label}’ 유형으로 봤어요.`}]};
+  return {state:'no',label:'로고는 붙이지 않아요',reason:`‘${T.label}’${josa(T.label)} 로고를 붙이지 않는 유형이에요. 오늘의집 로고 옆에 이름만 글자로 써요.`,
+    basis:[{k:'map',cl:`상시 · ${T.label}`,kind:'rule',t:'로고 부착 불가'},{k:'map',cl:'분류',kind:'interp',t:`설명을 보고 ‘${T.label}’ 유형으로 봤어요.`}]};
+}
+const jo=(w,a,b)=>{const c=String(w).trim().slice(-1).charCodeAt(0);return c>=0xAC00&&c<=0xD7A3?((c-0xAC00)%28?a:b):a+'('+b+')'};
+const josa=w=>{const c=w.trim().slice(-1).charCodeAt(0);return c>=0xAC00&&c<=0xD7A3?((c-0xAC00)%28?'은':'는'):'은(는)'};
+const norm=s=>s.replace(/[\s·›!\-]/g,'').toLowerCase();
+const coreOf=s=>s.replace(/^오늘의집\s*/,'');
+const BRAND_BI=new Set(['오늘','늘의','의집']);
+function bigrams(s){s=norm(s);const b=new Set();for(let i=0;i<s.length-1;i++){const g=s.slice(i,i+2);if(!BRAND_BI.has(g)&&/[가-힣]/.test(g))b.add(g)}return b}
+const GENERIC=REG.filter(r=>r.type==='generic').map(r=>norm(r.base));
+function matchName(n){
+  const nn=norm(n),nc=norm(coreOf(n));
+  const forms=r=>[norm(r.base),norm(coreOf(r.base)),norm(r.seg)];
+  const pool=REG.filter(r=>r.type!=='generic');
+  const exact=pool.filter(r=>forms(r).some(f=>f===nn||(nc.length>1&&f===nc)));
+  const alias=pool.filter(r=>!exact.includes(r)&&r.alias.some(a=>norm(a)===nc||norm(a)===nn));
+  const cb=bigrams(coreOf(n));
+  const sim=pool.filter(r=>!exact.includes(r)&&!alias.includes(r)&&forms(r).some(f=>{
+    if(nc.length>1&&(f.includes(nc)||(f.length>1&&nc.includes(f))))return true;
+    for(const b of bigrams(f))if(cb.has(b))return true;return false}));
+  return {exact,alias,sim};
+}
+const placeOf=r=>{const c=COLS[r.col];return`${TYPES[r.type].label}, ${ENT[c[0]]}·${TGT[c[1]]}`};
+function reviewName(n){
+  const hasBrand=/^오늘의집/.test(n), core=coreOf(n), p=position();
+  let combo;
+  if(GENERIC.includes(norm(core))) combo=hasBrand?{st:'fix',t:`‘${core}’${josa(core)} 앱 일반 명칭이라 ‘오늘의집’을 붙이지 않아요.`,ref:'참고 · 앱 일반 명칭'}:{st:'ok',t:'앱 일반 명칭이라 이름만 쓰는 게 맞아요.',ref:'참고 · 앱 일반 명칭'};
+  else if(p&&p.cases.length){const m=p.cases.filter(r=>/^오늘의집/.test(r.base)).length;
+    combo={st:'ref',t:`같은 칸 이름 ${p.cases.length}개 중 ${m}개가 ‘오늘의집’을 붙였어요. ${hasBrand?'붙인 쪽이에요.':'안 붙인 쪽이에요.'} 정해진 기준은 아직 없어요.`,ref:''}}
+  else combo={st:'check',t:'같은 칸 사례가 없어서 비교하지 못했어요. 담당 팀에 확인해보세요.',ref:''};
+  const nota=/[가-힣][A-Za-z]|[A-Za-z][가-힣]/.test(core)
+    ?{st:'check',t:'한글과 영문이 붙어 있으면 표기가 흔들리기 쉬워요. 매트릭스에도 ‘오늘의집 O.rora’가 표기 통일 필요로 표시돼 있어요.',ref:''}
+    :{st:'ok',t:'표기에서 걸리는 건 없어요.',ref:''};
+  const m=matchName(n), merge=m.exact.find(r=>r.type==='merge');
+  let dup;
+  const list=(a)=>a.slice(0,3).map(r=>`‘${r.name}’(${placeOf(r)})`).join(', ')+(a.length>3?` 외 ${a.length-3}개`:'');
+  if(merge) dup={st:'bad',t:`정리 대상으로 표시된 이름이에요: ${merge.name}`};
+  else if(m.exact.length) dup={st:'bad',t:`같은 이름이 이미 있어요: ${list(m.exact)}`};
+  else if(m.alias.length) dup={st:'check',t:`읽으면 같은 이름이 있어요: ${list(m.alias)}`};
+  else if(m.sim.length) dup={st:'check',t:`비슷한 이름이 있어요: ${list(m.sim)}. 헷갈리지 않을지 확인해보세요.`};
+  else dup={st:'none',t:'매트릭스의 이름 중에는 겹치는 게 없어요. 매트릭스에 없는 이름도 있을 수 있어요.'};
+  return [['오늘의집 붙이기',combo],['표기',nota],['겹치는 이름',dup],
+    ['상표',{st:'info',t:'상표는 여기서 판단하지 않아요. 출시 전에 따로 확인해주세요.',ref:''}]];
+}
+const ST={ok:'좋아요',fix:'고쳐보세요',check:'확인 필요',bad:'이미 있어요',none:'없어요',info:'따로 확인',ref:'참고'};
+
+/* ───────── 대화 진행 ───────── */
+const NEEDS={overview:['summary','target','entity','period','kind'],names:['summary','target','entity','period','kind','candidates'],logo:['summary','target','entity','period','kind'],start:[],trademark:[]};
+function missing(intent){
+  return (NEEDS[intent]||[]).find(k=>{
+    if(k==='candidates') return !S.candidates.length;
+    if(k==='kind') return S.svc.period!=='campaign'&&S.svc.kind===null;
+    return S.svc[k]===null;
+  });
+}
+function knownChips(){
+  const s=S.svc,a=[];
+  if(s.target)a.push(L('target')+' 대상');
+  if(s.entity&&s.entity!=='unknown')a.push(L('entity'));
+  if(s.period)a.push(PERIOD[s.period]);
+  if(s.kind&&s.kind!=='unknown'&&s.period!=='campaign')a.push(L('kind'));
+  if(S.candidates.length)a.push('후보 '+S.candidates.length+'개');
+  return a;
+}
+function questionFor(k){
+  return {
+    target:['누가 쓰나요?',[{label:'고객',v:'user'},{label:'사장님·업체',v:'owner'},{label:'파트너·크리에이터',v:'creator'},{label:'결제사',v:'payer'},{label:'맞는 게 없어요',v:'other'}]],
+    entity:['어느 사업 쪽이에요?',[{label:'오늘의집 (쇼핑·커뮤니티)',v:'ohouse'},{label:'인테리어·시공',v:'interior'},{label:'오늘의집페이',v:'pay'},{label:'PB (자체 브랜드)',v:'pb'},{label:'오프라인 매장',v:'retail'},{label:'잘 모르겠어요',v:'unknown'}]],
+    period:['끝나는 날이 있나요?',[{label:'아니요, 계속 운영해요',v:'always'},{label:'네, 기간을 정해 운영해요',v:'campaign'}]],
+    kind:['어떤 쪽에 가까워요?',[...['service','cert','feature','content'].map(v=>({label:TYPES[v].ask,v})),{label:'잘 모르겠어요',v:'unknown'}]],
+  }[k];
+}
+function ask(k){
+  const known=knownChips();
+  if(k==='summary'){
+    S.awaiting='desc';
+    const t=S.intent==='names'&&S.candidates.length
+      ? `${S.candidates.map(c=>`‘${c}’`).join(', ')}, 좋아요.\n어떤 서비스에 붙일 이름인지 한두 문장으로 알려주세요. 그래야 정확하게 봐드릴 수 있어요.`
+      : '어떤 서비스인지 한두 문장으로 알려주세요.\n누가 쓰는지, 무엇을 하는지 정도면 충분해요.';
+    bot(t,[{label:'예시 설명 넣기',act:'fill'}]);return;
+  }
+  if(k==='candidates'){S.awaiting='names';bot('봐드릴 이름을 알려주세요. 여러 개면 ‘따옴표’로 하나씩 묶어주세요.',[{label:"예시: '오늘의집 렌즈', '스타일찾기'",act:'say',text:"'오늘의집 렌즈', '스타일찾기'"}],known);return}
+  S.awaiting=k;
+  const Q=questionFor(k);
+  bot(Q[0],Q[1].map(o=>({...o,act:'set',k})),known.length?known:null);
+}
+function advance(){
+  const m=missing(S.intent);
+  if(m){ask(m);render();return}
+  S.awaiting=null;respond();render();
+}
+function addTopic(t){S.topics=S.topics.filter(x=>x!==t);S.topics.unshift(t)}
+function respond(){
+  const i=S.intent;
+  if(i==='start'){
+    S.intent='overview';S.awaiting='desc';
+    bot('먼저 어떤 서비스인지 알려주세요. 나머지는 차례로 같이 확인해요.\n① 매트릭스에서 들어갈 칸 ② 이름 후보 ③ 로고 ④ 상표',[{label:'예시 설명 넣기',act:'fill'}]);
+    addTopic('start');return;
+  }
+  if(i==='overview'){addTopic('overview');bot(`매트릭스에서 들어갈 칸과 지켜야 할 기준을 오른쪽에 정리했어요.\n생각해둔 이름이 있으면 알려주세요.`,[{label:'이름 봐주세요',act:'intent',v:'names'},{label:'로고도 필요해요?',act:'intent',v:'logo'}]);return}
+  if(i==='names'){addTopic('names');const {vs,pick}=verdictSummary();bot(`매트릭스로 검토한 결과예요.\n${vs.map(([n,v])=>`· ‘${n}’ → ${v.label}`).join('\n')}\n\n${pick}`,S.topics.includes('logo')?[]:[{label:'로고도 필요해요?',act:'intent',v:'logo'}]);return}
+  if(i==='logo'){addTopic('logo');const r=logoResult();bot(`${r.label}\n이유는 오른쪽에 정리했어요.`);return}
+  if(i==='trademark'){addTopic('trademark');bot('상표 등록 여부는 여기서 정하지 않아요. 누구에게, 언제 확인하면 되는지 정리했어요.');return}
+}
+/* ── 자유 입력 해석: 뷰어에서는 Claude가, 아니면 키워드 규칙이 맡아요 ── */
+let SAMPLE=null, busy=false;
+try{ if(window.claude&&claude.use) claude.use('sample').then(x=>{SAMPLE=x}).catch(()=>{}) }catch(e){}
+const FIELD={target:'누가 쓰는지',entity:'어느 사업 쪽인지',period:'끝나는 날이 있는지',kind:'어떤 유형인지'};
+const ALLOWED={target:['user','owner','creator','payer','other'],entity:['ohouse','interior','pay','pb','retail','unknown','other'],period:['always','campaign'],kind:['service','cert','feature','content','unknown','other']};
+function aiPrompt(text){
+  return `너는 오늘의집 사내 브랜드 안내 툴 "Brand Map"의 입력 해석기야. 사용자 메시지를 읽고 JSON 객체 하나로만 답해.
+
+매트릭스 정의
+- entity(사업자): ohouse=오늘의집 앱(쇼핑·커뮤니티), interior=오늘의집인테리어(시공·이사·청소 등), pay=오늘의집페이(결제·머니), pb=오늘의집 PB(자체 브랜드 상품), retail=오늘의집 리테일(오프라인 매장)
+- target(대상): user=유저(고객), owner=사장님(입점 판매자·시공 업체), creator=파트너·크리에이터, payer=결제사
+- period: always=상시 운영, campaign=끝나는 날이 있는 기간 운영(세일·캠페인·어워드 등)
+- kind(유형, 상시일 때만): service=${TYPES.service.desc} / cert=${TYPES.cert.desc} / feature=${TYPES.feature.desc} / content=${TYPES.content.desc}
+
+지금까지 확인한 것: ${JSON.stringify({...S.svc,summary:undefined,candidates:S.candidates})}
+방금 사용자에게 한 질문: ${S.awaiting&&FIELD[S.awaiting]?FIELD[S.awaiting]:'없음'}
+사용자 메시지: """${text.slice(0,2000)}"""
+
+규칙
+- 메시지에서 분명히 알 수 있는 값만 채우고, 모르면 null.
+- 정의에 맞는 값이 없으면 "other"로 두고, notes에 그 필드 이름을 키로 사용자 표현을 10자 안팎으로 적어. 예: {"target":"임직원"}
+- 대상이 둘 이상이면 주된 하나를 고르고 나머지는 notes.target에 적어.
+- "잘 모르겠다"고 하면 entity/kind는 "unknown".
+- candidates: 사용자가 검토를 원하는 이름 후보 배열. 따옴표가 없어도 이름이면 넣어. 없으면 [].
+- intent: names(이름을 써도 되는지·후보 검토), logo(로고), trademark(상표), start(어디서부터 할지), info(서비스 설명이나 질문에 대한 답), question(가이드·매트릭스에 대해 묻는 말) 중 하나.
+- answer: intent가 question일 때만. 위 정의만 근거로 해요체 2문장 이내. 정의로 답할 수 없으면 "그건 매트릭스에 없어서 담당 팀 확인이 필요해요."
+- describes: 메시지가 서비스가 무엇인지 설명하면 true.
+
+형식: {"intent":"info","target":null,"entity":null,"period":null,"kind":null,"notes":{},"candidates":[],"describes":false,"answer":null}`;
+}
+function applyAI(r,text){
+  if(!r||typeof r!=='object') return false;
+  const s=S.svc, aw=S.awaiting;
+  for(const k of Object.keys(ALLOWED)){
+    const v=r[k];
+    if(typeof v==='string'&&ALLOWED[k].includes(v)&&(s[k]===null||aw===k)){s[k]=v;if(r.notes&&r.notes[k])S.notes[k]=String(r.notes[k]).slice(0,30)}
+  }
+  if(Array.isArray(r.candidates)) r.candidates.map(x=>String(x).trim()).filter(x=>x&&x.length<=24&&x!=='오늘의집').forEach(n=>{if(!S.candidates.includes(n))S.candidates.push(n)});
+  if(!s.summary&&(r.describes||aw==='desc')) s.summary=text.split(/후보는|후보:/)[0].trim()||text;
+  const it=r.intent;
+  if(it==='question'&&r.answer){bot(String(r.answer).slice(0,400));if(S.awaiting){const k=S.awaiting;S.awaiting=null;setTimeout(()=>{ask(k);render()},200)}render();return true}
+  if(['names','logo','trademark','start'].includes(it)) S.intent=it;
+  if(!S.intent) S.intent=S.candidates.length?'names':'overview';
+  setTimeout(advance,120);render();return true;
+}
+async function handleUser(text){
+  text=text.trim();if(!text||busy)return;
+  user(text);
+  if(SAMPLE){
+    busy=true;S.typing=true;render();
+    try{
+      const r=await SAMPLE.json(aiPrompt(text),{modelTier:'quick'});
+      S.typing=false;busy=false;
+      if(applyAI(r,text)) return;
+    }catch(e){
+      S.typing=false;busy=false;
+      if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(e&&e.code)) SAMPLE=null;
+    }
+  }
+  ruleBased(text);
+}
+function ruleBased(text){
+  const aw=S.awaiting;
+  const {found,names}=extract(text);
+  const c=classify(text,names);
+  if(aw==='desc'&&!c){S.svc.summary=text}
+  else if(aw==='desc'&&c){S.svc.summary=text;S.intent=c}
+  else if(c){S.intent=c}
+  else if(aw&&aw!=='desc'){
+    if(FIELD[aw]&&S.svc[aw]===null){ notUnderstood(aw,text);render();return }
+  }
+  else if(!S.svc.summary){S.svc.summary=text;S.intent=S.intent||'overview'}
+  if(!S.intent)S.intent='overview';
+  if(!S.svc.summary&&found.length&&S.intent!=='trademark'){S.svc.summary=text.split(/후보는|후보:/)[0].trim()||text}
+  setTimeout(advance,280);render();
+}
+function notUnderstood(k,text){
+  const opts=questionFor(k)[1].filter(o=>o.v!=='other'&&o.v!=='unknown');
+  bot(`‘${text.length>20?text.slice(0,20)+'…':text}’만으로는 ${FIELD[k]} 정하지 못했어요.\n가까운 걸 고르거나, 맞는 게 없으면 ‘맞는 게 없어요’를 눌러주세요. 담당 팀이 확인하도록 넘길게요.`,
+    [...opts.map(o=>({...o,act:'set',k})),{label:'맞는 게 없어요',act:'set',k,v:'other',note:text.slice(0,30)}]);
+}
+function onReply(r){
+  if(r.act==='fill'){const el=$('#input');el.value=SAMPLE_DESC;el.focus();autoGrow();return}
+  if(r.act==='say'){handleUser(r.text);return}
+  if(r.act==='ex'){handleUser(r.text);return}
+  if(r.act==='set'){user(r.label);S.svc[r.k]=r.v;if(r.note)S.notes[r.k]=r.note;else if(r.v==='other')delete S.notes[r.k];setTimeout(advance,220);render();return}
+  if(r.act==='intent'){user(r.label);S.intent=r.v;setTimeout(advance,220);render();return}
+}
+
+/* ───────── 메시지 ───────── */
+function user(t){S.msgs.push({role:'user',t})}
+function bot(t,replies,known){S.msgs.push({role:'bot',t,replies:replies||[],known})}
+function renderThread(){
+  const last=S.msgs.length-1;
+  $('#thread').innerHTML=S.msgs.map((m,i)=>m.role==='user'
+    ?`<div class="msg user"><div class="bubble">${esc(m.t)}</div></div>`
+    :`<div class="msg bot"><div class="who">Brand Map</div>${m.known?`<div class="known">확인한 내용 ${m.known.map(k=>`<span class="k">${esc(k)}</span>`).join('')}</div>`:''}<div class="text">${esc(m.t)}</div>${m.replies.length?`<div class="replies" ${i!==last?'aria-disabled="true"':''}>${m.replies.map((r,j)=>`<button type="button" class="reply ${r.act==='ex'?'ex':''}" data-m="${i}" data-r="${j}" ${i!==last?'tabindex="-1"':''}>${esc(r.label)}</button>`).join('')}</div>`:''}</div>`
+  ).join('')+(S.typing?'<div class="msg bot"><div class="who">Brand Map</div><div class="text typing"><span class="spin"></span> 읽고 있어요</div></div>':'');
+  const lm=S.msgs[last];
+  if(lm&&lm.role==='bot'&&!S.typing&&lm.replies.some(r=>r.act==='set')){const h=document.createElement('p');h.className='note';h.textContent='버튼에 없으면 편하게 적어주세요.';$('#thread').lastElementChild.append(h)}
+  $('#input').placeholder=S.awaiting&&S.awaiting!=='desc'?'버튼에 없으면 직접 적어주세요':'답하거나 더 물어보세요';
+  const th=$('#thread');th.scrollTop=th.scrollHeight;
+}
+
+/* ───────── 결과 패널 ───────── */
+function pill(cls,t){return`<span class="pill ${cls}">${esc(t)}</span>`}
+const KIND={rule:['rule','매트릭스'],interp:['interp','판단'],gap:['gap','기준 없음']};
+const chip=r=>`<span class="nm ${r.tag?'t'+({'+':'add','*':'chg','~':'sup'})[r.tag]:''}">${esc(r.name)}${r.tag?`<i>${TAGS[r.tag]}</i>`:''}</span>`;
+function secSummary(){
+  const s=S.svc;
+  const conds=[s.target?L('target')+' 대상':null,s.entity?L('entity'):null,s.period?PERIOD[s.period]:null,s.kind&&s.period!=='campaign'?L('kind'):null];
+  const miss=[['target','누가 쓰는지'],['entity','사업 분류'],['period','운영 기간'],['kind','유형']].filter(([k])=>s[k]===null&&!(k==='kind'&&s.period==='campaign'));
+  if(S.editing){
+    const seg=(k,map)=>`<div class="seg" role="group">${Object.entries(map).map(([v,l])=>`<button type="button" data-edit="${k}" data-v="${v}" aria-pressed="${s[k]===v}">${esc(l)}</button>`).join('')}</div>`;
+    return`<div class="card"><div class="sec-h"><span class="eyebrow">내 서비스</span><button class="btn sec right" type="button" id="doneEdit" style="padding:6px 12px">완료</button></div>
+    <div class="edit">
+      <div><label class="l" for="sumEdit">설명</label><textarea id="sumEdit">${esc(s.summary||'')}</textarea></div>
+      <div><span class="l">누가 쓰나요</span>${seg('target',TGTX)}</div>
+      <div><span class="l">사업 분류</span>${seg('entity',ENTX)}</div>
+      <div><span class="l">운영 기간</span>${seg('period',PERIOD)}</div>
+      <div><span class="l">유형</span>${seg('kind',KINDS)}</div>
+      <p class="note">바꾸면 결과가 바로 바뀌어요.</p>
+    </div></div>`;
+  }
+  return`<div class="card"><div class="sec-h"><span class="eyebrow">내 서비스</span><button class="linkish right" type="button" id="editBtn">고치기</button></div>
+  <p class="summary-text">${esc(s.summary||'아직 설명이 없어요.')}</p>
+  <div class="conds">${conds.filter(Boolean).map(c=>`<span class="cond">${esc(c)}</span>`).join('')}${miss.map(([,l])=>`<span class="cond missing">${l} ?</span>`).join('')}</div></div>`;
+}
+function secPosition(){
+  const p=position();if(!p)return'';
+  const s=S.svc;
+  return`<div class="card"><div class="sec-h"><h2>우리 서비스의 위치</h2>${pill('tent','예상')}<button class="linkish right" type="button" id="mapBtn">전체 매트릭스 보기</button></div>
+  <div class="tree">
+    <div class="node l1"><span class="dot"></span>버킷플레이스 <span class="lv">회사</span></div>
+    <div class="node l2 ${isUnk(s.entity)?'unk':''}"><span class="dot"></span>${esc(L('entity'))} <span class="lv">사업자</span></div>
+    <div class="node l3 ${p.col<0?'unk':''}"><span class="dot"></span>${esc(L('target'))} <span class="lv">대상</span></div>
+    <div class="node l4 me"><span class="dot"></span>이번 서비스 <span class="lv">${esc(p.type?p.type.label:'유형 모름')}${p.type&&p.type.group?' · '+p.type.group:''}</span></div>
+  </div>
+  <p class="why">${esc(p.why)}</p>
+  ${p.cases.length?`<div><div class="eyebrow" style="margin-bottom:6px">같은 칸의 이름 ${p.cases.length}개</div><div class="nms">${p.cases.map(chip).join('')}</div></div>`:''}
+  </div>`;
+}
+function secLogo(){
+  const r=logoResult(), req=S.requests[r.state==='yes'?'make':'review'];
+  let act='';
+  if(r.state==='yes') act=req?`<button class="btn sec" type="button" data-open="make">요청 보냄 · ${esc(req.no)}</button>`:`<button class="btn" type="button" data-open="make">로고 만들어달라고 요청하기</button>`;
+  if(r.state==='review') act=req?`<button class="btn sec" type="button" data-open="review">요청 보냄 · ${esc(req.no)}</button>`:`<button class="btn" type="button" data-open="review">담당 팀에 물어보기</button>`;
+  if(r.state==='pending') act=`<button class="btn sec" type="button" id="editBtn2">알려주기</button>`;
+  if(r.state==='no') act=`<button class="btn sec" type="button" id="guideBtn" aria-expanded="${S.showGuide}">이름 쓰는 법 ${S.showGuide?'닫기':'보기'}</button><button class="linkish" type="button" id="objectBtn">다른 조건이 있어요</button>`;
+  const name=S.candidates[0]?coreOf(S.candidates[0]):'서비스명';
+  return`<div class="card"><div class="sec-h"><h2>로고</h2></div>
+  <div class="result-big ${r.state}"><div><div class="state">${esc(r.label)}</div><p class="summary-text">${esc(r.reason)}</p></div></div>
+  ${r.state==='no'&&S.showGuide?`<div class="lockup" aria-label="표기 예시"><span class="wm">오늘의집</span><span class="bar"></span><span class="svc">${esc(name)}</span></div><p class="note">예시예요. 오늘의집 로고 옆에 선을 하나 긋고 이름을 글자로 써요.</p>`:''}
+  ${r.state==='yes'?`<p class="note">요청이 접수돼도 바로 만들어지는 건 아니에요. 담당 팀이 보고 연락드려요.</p>`:''}
+  <div class="actions">${act}</div></div>`;
+}
+function verdict(n){
+  const p=position(), m=matchName(n), core=coreOf(n), hasBrand=/^오늘의집/.test(n), nc=norm(core);
+  const col=p?p.col:-1;
+  const merge=m.exact.find(r=>r.type==='merge');
+  if(merge) return {v:'bad',label:'쓰면 안 돼요',reason:`매트릭스에서 정리 대상으로 표시된 이름이에요: ${merge.name}`};
+  const ex=m.exact.filter(r=>r.type!=='merge');
+  if(ex.length) return {v:'bad',label:'쓰면 안 돼요',reason:`이미 쓰고 있는 이름이에요: ‘${ex[0].name}’(${placeOf(ex[0])})`};
+  const formsOf=r=>[norm(r.base),norm(coreOf(r.base)),norm(r.seg)];
+  const same=[...m.alias,...m.sim.filter(r=>formsOf(r).some(f=>nc.length>1&&(f.includes(nc)||nc.includes(f))))].filter(r=>r.col===col);
+  if(same.length) return {v:'bad',label:'쓰면 안 돼요',reason:`같은 칸에 사실상 같은 이름이 있어요: ‘${same[0].name}’. 고객이 같은 걸로 알기 쉬워요.`};
+  if(!p||col<0||!p.type) return {v:'review',label:'담당 팀 확인이 필요해요',reason:'매트릭스에서 들어갈 칸을 찾지 못해서 판단할 기준이 없어요.'};
+  const fixes=[];let fixTo=null;
+  if(GENERIC.includes(nc)&&hasBrand){fixes.push('일반명사라 ‘오늘의집’을 빼야 해요.');fixTo=core}
+  if(/[가-힣][A-Za-z]|[A-Za-z][가-힣]/.test(core)) fixes.push('한글과 영문이 붙어 있어요. 하나로 통일해주세요.');
+  const near=m.sim.filter(r=>r.col===col&&!same.includes(r));
+  if(near.length) fixes.push(`같은 칸의 ‘${near[0].name}’${jo(near[0].base,'과','와')} 헷갈릴 수 있어요. 겹치는 말을 바꿔주세요.`);
+  if(fixes.length) return {v:'fix',label:'고쳐서 쓰세요',reason:fixes.join(' '),fixTo};
+  return {v:'ok',label:'써도 돼요',reason:'매트릭스 기준에 걸리는 게 없어요. 출시 전에 상표만 따로 확인해주세요.'};
+}
+const VPILL={ok:'ok',fix:'fix',bad:'bad',review:'review'};
+function verdictSummary(){
+  const vs=S.candidates.map(n=>[n,verdict(n)]);
+  const ok=vs.find(([,v])=>v.v==='ok'), fx=vs.find(([,v])=>v.v==='fix');
+  const pick=ok?`바로 쓸 수 있는 이름은 ‘${ok[0]}’${jo(ok[0],'이에요','예요')}.`:fx?`그대로 쓸 수 있는 이름은 없어요. ‘${fx[0]}’${jo(fx[0],'은','는')} 고치면 쓸 수 있어요.`:vs.some(([,v])=>v.v==='review')?'매트릭스만으로는 정할 수 없어서 담당 팀 확인이 필요해요.':'지금 후보 중에는 쓸 수 있는 이름이 없어요. 새 후보를 알려주세요.';
+  return {vs,pick};
+}
+function secNames(){
+  const {vs,pick}=verdictSummary();
+  return`<div class="card"><div class="sec-h"><h2>이 이름, 써도 될까요?</h2><span class="note">${S.candidates.length}개</span></div>
+  <p class="verdict-pick">${esc(pick)}</p>
+  <div class="cands">${vs.map(([n,v],i)=>{const rows=reviewName(n);return`<div class="cand v-${v.v}"><div class="cand-h"><span class="name">${esc(n)}</span>${pill(VPILL[v.v],v.label)}<button class="x" type="button" data-rm="${i}" aria-label="${esc(n)} 빼기">빼기</button></div>
+    <div class="cand-v"><p>${esc(v.reason)}</p>${v.fixTo&&!S.candidates.includes(v.fixTo)?`<button class="linkish" type="button" data-try="${esc(v.fixTo)}">‘${esc(v.fixTo)}’${jo(v.fixTo,'으로','로')} 다시 보기</button>`:''}</div>
+    <details class="cand-d"><summary>매트릭스 검토 내용</summary><div class="checks">${rows.map(([k,c])=>`<div class="ck">${k}</div><div class="st">${pill(c.st,ST[c.st])}</div><div class="tx">${esc(c.t)}${c.ref?`<span class="ref">${esc(c.ref)}</span>`:''}</div>`).join('')}</div></details></div>`}).join('')}</div>
+  <form class="addc" id="addCand"><input id="candIn" placeholder="이름 더 넣기" aria-label="이름 후보 추가"><button class="btn sec" type="submit">추가</button></form>
+  <p class="limit">브랜드 네이밍 매트릭스(초안)의 이름 ${REG.length}개와 비교한 결과예요. 상표 등록 가능 여부는 포함하지 않아요.</p></div>`;
+}
+function secTrademark(){
+  return`<div class="card"><div class="sec-h"><h2>상표</h2></div>
+  <p class="summary-text">상표 등록이 되는지는 여기서 정하지 않아요. 아래 순서로 확인해주세요.</p>
+  <ol class="steps">
+    <li><b>언제</b> 이름 후보를 2~3개로 줄인 뒤, 밖에 공개하기 전에</li>
+    <li><b>무엇을</b> 앱 밖에서도 보이거나 계속 쓸 이름</li>
+    <li><b>누구에게</b> 상표 담당자 (아직 정해지지 않았어요)</li>
+  </ol></div>`;
+}
+function secStart(){return''}
+function secOverview(){
+  const p=position(), r=logoResult();
+  const m=p&&p.cases.length?p.cases.filter(x=>/^오늘의집/.test(x.base)).length:null;
+  return`<div class="card"><div class="sec-h"><h2>지켜야 할 기준</h2></div>
+  <ul class="steps">
+    <li>${p&&p.type?`‘${esc(p.type.label)}’ 유형이에요. `:''}${r.state==='yes'?'로고를 붙일 수 있어요.':r.state==='no'?'로고는 붙이지 않아요.':r.state==='review'?'로고는 담당 팀 확인이 필요해요.':'로고는 유형을 알면 정할 수 있어요.'}</li>
+    ${m!==null?`<li>같은 칸 이름 ${p.cases.length}개 중 ${m}개가 ‘오늘의집’을 붙였어요. 정해진 기준은 아직 없어요.</li>`:''}
+    <li>스크랩, 태그 같은 일반명사에는 ‘오늘의집’을 붙이지 않아요.</li>
+    <li>밖에 공개하기 전에 상표를 확인해요.</li>
+  </ul></div>`;
+}
+function secBasis(){
+  const rows=[];
+  if(S.topics.includes('logo')) logoResult().basis.forEach(b=>rows.push(b));
+  if(S.topics.includes('names')) rows.push({k:'map',cl:`이름 ${REG.length}개`,kind:'rule',t:'겹치는 이름은 매트릭스에 있는 이름 안에서만 찾았어요.'});
+  if(position()) rows.push({k:'map',cl:'사업자 × 대상 × 유형',kind:'interp',t:'위치는 설명을 보고 예상한 거예요. 공식 분류는 아니에요.'});
+  const s=S.svc,unk=[];
+  if(s.summary)[['target','누가 쓰는지'],['entity','어느 사업 쪽인지'],['period','끝나는 날이 있는지'],['kind','어떤 유형인지']].forEach(([k,l])=>{if((s[k]===null||isUnk(s[k]))&&!(k==='kind'&&s.period==='campaign'))unk.push(l)});
+  if(S.candidates.length) unk.push('이름을 확정했는지');
+  if(S.topics.includes('names')||S.topics.includes('trademark')) unk.push('상표를 확인했는지');
+  if(!rows.length&&!unk.length) return'';
+  return`<details class="card more" ${S.basisOpen?'open':''}><summary><h2>왜 이렇게 봤나요?</h2></summary>
+  ${rows.length?`<div class="basis">${rows.map(b=>`<div class="brow">${pill(...KIND[b.kind])}<span>${esc(b.t)}</span><span class="doc bt">${esc(docRef(b.k,b.cl))}</span></div>`).join('')}</div>`:''}
+  ${unk.length?`<div><div class="eyebrow" style="margin-bottom:4px">아직 모르는 것</div><ul class="unk">${unk.map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`:''}
+  <p class="note">로고 부착 가능·불가는 매트릭스 표시를 따랐고, 유형 분류와 나머지 안내는 프로토타입용 해석이에요.</p>
+  </details>`;
+}
+function renderPanel(){
+  const P=$('#panel');
+  if(!S.svc.summary&&!S.topics.filter(t=>t!=='start').length){
+    P.innerHTML=`<div class="empty"><h2>여기에 결과가 나와요</h2><p>질문에 답하면 지켜야 할 기준, 이름 검토, 로고 필요 여부를 정리해드려요.</p></div>`;return;
+  }
+  const map={logo:secLogo,names:()=>S.candidates.length?secNames():'',trademark:secTrademark,start:secStart,overview:()=>position()?secOverview():''};
+  P.innerHTML=(S.svc.summary?secSummary():'')+S.topics.map(t=>map[t]()).join('')+secPosition()+secBasis();
+  const d=P.querySelector('details.more');d&&d.addEventListener('toggle',()=>{S.basisOpen=d.open});
+}
+function render(){
+  const landing=!S.msgs.some(m=>m.role==='user');
+  $('#landing').hidden=!landing;$('#shell').hidden=landing;
+  if(landing)return;
+  renderThread();renderPanel();renderDrawer();
+}
+
+/* ───────── 요청 초안 · 전송 ───────── */
+const condKey=()=>JSON.stringify([S.svc,S.candidates]);
+function buildDraft(type){
+  const r=logoResult(),p=position(),s=S.svc;
+  const unk=[];[['target','누가 쓰는지'],['entity','어느 사업 쪽인지'],['kind','어떤 유형인지']].forEach(([k,l])=>{if((s[k]===null||isUnk(s[k]))&&!(k==='kind'&&s.period==='campaign'))unk.push(l+' 모름')});
+  if(type==='review') unk.unshift(r.reason);
+  unk.push('상표 확인 전');
+  return{type,name:S.candidates[0]||'',nameState:S.candidates.length?'후보':'미정',summary:s.summary||'',tier:p?p.path:'위치 미정',
+    logo:`${r.label} — ${r.reason}`,basis:r.basis.map(b=>docRef(b.k,b.cl)).join(', '),
+    where:'',date:'',link:'',unknowns:unk.join('\n'),
+    key:'req_'+Math.random().toString(36).slice(2,10),errors:{}};
+}
+let drawerOpen=null, notice='';
+function openDrawer(type){
+  if(S.requests[type]){drawerOpen=type;S.send={phase:'done'};renderDrawer();return}
+  const k=condKey();
+  notice='';
+  if(S.draft&&S.draft.type===type&&S.draftKey===k){/* 수정한 초안 유지 */}
+  else{ if(S.draft&&S.draftKey!==k) notice='서비스 조건이 바뀌어서 요청 내용을 다시 만들었어요. 바뀐 내용을 확인해주세요.'; S.draft=buildDraft(type);S.draftKey=k}
+  S.send={phase:'idle'};drawerOpen=type;renderDrawer();
+  setTimeout(()=>{const f=$('#drawerRoot [data-first]');f&&f.focus()},30);
+}
+function closeDrawer(){if(S.send.phase==='sending'||S.send.phase==='checking')return;drawerOpen=null;renderDrawer();render()}
+function syncDraft(){
+  const d=S.draft;if(!d)return;
+  ['name','nameState','summary','where','date','link','unknowns'].forEach(f=>{const el=document.getElementById('f_'+f);if(el)d[f]=el.value});
+}
+function validate(){
+  const d=S.draft,e={};
+  if(!d.summary.trim())e.summary='어떤 서비스인지 적어주세요.';
+  if(!d.where.trim())e.where='어디에 쓰는지 적어주세요. 예: 앱 검색 탭, 광고';
+  if(d.type==='make'&&!d.name.trim())e.name='임시 이름이라도 적어주세요.';
+  d.errors=e;return!Object.keys(e).length;
+}
+function send(){
+  syncDraft();
+  if(S.send.phase==='sending'||S.send.phase==='checking')return; // 연속 클릭 방지
+  if(!validate()){renderDrawer();return}
+  const outcome=$('#simSel')?$('#simSel').value:'success';
+  S.send={phase:'sending',outcome};renderDrawer();
+  if(outcome==='fail'){setTimeout(()=>{S.send={phase:'failed'};S.sim='success';renderDrawer()},1100);return}
+  if(outcome==='timeout'){
+    setTimeout(()=>{S.send={phase:'checking'};renderDrawer();
+      setTimeout(()=>{finish(true)},1400)},2000);return}
+  setTimeout(()=>finish(false),1100);
+}
+function finish(recovered){
+  const d=S.draft;
+  const no='BD-2610-'+String(140+Object.keys(S.requests).length+1).padStart(4,'0');
+  const now=new Date();
+  S.requests[d.type]={no,at:`2026-10-15 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,recovered,key:d.key,draft:{...d}};
+  S.send={phase:'done'};S.sim='success';
+  bot(`요청을 보냈어요. 요청 번호: ${no}\n담당 팀이 보고 연락드릴 거예요. 아직 ${d.type==='make'?'만들기로 정해진':'결정된'} 건 아니에요.`);
+  renderDrawer();renderThread();renderPanel();
+}
+function renderDrawer(){
+  const R=$('#drawerRoot');
+  if(!drawerOpen){R.innerHTML='';return}
+  const type=drawerOpen, title=type==='make'?'로고 만들기 요청':'담당 팀에 물어보기';
+  const req=S.requests[type];
+  if(req&&S.send.phase==='done'){
+    const d=req.draft;
+    R.innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="${title} 접수 결과">
+    <div class="dr-h"><h2>요청을 보냈어요</h2><button class="ghost" type="button" data-close data-first>닫기</button></div>
+    <div class="dr-b"><div class="receipt">
+      <div><div class="eyebrow">요청 번호</div><div class="no">${esc(req.no)}</div></div>
+      ${req.recovered?`<div class="banner info">응답이 늦어 접수 여부를 먼저 확인했어요. 이미 접수된 요청을 찾아서 같은 요청을 다시 만들지 않았어요.</div>`:''}
+      <dl class="kv"><dt>요청</dt><dd>${title}</dd><dt>받는 팀</dt><dd>브랜드디자인팀 (예시)</dd><dt>보낸 시각</dt><dd>${esc(req.at)}</dd><dt>서비스명</dt><dd>${esc(d.name||'미정')} · ${esc(d.nameState)}</dd><dt>희망 일정</dt><dd>${esc(d.date||'적지 않음')} <span class="note">확정 일정 아님</span></dd></dl>
+      <div class="banner warn">담당 팀이 보고 연락드릴 거예요. 아직 ${type==='make'?'만들기로 정해진':'결정된'} 건 아니에요.</div>
+      <p class="note">보낸 내용에는 요청서 항목과 판단 근거만 들어갔어요. 대화 전체는 보내지 않았어요. · 식별자 <span class="mono">${esc(req.key)}</span></p>
+    </div></div></aside>`;
+    bindDrawer();return;
+  }
+  const d=S.draft, ph=S.send.phase, busy=ph==='sending'||ph==='checking';
+  const err=f=>d.errors[f]?`<span class="err" id="e_${f}">${esc(d.errors[f])}</span>`:'';
+  R.innerHTML=`<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="${title}">
+  <div class="dr-h"><h2>${title}</h2><button class="ghost" type="button" data-close ${busy?'disabled':''}>닫기</button></div>
+  <div class="dr-b">
+    <div class="banner info">나눈 대화로 미리 채워뒀어요. 고칠 게 있으면 고치고 보내주세요.</div>
+    ${notice?`<div class="banner warn">${esc(notice)}</div>`:''}
+    ${ph==='failed'?`<div class="banner bad"><b>요청을 보내지 못했어요.</b><span>입력한 내용은 그대로 있어요. 다시 보내도 같은 요청이 두 번 만들어지지 않아요.</span><span class="note">계속 안 되면 디자인 요청 보드(예시)에 직접 등록해주세요.</span></div>`:''}
+        <div class="row2">
+      <div class="field"><label for="f_name">이름</label><input id="f_name" data-first value="${esc(d.name)}" ${busy?'disabled':''} aria-describedby="e_name">${err('name')}</div>
+      <div class="field"><label for="f_nameState">이름 정했나요?</label><select id="f_nameState" ${busy?'disabled':''}>${['확정','후보','가칭','미정'].map(o=>`<option ${o===d.nameState?'selected':''}>${o}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label for="f_summary">어떤 서비스인가요?</label><textarea id="f_summary" ${busy?'disabled':''}>${esc(d.summary)}</textarea>${err('summary')}</div>
+    <div class="field"><label>예상 위치 <span class="hint">AI가 예상한 거예요</span></label><div class="ro">${esc(d.tier)}</div></div>
+    <div class="field"><label>로고 확인 결과</label><div class="ro">${esc(d.logo)}<br><span class="mono">${esc(d.basis)}</span></div></div>
+    <div class="field"><label for="f_where">어디에 쓰나요?</label><input id="f_where" value="${esc(d.where)}" placeholder="예: 앱 검색 탭, 프로모션 랜딩" ${busy?'disabled':''}>${err('where')}</div>
+    <div class="row2">
+      <div class="field"><label for="f_date">언제까지 필요해요? <span class="hint">희망 일정</span></label><input id="f_date" type="date" value="${esc(d.date)}" ${busy?'disabled':''}></div>
+      <div class="field"><label for="f_link">참고 링크</label><input id="f_link" type="url" value="${esc(d.link)}" placeholder="https://" ${busy?'disabled':''}></div>
+    </div>
+    <div class="field"><label for="f_unknowns">아직 모르는 것</label><textarea id="f_unknowns" ${busy?'disabled':''}>${esc(d.unknowns)}</textarea></div>
+      </div>
+  <div class="dr-f">
+    <div class="to">받는 팀 <b>브랜드디자인팀 (예시)</b><span class="note">디자인 요청 보드로 접수돼요</span></div>
+    <div class="actions">
+      <button class="btn" type="button" id="sendReq" ${busy?'disabled':''}>${ph==='sending'?'<span class="spin"></span> 보내는 중':ph==='checking'?'<span class="spin"></span> 접수 여부 확인 중':ph==='failed'?'다시 보내기':'요청 보내기'}</button>
+      ${ph==='checking'?'<span class="note">응답이 늦어 이미 접수됐는지 확인하고 있어요.</span>':''}
+    </div>
+    <div class="sim"><label for="simSel">프로토타입 · 전송 결과</label><select id="simSel" ${busy?'disabled':''}><option value="success">성공</option><option value="fail">실패</option><option value="timeout">시간 초과</option></select><span class="mono">${esc(d.key)}</span></div>
+  </div></aside>`;
+  const sel=$('#simSel');if(sel)sel.value=S.sim||'success';
+  bindDrawer();
+}
+function bindDrawer(){
+  document.querySelectorAll('#drawerRoot [data-close]').forEach(b=>b.addEventListener('click',closeDrawer));
+  const sb=$('#sendReq');sb&&sb.addEventListener('click',send);
+  const sel=$('#simSel');sel&&sel.addEventListener('change',e=>{S.sim=e.target.value});
+  document.querySelectorAll('#drawerRoot input,#drawerRoot textarea,#drawerRoot select').forEach(el=>{if(el.id!=='simSel')el.addEventListener('input',syncDraft)});
+}
+
+/* ───────── 이벤트 ───────── */
+function relogo(before){
+  const after=logoResult().label;
+  if(S.topics.includes('logo')&&before!==after) bot(`내용이 바뀌어서 다시 봤어요. 로고: ${before} → ${after}`);
+  else if(S.topics.length) bot('내용이 바뀌어서 결과를 다시 봤어요.');
+}
+$('#panel').addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.id==='editBtn'||t.id==='editBtn2'){S.editing=true;renderPanel();return}
+  if(t.id==='doneEdit'){const v=$('#sumEdit').value.trim();if(v&&v!==S.svc.summary){S.svc.summary=v}S.editing=false;render();return}
+  if(t.dataset.edit){
+    const k=t.dataset.edit,v=t.dataset.v;
+    const sumEl=$('#sumEdit');if(sumEl)S.svc.summary=sumEl.value.trim()||S.svc.summary;
+    if(S.svc[k]===v)return;
+    const before=logoResult().label;S.svc[k]=v;relogo(before);render();return}
+  if(t.id==='guideBtn'){S.showGuide=!S.showGuide;renderPanel();return}
+  if(t.id==='objectBtn'){bot('어떤 점이 다른지 알려주세요. 내용을 고치면 다시 볼게요. 애매하면 담당 팀에 물어볼 수도 있어요.',[{label:'내용 고치기',act:'editPanel'},{label:'담당 팀에 물어보기',act:'openReview'}]);renderThread();return}
+  if(t.id==='mapBtn'){openMap();return}
+  if(t.dataset.open){openDrawer(t.dataset.open);return}
+  if(t.dataset.try){const v=t.dataset.try;if(!S.candidates.includes(v))S.candidates.push(v);render();return}
+  if(t.dataset.rm){S.candidates.splice(+t.dataset.rm,1);if(!S.candidates.length)S.topics=S.topics.filter(x=>x!=='names');render();return}
+});
+$('#panel').addEventListener('submit',e=>{
+  if(e.target.id!=='addCand')return;e.preventDefault();
+  const v=$('#candIn').value.trim();if(v&&!S.candidates.includes(v)){S.candidates.push(v)}render();
+});
+$('#thread').addEventListener('click',e=>{
+  const b=e.target.closest('.reply');if(!b)return;
+  const r=S.msgs[+b.dataset.m].replies[+b.dataset.r];
+  if(+b.dataset.m!==S.msgs.length-1)return;
+  if(r.act==='editPanel'){S.editing=true;renderPanel();document.querySelector('.panel').scrollTo({top:0,behavior:'smooth'});return}
+  if(r.act==='openReview'){openDrawer('review');return}
+  onReply(r);
+});
+function autoGrow(){const el=$('#input');el.style.height='auto';el.style.height=Math.min(el.scrollHeight,160)+'px'}
+$('#input').addEventListener('input',autoGrow);
+$('#input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('#composer').requestSubmit()}});
+$('#composer').addEventListener('submit',e=>{e.preventDefault();if(busy)return;const el=$('#input');const v=el.value;el.value='';autoGrow();handleUser(v)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&drawerOpen)closeDrawer()});
+$('#resetBtn').addEventListener('click',()=>{S=fresh();drawerOpen=null;$('#drawerRoot').innerHTML='';const li=$('#landIn');li.value='';$('#landGo').disabled=true;render();li.focus()});
+
+/* 전체 매트릭스 */
+function openMap(){
+  const p=position(), myCol=p?p.col:-1, myType=p?p.tk:null;
+  const ents=[];COLS.forEach(([e])=>{const l=ents[ents.length-1];if(l&&l[0]===e)l[1]++;else ents.push([e,1])});
+  const rows=['service','cert','feature','content','campaign','generic','merge'];
+  const groups={상시:4,비상시:1,참고:2};let lastG=null;
+  const body=rows.map(t=>{const T=TYPES[t];const g=T.group;const gcell=g!==lastG?`<th class="grp g-${g}" rowspan="${groups[g]}">${g}</th>`:'';lastG=g;
+    const logo=T.logo===true?'<span class="lg ok">로고 부착 가능</span>':T.logo===false?'<span class="lg no">로고 부착 불가</span>':'';
+    return`<tr class="${t===myType?'myrow':''}">${gcell}<th class="rowh">${logo}<b>${esc(T.label)}</b><span>${esc(T.desc)}</span></th>${COLS.map((c,ci)=>`<td class="${t===myType&&ci===myCol?'me':''}">${cellOf(t,ci).map(chip).join('')}${t===myType&&ci===myCol?'<span class="here">이번 서비스</span>':''}</td>`).join('')}</tr>`}).join('');
+  $('#mapRoot').innerHTML=`<div class="scrim" data-mclose></div><div class="mapdlg" role="dialog" aria-modal="true" aria-label="브랜드 네이밍 매트릭스">
+  <div class="dr-h"><h2>브랜드 네이밍 매트릭스</h2><span class="note">초안 · 이름 ${REG.length}개</span><button class="ghost" type="button" data-mclose>닫기</button></div>
+  <div class="map-wrap"><table class="mtx"><thead>
+    <tr><th colspan="2" class="corner">사업자</th>${ents.map(([e,n])=>`<th colspan="${n}" class="ent">${esc(ENT[e])}</th>`).join('')}</tr>
+    <tr><th colspan="2" class="corner">대상</th>${COLS.map(([,t],ci)=>`<th class="tgt ${ci===myCol?'mecol':''}">${esc(TGT[t])}</th>`).join('')}</tr>
+  </thead><tbody>${body}</tbody></table></div>
+  <div class="map-legend"><span class="nm tadd">이름<i>추가</i></span><span class="nm tchg">이름<i>변경</i></span><span class="nm tsup">이름<i>보강</i></span><span class="note">매트릭스 원본에 표시된 정리 상태예요.</span></div>
+  </div>`;
+  document.querySelectorAll('#mapRoot [data-mclose]').forEach(b=>b.addEventListener('click',closeMap));
+  const me=$('#mapRoot td.me');me&&me.scrollIntoView({block:'center',inline:'center'});
+  $('#mapRoot .ghost').focus();
+}
+function closeMap(){$('#mapRoot').innerHTML=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#mapRoot').innerHTML)closeMap()});
+
+/* 시작 화면 */
+$('#sugs').innerHTML=EXAMPLES.map((e,i)=>`<button type="button" data-ex="${i}" title="${esc(e.text)}">${esc(e.label)}</button>`).join('');
+function start(text){if(!text.trim())return;handleUser(text);setTimeout(()=>$('#input').focus(),50)}
+$('#sugs').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(b)start(EXAMPLES[+b.dataset.ex].text)});
+$('#landIn').addEventListener('input',e=>{$('#landGo').disabled=!e.target.value.trim()});
+$('#landIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.isComposing)e.preventDefault()});
+$('#landForm').addEventListener('submit',e=>{e.preventDefault();start($('#landIn').value)});
+render();$('#landIn').focus();
+</script>
